@@ -3,9 +3,20 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { X, Camera, Scan, Plus, Trash2, Package, Receipt, CheckSquare, Upload, AlertTriangle } from 'lucide-react';
 
+interface RegisteredStore {
+  id: number;
+  nama_toko: string;
+  nama_pemilik: string;
+  alamat: string;
+  nomor_hp: string;
+  sharelok: string;
+  status: string;
+}
+
 interface Props {
   visitPlanId: string;
   defaultStore: { name: string; address: string } | null;
+  registeredStores?: RegisteredStore[];
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -21,7 +32,7 @@ type VisitType = 'drop_roti' | 'tagihan' | 'drop_dan_tagihan';
 
 const STEP_COUNT = 3;
 
-export default function CheckinModal({ visitPlanId, defaultStore, onClose, onSuccess }: Props) {
+export default function CheckinModal({ visitPlanId, defaultStore, registeredStores = [], onClose, onSuccess }: Props) {
   const { user } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -170,15 +181,39 @@ export default function CheckinModal({ visitPlanId, defaultStore, onClose, onSuc
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nama Toko *</label>
-                <input type="text" value={storeName} onChange={e => setStoreName(e.target.value)}
-                  placeholder="Nama toko yang dikunjungi"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                {defaultStore?.name ? (
+                  <div className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-800 font-medium">
+                    {storeName}
+                  </div>
+                ) : registeredStores.length > 0 ? (
+                  <select
+                    value={registeredStores.find(s => s.nama_toko === storeName) ? String(registeredStores.find(s => s.nama_toko === storeName)!.id) : ''}
+                    onChange={e => {
+                      const found = registeredStores.find(s => String(s.id) === e.target.value);
+                      if (found) { setStoreName(found.nama_toko); setStoreAddress(found.alamat || ''); }
+                      else { setStoreName(''); setStoreAddress(''); }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">-- Pilih Toko --</option>
+                    {registeredStores.map(s => (
+                      <option key={s.id} value={String(s.id)}>{s.nama_toko}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input type="text" value={storeName} onChange={e => setStoreName(e.target.value)}
+                    placeholder="Nama toko yang dikunjungi"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Toko</label>
                 <input type="text" value={storeAddress} onChange={e => setStoreAddress(e.target.value)}
                   placeholder="Alamat (opsional)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                  readOnly={!!defaultStore?.name || (registeredStores.length > 0 && !!storeName)}
+                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 ${
+                    (!!defaultStore?.name || (registeredStores.length > 0 && !!storeName)) ? 'bg-gray-50 border-gray-200 text-gray-500' : 'border-gray-300'
+                  }`} />
               </div>
 
               <div>

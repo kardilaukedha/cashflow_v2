@@ -6,7 +6,7 @@ import CheckinModal from './CheckinModal';
 import {
   MapPin, Clock, CheckCircle2, Circle, Plus, Trash2,
   AlertCircle, Send, RefreshCw, Package, ClipboardList,
-  TrendingUp, ChevronRight, Navigation
+  TrendingUp, ChevronRight, Navigation, Store
 } from 'lucide-react';
 
 interface SariRotiSettings {
@@ -38,8 +38,17 @@ interface CheckinSummary {
   total_billing: number;
 }
 
+interface RegisteredStore {
+  id: number;
+  nama_toko: string;
+  nama_pemilik: string;
+  alamat: string;
+  nomor_hp: string;
+  sharelok: string;
+  status: string;
+}
+
 function todayStr() { return new Date().toISOString().split('T')[0]; }
-function timeStr(t: string) { return t.substring(0, 5); }
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   drop_roti: 'Drop Roti',
@@ -53,6 +62,7 @@ export default function SariRotiDashboard() {
   const [todayPlan, setTodayPlan] = useState<VisitPlan | null>(null);
   const [checkins, setCheckins] = useState<CheckinSummary[]>([]);
   const [storeInputs, setStoreInputs] = useState<PlannedStore[]>([{ name: '', address: '' }]);
+  const [registeredStores, setRegisteredStores] = useState<RegisteredStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -68,11 +78,21 @@ export default function SariRotiDashboard() {
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    await Promise.all([loadSettings(), loadTodayPlan()]);
+    await Promise.all([loadSettings(), loadTodayPlan(), loadRegisteredStores()]);
     setLoading(false);
   }, [user, userProfile]);
 
   useEffect(() => { load(); }, [load]);
+
+  const loadRegisteredStores = async () => {
+    const res = await fetch('/api/stores', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
+    });
+    const json = await res.json();
+    if (json.data) {
+      setRegisteredStores((json.data as RegisteredStore[]).filter(s => s.status === 'active' || !s.status));
+    }
+  };
 
   const loadSettings = async () => {
     if (!userProfile?.id) return;
@@ -124,8 +144,15 @@ export default function SariRotiDashboard() {
     setStoreInputs(storeInputs.filter((_, idx) => idx !== i));
   };
 
-  const updateStore = (i: number, field: keyof PlannedStore, val: string) => {
-    setStoreInputs(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: val } : s));
+  const selectStore = (i: number, storeId: string) => {
+    if (!storeId) {
+      setStoreInputs(prev => prev.map((s, idx) => idx === i ? { name: '', address: '' } : s));
+      return;
+    }
+    const found = registeredStores.find(s => String(s.id) === storeId);
+    if (found) {
+      setStoreInputs(prev => prev.map((s, idx) => idx === i ? { name: found.nama_toko, address: found.alamat || '' } : s));
+    }
   };
 
   const savePlan = async () => {
@@ -174,6 +201,11 @@ export default function SariRotiDashboard() {
   const validStoreCount = storeInputs.filter(s => s.name.trim()).length;
   const checkinCount = checkins.length;
   const progressPct = todayPlan ? Math.round((checkinCount / Math.max(todayPlan.stores.length, 1)) * 100) : 0;
+
+  const getSelectedStoreId = (storeName: string) => {
+    const found = registeredStores.find(s => s.nama_toko === storeName);
+    return found ? String(found.id) : '';
+  };
 
   if (loading) {
     return (
@@ -263,47 +295,73 @@ export default function SariRotiDashboard() {
         <div className="p-4 space-y-3">
           {canEditPlan() && (
             <>
-              {storeInputs.map((store, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <div className="flex-1 space-y-1.5">
-                    <input type="text" placeholder={`Nama Toko ${i + 1} *`} value={store.name}
-                      onChange={e => updateStore(i, 'name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-                    <input type="text" placeholder="Alamat toko (opsional)" value={store.address}
-                      onChange={e => updateStore(i, 'address', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:ring-2 focus:ring-blue-500" />
-                  </div>
-                  <button onClick={() => removeStore(i)} disabled={storeInputs.length <= 1}
-                    className="mt-2 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+              {registeredStores.length === 0 ? (
+                <div className="text-center py-6">
+                  <Store className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm font-medium text-gray-500">Belum ada toko terdaftar</p>
+                  <p className="text-xs text-gray-400 mt-1">Daftarkan toko di menu "Toko Saya" terlebih dahulu</p>
                 </div>
-              ))}
-              <div className="flex gap-2">
-                <button onClick={addStore} disabled={storeInputs.length >= settings.max_visits}
-                  className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-40">
-                  <Plus className="w-4 h-4" /> Tambah Toko
-                </button>
-                <span className="text-xs text-gray-400 self-center">{validStoreCount}/{settings.max_visits} toko (min {settings.min_visits})</span>
-              </div>
-              <div className="flex gap-2 pt-1">
-                <button onClick={savePlan} disabled={saving || validStoreCount < settings.min_visits}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 font-medium text-sm disabled:opacity-50 transition-colors">
-                  {saving ? 'Menyimpan...' : 'Simpan Draft'}
-                </button>
-                {todayPlan && (
-                  <button onClick={submitPlan} disabled={submitting || validStoreCount < settings.min_visits}
-                    className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
-                    <Send className="w-4 h-4" /> {submitting ? 'Mengirim...' : 'Kirim Plan'}
-                  </button>
-                )}
-                {!todayPlan && (
-                  <button onClick={savePlan} disabled={saving || validStoreCount < settings.min_visits || (isPastDeadline())}
-                    className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
-                    <Send className="w-4 h-4" /> Buat Plan
-                  </button>
-                )}
-              </div>
+              ) : (
+                <>
+                  {storeInputs.map((store, i) => {
+                    const selectedId = getSelectedStoreId(store.name);
+                    const selectedStoreData = registeredStores.find(s => s.nama_toko === store.name);
+                    return (
+                      <div key={i} className="flex gap-2 items-start">
+                        <div className="flex-1 space-y-1.5">
+                          <select
+                            value={selectedId}
+                            onChange={e => selectStore(i, e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white"
+                          >
+                            <option value="">-- Pilih Toko {i + 1} --</option>
+                            {registeredStores.map(s => (
+                              <option key={s.id} value={String(s.id)}>{s.nama_toko}</option>
+                            ))}
+                          </select>
+                          {selectedStoreData && (
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg">
+                              <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                              <span className="text-xs text-gray-500 truncate">
+                                {selectedStoreData.alamat || 'Alamat belum diisi'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => removeStore(i)} disabled={storeInputs.length <= 1}
+                          className="mt-2 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <div className="flex gap-2">
+                    <button onClick={addStore} disabled={storeInputs.length >= settings.max_visits}
+                      className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-40">
+                      <Plus className="w-4 h-4" /> Tambah Toko
+                    </button>
+                    <span className="text-xs text-gray-400 self-center">{validStoreCount}/{settings.max_visits} toko (min {settings.min_visits})</span>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={savePlan} disabled={saving || validStoreCount < settings.min_visits}
+                      className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 font-medium text-sm disabled:opacity-50 transition-colors">
+                      {saving ? 'Menyimpan...' : 'Simpan Draft'}
+                    </button>
+                    {todayPlan && (
+                      <button onClick={submitPlan} disabled={submitting || validStoreCount < settings.min_visits}
+                        className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                        <Send className="w-4 h-4" /> {submitting ? 'Mengirim...' : 'Kirim Plan'}
+                      </button>
+                    )}
+                    {!todayPlan && (
+                      <button onClick={savePlan} disabled={saving || validStoreCount < settings.min_visits || isPastDeadline()}
+                        className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-medium text-sm disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                        <Send className="w-4 h-4" /> Buat Plan
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -348,10 +406,10 @@ export default function SariRotiDashboard() {
             </div>
           )}
 
-          {!todayPlan && !isPastDeadline() && (
+          {!todayPlan && !isPastDeadline() && registeredStores.length > 0 && (
             <div className="text-center py-4 text-gray-400">
               <Package className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">Isi rencana kunjungan toko hari ini</p>
+              <p className="text-sm">Pilih toko yang akan dikunjungi hari ini</p>
             </div>
           )}
         </div>
@@ -376,6 +434,7 @@ export default function SariRotiDashboard() {
         <CheckinModal
           visitPlanId={todayPlan.id}
           defaultStore={checkinTarget}
+          registeredStores={registeredStores}
           onClose={() => { setShowCheckin(false); setCheckinTarget(null); }}
           onSuccess={() => { setShowCheckin(false); setCheckinTarget(null); loadCheckins(todayPlan.id); }}
         />
