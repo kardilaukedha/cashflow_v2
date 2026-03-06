@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { can } from '../lib/permissions';
 import { Wallet, Plus, Edit2, Trash2, X, Check, TrendingDown } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 
@@ -39,14 +40,15 @@ export default function EmployeeLoanManager() {
     notes: '',
   });
 
-  const isKaryawan = userRole === 'karyawan';
+  const role = userRole || 'karyawan';
+  const canManage = can(role, 'manage_loans');
 
   useEffect(() => {
     fetchLoans();
-    if (!isKaryawan) {
+    if (canManage) {
       fetchEmployees();
     }
-  }, [isKaryawan]);
+  }, [canManage]);
 
   const fetchLoans = async () => {
     try {
@@ -205,11 +207,11 @@ export default function EmployeeLoanManager() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Pinjaman Karyawan</h2>
             <p className="text-sm text-gray-600">
-              {isKaryawan ? 'Lihat pinjaman Anda' : 'Kelola pinjaman karyawan'}
+              {!canManage ? 'Lihat pinjaman Anda' : 'Kelola pinjaman karyawan'}
             </p>
           </div>
         </div>
-        {!isKaryawan && (
+        {canManage && (
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
@@ -220,7 +222,7 @@ export default function EmployeeLoanManager() {
         )}
       </div>
 
-      {showForm && !isKaryawan && (
+      {showForm && canManage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
@@ -332,9 +334,9 @@ export default function EmployeeLoanManager() {
           <div className="text-center py-12">
             <Wallet className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">
-              {isKaryawan ? 'Tidak ada pinjaman' : 'Belum ada pinjaman'}
+              {!canManage ? 'Tidak ada pinjaman' : 'Belum ada pinjaman'}
             </p>
-            {!isKaryawan && (
+            {canManage && (
               <button
                 onClick={() => setShowForm(true)}
                 className="mt-4 text-orange-600 hover:text-orange-700 font-medium"
@@ -363,7 +365,7 @@ export default function EmployeeLoanManager() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  {!isKaryawan && (
+                  {canManage && (
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
                     </th>
@@ -420,7 +422,7 @@ export default function EmployeeLoanManager() {
                           {loan.status === 'active' ? 'Aktif' : 'Lunas'}
                         </span>
                       </td>
-                      {!isKaryawan && (
+                      {canManage && (
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           {loan.status === 'active' && (
                             <>

@@ -13,7 +13,8 @@ import JobPositionManager from './JobPositionManager';
 import EmployeeLoanManager from './EmployeeLoanManager';
 import UserManager from './UserManager';
 import Settings from './Settings';
-import { Plus } from 'lucide-react';
+import { Plus, Lock } from 'lucide-react';
+import { can, DEFAULT_VIEW_BY_ROLE } from '../lib/permissions';
 
 export interface FilterOptions {
   categoryIds: string[];
@@ -32,6 +33,16 @@ interface UserProfile {
   role: string;
 }
 
+function AccessDenied() {
+  return (
+    <div className="flex flex-col items-center justify-center h-64 text-center">
+      <Lock className="w-12 h-12 text-gray-300 mb-4" />
+      <h2 className="text-lg font-semibold text-gray-600">Akses Ditolak</h2>
+      <p className="text-sm text-gray-400 mt-1">Role Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user, userRole } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -42,7 +53,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [currentView, setCurrentView] = useState(userRole === 'karyawan' ? 'loans' : 'dashboard');
+  const [currentView, setCurrentView] = useState(DEFAULT_VIEW_BY_ROLE[userRole || 'karyawan'] || 'loans');
   const [filters, setFilters] = useState<FilterOptions>({
     categoryIds: [],
     type: 'all',
@@ -54,6 +65,7 @@ export default function Dashboard() {
   });
 
   const isSuperAdmin = userRole === 'superadmin';
+  const role = userRole || 'karyawan';
 
   useEffect(() => {
     if (user) {
@@ -215,16 +227,18 @@ export default function Dashboard() {
                     </select>
                   </div>
                 )}
-                <button
-                  onClick={() => {
-                    setEditingTransaction(null);
-                    setShowTransactionForm(true);
-                  }}
-                  className="bg-gradient-to-r from-emerald-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-emerald-600 hover:to-blue-700 transition-all flex items-center gap-2"
-                >
-                  <Plus className="w-5 h-5" />
-                  Tambah Transaksi
-                </button>
+                {can(role, 'manage_transactions') && (
+                  <button
+                    onClick={() => {
+                      setEditingTransaction(null);
+                      setShowTransactionForm(true);
+                    }}
+                    className="bg-gradient-to-r from-emerald-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-emerald-600 hover:to-blue-700 transition-all flex items-center gap-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Tambah Transaksi
+                  </button>
+                )}
               </div>
 
               {loading ? (
@@ -272,11 +286,11 @@ export default function Dashboard() {
           ) : currentView === 'salary' ? (
             <EmployeeSalary />
           ) : currentView === 'positions' ? (
-            <JobPositionManager />
+            can(role, 'manage_positions') ? <JobPositionManager /> : <AccessDenied />
           ) : currentView === 'loans' ? (
             <EmployeeLoanManager />
           ) : currentView === 'users' ? (
-            <UserManager />
+            can(role, 'manage_users') ? <UserManager /> : <AccessDenied />
           ) : currentView === 'settings' ? (
             <Settings />
           ) : null}

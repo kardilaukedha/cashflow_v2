@@ -65,6 +65,19 @@ npm run build     # Production build
 - `PUT /api/:table` - Update rows (with filter)
 - `DELETE /api/:table` - Delete rows (with filter)
 
+## Role-Based Access Control
+
+4 roles enforced both frontend (UI) and backend (API):
+
+| Role | Akses |
+|---|---|
+| `superadmin` | Full access — semua fitur |
+| `admin_keuangan` | Dashboard, Gaji, Pinjaman, Kategori, Import/Export, Settings (keuangan) |
+| `admin_sariroti` | Dashboard, Gaji, Pinjaman |
+| `karyawan` | Lihat slip gaji sendiri, lihat pinjaman sendiri, Settings dasar |
+
+Permissions centralized in `src/lib/permissions.ts`. Role is embedded in JWT at login.
+
 ## Key Features
 
 - Financial transaction tracking (income/expense) with categories
@@ -72,6 +85,6 @@ npm run build     # Production build
 - Employee salary management and payslips
 - Loan management
 - Job position management
-- Role-based access control (superadmin / karyawan)
+- Role-based access control (4 roles: superadmin / admin_keuangan / admin_sariroti / karyawan)
 - User invitation system
 - Company profile and payroll settings

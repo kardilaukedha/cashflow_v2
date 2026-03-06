@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import type { Category } from '../lib/supabase';
+import { can, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
 import {
   Wallet,
   LogOut,
@@ -24,9 +25,25 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ categories, onCategoryUpdated, currentView, onViewChange }: SidebarProps) {
-  const { user, signOut, userProfile, isSuperAdmin } = useAuth();
+  const { user, signOut, userProfile, userRole } = useAuth();
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
+
+  const role = userRole || 'karyawan';
+  const roleLabel = ROLE_LABELS[role] || role;
+  const badgeColor = ROLE_BADGE_COLORS[role] || 'bg-gray-400 text-white';
+
+  const navBtn = (view: string, Icon: React.ElementType, label: string) => (
+    <button
+      onClick={() => onViewChange(view)}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+        currentView === view ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      <Icon className="w-5 h-5" />
+      <span className="font-medium">{label}</span>
+    </button>
+  );
 
   return (
     <>
@@ -40,113 +57,58 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
               <h2 className="font-bold text-gray-900">Cashflow App</h2>
               <p className="text-xs text-gray-600">{userProfile?.full_name || 'User'}</p>
               <p className="text-xs text-gray-500">{user?.email}</p>
-              {isSuperAdmin && (
-                <span className="inline-block mt-1 px-2 py-0.5 bg-blue-600 text-white text-xs font-semibold rounded">
-                  ADMIN
+              {role !== 'karyawan' && (
+                <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
+                  {roleLabel}
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          <button
-            onClick={() => onViewChange('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'dashboard'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <BarChart3 className="w-5 h-5" />
-            <span className="font-medium">Dashboard</span>
-          </button>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {can(role, 'view_dashboard') && navBtn('dashboard', BarChart3, 'Dashboard')}
 
-          <button
-            onClick={() => onViewChange('salary')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'salary'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <Users className="w-5 h-5" />
-            <span className="font-medium">Gaji Karyawan</span>
-          </button>
+          {can(role, 'view_own_salary') && navBtn('salary', Users, 'Gaji Karyawan')}
 
-          <button
-            onClick={() => onViewChange('loans')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'loans'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <Wallet className="w-5 h-5" />
-            <span className="font-medium">Pinjaman Karyawan</span>
-          </button>
+          {can(role, 'view_own_loans') && navBtn('loans', Wallet, 'Pinjaman Karyawan')}
 
-          <button
-            onClick={() => onViewChange('positions')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'positions'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <Briefcase className="w-5 h-5" />
-            <span className="font-medium">Kelola Jabatan</span>
-          </button>
+          {can(role, 'manage_positions') && navBtn('positions', Briefcase, 'Kelola Jabatan')}
 
-          <button
-            onClick={() => setShowCategoryManager(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Tag className="w-5 h-5" />
-            <span className="font-medium">Kelola Kategori</span>
-          </button>
+          {can(role, 'manage_categories') && (
+            <button
+              onClick={() => setShowCategoryManager(true)}
+              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Tag className="w-5 h-5" />
+              <span className="font-medium">Kelola Kategori</span>
+            </button>
+          )}
 
-          <button
-            onClick={() => setShowImportExport(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Upload className="w-5 h-5" />
-            <span className="font-medium">Import Data</span>
-          </button>
+          {can(role, 'import_export') && (
+            <>
+              <button
+                onClick={() => setShowImportExport(true)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Upload className="w-5 h-5" />
+                <span className="font-medium">Import Data</span>
+              </button>
+              <button
+                onClick={() => setShowImportExport(true)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Download className="w-5 h-5" />
+                <span className="font-medium">Export Data</span>
+              </button>
+            </>
+          )}
 
-          <button
-            onClick={() => setShowImportExport(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Download className="w-5 h-5" />
-            <span className="font-medium">Export Data</span>
-          </button>
-
-          <button
-            onClick={() => onViewChange('users')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'users'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <UserCircle className="w-5 h-5" />
-            <span className="font-medium">Kelola User</span>
-          </button>
+          {can(role, 'manage_users') && navBtn('users', UserCircle, 'Kelola User')}
 
           <div className="my-2 border-t border-gray-200"></div>
 
-          <button
-            onClick={() => onViewChange('settings')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              currentView === 'settings'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            <Settings className="w-5 h-5" />
-            <span className="font-medium">Pengaturan</span>
-          </button>
+          {navBtn('settings', Settings, 'Pengaturan')}
         </nav>
 
         <div className="p-4 border-t border-gray-200">

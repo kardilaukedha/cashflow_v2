@@ -40,27 +40,29 @@ type SettingsTab =
   | 'budget';
 
 export default function Settings() {
-  const { isSuperAdmin } = useAuth();
+  const { userRole } = useAuth();
+  const role = userRole || 'karyawan';
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
+  const ALL = ['superadmin', 'admin_keuangan', 'admin_sariroti', 'karyawan'];
+  const FINANCE = ['superadmin', 'admin_keuangan'];
+  const SUPER = ['superadmin'];
+
   const tabs = [
-    { id: 'profile' as SettingsTab, name: 'Profil Saya', icon: User, adminOnly: false },
-    { id: 'company' as SettingsTab, name: 'Profil Perusahaan', icon: Building2, adminOnly: true },
-    { id: 'dashboard' as SettingsTab, name: 'Preferensi Dashboard', icon: Layout, adminOnly: true },
-    { id: 'bulk' as SettingsTab, name: 'Operasi Massal', icon: Zap, adminOnly: true },
-    { id: 'salary' as SettingsTab, name: 'Komponen Gaji', icon: DollarSign, adminOnly: true },
-    { id: 'payroll' as SettingsTab, name: 'Periode Gaji', icon: Calendar, adminOnly: true },
-    { id: 'employee_policy' as SettingsTab, name: 'Kebijakan Karyawan', icon: UsersIcon, adminOnly: true },
-    { id: 'budget' as SettingsTab, name: 'Anggaran & Forecast', icon: PieChart, adminOnly: true },
-    { id: 'notifications' as SettingsTab, name: 'Notifikasi', icon: Bell, adminOnly: false },
-    { id: 'api' as SettingsTab, name: 'API & AI', icon: Key, adminOnly: true },
-    { id: 'security' as SettingsTab, name: 'Keamanan', icon: Shield, adminOnly: false },
+    { id: 'profile' as SettingsTab,          name: 'Profil Saya',          icon: User,       allowedRoles: ALL },
+    { id: 'company' as SettingsTab,           name: 'Profil Perusahaan',    icon: Building2,  allowedRoles: SUPER },
+    { id: 'dashboard' as SettingsTab,         name: 'Preferensi Dashboard', icon: Layout,     allowedRoles: FINANCE },
+    { id: 'salary' as SettingsTab,            name: 'Komponen Gaji',        icon: DollarSign, allowedRoles: FINANCE },
+    { id: 'payroll' as SettingsTab,           name: 'Periode Gaji',         icon: Calendar,   allowedRoles: FINANCE },
+    { id: 'budget' as SettingsTab,            name: 'Anggaran & Forecast',  icon: PieChart,   allowedRoles: FINANCE },
+    { id: 'employee_policy' as SettingsTab,   name: 'Kebijakan Karyawan',   icon: UsersIcon,  allowedRoles: SUPER },
+    { id: 'bulk' as SettingsTab,              name: 'Operasi Massal',       icon: Zap,        allowedRoles: SUPER },
+    { id: 'api' as SettingsTab,               name: 'API & AI',             icon: Key,        allowedRoles: SUPER },
+    { id: 'notifications' as SettingsTab,     name: 'Notifikasi',           icon: Bell,       allowedRoles: ALL },
+    { id: 'security' as SettingsTab,          name: 'Keamanan',             icon: Shield,     allowedRoles: ALL },
   ];
 
-  const visibleTabs = tabs.filter(tab => {
-    if (!tab.adminOnly) return true;
-    return isSuperAdmin;
-  });
+  const visibleTabs = tabs.filter(tab => tab.allowedRoles.includes(role));
 
   const renderContent = () => {
     switch (activeTab) {

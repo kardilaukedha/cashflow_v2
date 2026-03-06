@@ -107,6 +107,30 @@ function authMiddleware(req, res, next) {
   }
 }
 
+// Role guard middleware factory
+function requireRole(...roles) {
+  return (req, res, next) => {
+    const userRole = req.user?.role || 'karyawan';
+    if (!roles.includes(userRole)) {
+      return res.status(403).json({ data: null, error: { message: 'Akses ditolak. Role Anda tidak memiliki izin untuk tindakan ini.' } });
+    }
+    next();
+  };
+}
+
+const ADMIN_ROLES = ['superadmin', 'admin_keuangan', 'admin_sariroti'];
+const SUPERADMIN_ONLY = ['superadmin'];
+
+// Tables that require specific roles for write operations
+const WRITE_ROLE_MAP = {
+  job_positions:  SUPERADMIN_ONLY,
+  invite_links:   SUPERADMIN_ONLY,
+  user_profiles:  SUPERADMIN_ONLY,
+  employees:      ADMIN_ROLES,
+  salary_payments: ADMIN_ROLES,
+  employee_loans: ADMIN_ROLES,
+};
+
 // POST /api/auth/login
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -116,7 +140,11 @@ app.post('/api/auth/login', async (req, res) => {
     const valid = await bcrypt.compare(password, rows[0].password_hash);
     if (!valid) return res.json({ data: null, error: { message: 'Invalid login credentials' } });
 
-    const user = { id: rows[0].id, email: rows[0].email };
+    // Fetch role from user_profiles
+    const profileResult = await pool.query('SELECT role FROM user_profiles WHERE user_id = $1', [rows[0].id]);
+    const role = profileResult.rows[0]?.role || 'karyawan';
+
+    const user = { id: rows[0].id, email: rows[0].email, role };
     const token = jwt.sign(user, JWT_SECRET, { expiresIn: '30d' });
 
     // Log login
@@ -228,6 +256,13 @@ app.get('/api/:table', authMiddleware, async (req, res) => {
 app.post('/api/:table', authMiddleware, async (req, res) => {
   try {
     const { table } = req.params;
+    const allowedRoles = WRITE_ROLE_MAP[table];
+    if (allowedRoles) {
+      const userRole = req.user?.role || 'karyawan';
+      if (!allowedRoles.includes(userRole)) {
+        return res.status(403).json({ data: null, error: { message: 'Akses ditolak.' } });
+      }
+    }
     const data = req.body;
 
     const keys = Object.keys(data).filter(k => data[k] !== undefined);
@@ -249,6 +284,13 @@ app.post('/api/:table', authMiddleware, async (req, res) => {
 app.put('/api/:table', authMiddleware, async (req, res) => {
   try {
     const { table } = req.params;
+    const allowedRoles = WRITE_ROLE_MAP[table];
+    if (allowedRoles) {
+      const userRole = req.user?.role || 'karyawan';
+      if (!allowedRoles.includes(userRole)) {
+        return res.status(403).json({ data: null, error: { message: 'Akses ditolak.' } });
+      }
+    }
     const data = req.body;
     const filters = parseFilters(req.query);
 
@@ -279,6 +321,13 @@ app.put('/api/:table', authMiddleware, async (req, res) => {
 app.delete('/api/:table', authMiddleware, async (req, res) => {
   try {
     const { table } = req.params;
+    const allowedRoles = WRITE_ROLE_MAP[table];
+    if (allowedRoles) {
+      const userRole = req.user?.role || 'karyawan';
+      if (!allowedRoles.includes(userRole)) {
+        return res.status(403).json({ data: null, error: { message: 'Akses ditolak.' } });
+      }
+    }
     const filters = parseFilters(req.query);
 
     if (filters.length === 0) return res.json({ data: null, error: { message: 'No filter specified' } });

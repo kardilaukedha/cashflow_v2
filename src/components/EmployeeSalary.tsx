@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { can } from '../lib/permissions';
 import { Plus, Edit2, Trash2, DollarSign, Calendar, User, Briefcase, X, Eye } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 import SalarySlip from './SalarySlip';
@@ -78,6 +79,8 @@ interface PaymentFormData {
 
 export default function EmployeeSalary() {
   const { user, userRole } = useAuth();
+  const role = userRole || 'karyawan';
+  const canManage = can(role, 'manage_salary');
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [payments, setPayments] = useState<SalaryPayment[]>([]);
@@ -359,22 +362,24 @@ export default function EmployeeSalary() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Gaji Karyawan</h1>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowEmployeeForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Tambah Karyawan
-          </button>
-          <button
-            onClick={() => setShowPaymentForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <DollarSign className="w-4 h-4" />
-            Bayar Gaji
-          </button>
-        </div>
+        {canManage && (
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowEmployeeForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Tambah Karyawan
+            </button>
+            <button
+              onClick={() => setShowPaymentForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <DollarSign className="w-4 h-4" />
+              Bayar Gaji
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -426,20 +431,22 @@ export default function EmployeeSalary() {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => editEmployee(employee)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteEmployee(employee.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {canManage && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => editEmployee(employee)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEmployee(employee.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
               {employees.filter(e => e.status === 'active').length === 0 && (
