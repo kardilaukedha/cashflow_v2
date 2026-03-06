@@ -3,8 +3,11 @@ import { supabase } from '../../lib/supabase';
 import {
   Users, MapPin, Calendar, RefreshCw, ChevronDown, ChevronRight,
   CheckCircle2, Clock, AlertTriangle, Package, Receipt, Image,
-  Settings as SettingsIcon, Save, Eye, X
+  Settings as SettingsIcon, Save, X, ExternalLink, Timer,
+  Bell, FileText, TrendingUp
 } from 'lucide-react';
+import LaporanKaryawan from './LaporanKaryawan';
+import PerformaKaryawan from './PerformaKaryawan';
 
 interface VisitSummaryRow {
   id: string;
@@ -24,11 +27,16 @@ interface CheckinDetail {
   store_name: string;
   store_address: string;
   checkin_time: string;
+  checkout_time: string | null;
+  duration_minutes: number | null;
   selfie_url: string;
   visit_type: string;
   total_billing: number;
   has_expired_bread: boolean;
   notes: string;
+  gps_lat: number | null;
+  gps_lng: number | null;
+  gps_accuracy: number | null;
   bread_scans: BreadScan[] | null;
 }
 
@@ -47,6 +55,15 @@ interface SariRotiUser {
   user_id: string;
 }
 
+interface NotifRow {
+  user_profile_id: string;
+  full_name: string;
+  email: string;
+  plan_status: string;
+  plan_deadline: string | null;
+  status: string;
+}
+
 const VISIT_TYPE_LABELS: Record<string, string> = {
   drop_roti: 'Drop Roti',
   tagihan: 'Tagihan',
@@ -60,6 +77,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   rejected:  { label: 'Ditolak',   color: 'bg-red-100 text-red-700' },
 };
 
+type Tab = 'monitor' | 'notifikasi' | 'laporan' | 'performa' | 'settings';
+
 export default function VisitMonitorAdmin() {
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
   const [summaries, setSummaries] = useState<VisitSummaryRow[]>([]);
@@ -67,11 +86,13 @@ export default function VisitMonitorAdmin() {
   const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<Record<string, CheckinDetail[]>>({});
   const [loadingDetail, setLoadingDetail] = useState<string | null>(null);
-  const [tab, setTab] = useState<'monitor' | 'settings'>('monitor');
+  const [tab, setTab] = useState<Tab>('monitor');
   const [sariUsers, setSariUsers] = useState<SariRotiUser[]>([]);
   const [settingsMap, setSettingsMap] = useState<Record<string, { min_visits: number; max_visits: number; plan_deadline: string }>>({});
   const [savingSettings, setSavingSettings] = useState<string | null>(null);
   const [selfieModal, setSelfieModal] = useState<string | null>(null);
+  const [notifRows, setNotifRows] = useState<NotifRow[]>([]);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   const token = localStorage.getItem('sb_token');
 
@@ -88,6 +109,7 @@ export default function VisitMonitorAdmin() {
 
   useEffect(() => {
     if (tab === 'settings') loadSariUsers();
+    if (tab === 'notifikasi') loadNotifikasi();
   }, [tab]);
 
   const loadSariUsers = async () => {
@@ -96,6 +118,14 @@ export default function VisitMonitorAdmin() {
       setSariUsers(data as SariRotiUser[]);
       data.forEach(u => loadUserSettings(u.id));
     }
+  };
+
+  const loadNotifikasi = async () => {
+    setNotifLoading(true);
+    const res = await fetch('/api/notifikasi-deadline', { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    if (json.data) setNotifRows(json.data);
+    setNotifLoading(false);
   };
 
   const loadUserSettings = async (userProfileId: string) => {
@@ -141,6 +171,14 @@ export default function VisitMonitorAdmin() {
     setSettingsMap(prev => ({ ...prev, [uid]: { ...prev[uid], [field]: val } }));
   };
 
+  const tabs: { key: Tab; label: string; Icon: typeof Users; badge?: number }[] = [
+    { key: 'monitor', label: 'Monitor', Icon: Users },
+    { key: 'notifikasi', label: 'Notifikasi', Icon: Bell, badge: notifRows.length > 0 ? notifRows.length : undefined },
+    { key: 'laporan', label: 'Laporan', Icon: FileText },
+    { key: 'performa', label: 'Performa', Icon: TrendingUp },
+    { key: 'settings', label: 'Pengaturan', Icon: SettingsIcon },
+  ];
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -153,14 +191,21 @@ export default function VisitMonitorAdmin() {
             <p className="text-sm text-gray-500">Pantau aktivitas kunjungan toko karyawan</p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setTab('monitor')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'monitor' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-            <Users className="w-4 h-4 inline mr-1.5" />Monitor
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        {tabs.map(({ key, label, Icon, badge }) => (
+          <button key={key} onClick={() => setTab(key)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative ${tab === key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <Icon className="w-4 h-4" />
+            {label}
+            {badge !== undefined && (
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                {badge}
+              </span>
+            )}
           </button>
-          <button onClick={() => setTab('settings')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'settings' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-            <SettingsIcon className="w-4 h-4 inline mr-1.5" />Pengaturan
-          </button>
-        </div>
+        ))}
       </div>
 
       {tab === 'monitor' && (
@@ -261,15 +306,38 @@ export default function VisitMonitorAdmin() {
                                       <p className="font-semibold text-gray-900 text-sm">{d.store_name}</p>
                                       {d.store_address && <p className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" />{d.store_address}</p>}
                                     </div>
-                                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                                    <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                                       {d.selfie_url && (
                                         <button onClick={() => setSelfieModal(d.selfie_url)} className="flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-100 transition-colors">
                                           <Image className="w-3 h-3" />Selfie
                                         </button>
                                       )}
+                                      {d.gps_lat && d.gps_lng && (
+                                        <a href={`https://www.google.com/maps?q=${d.gps_lat},${d.gps_lng}`} target="_blank" rel="noopener noreferrer"
+                                          className="flex items-center gap-1 text-xs bg-emerald-50 text-emerald-600 px-2 py-1 rounded-lg hover:bg-emerald-100 transition-colors">
+                                          <ExternalLink className="w-3 h-3" />GPS
+                                          {d.gps_accuracy ? ` ±${Math.round(d.gps_accuracy)}m` : ''}
+                                        </a>
+                                      )}
                                       <span className="text-xs text-gray-400">{new Date(d.checkin_time).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' })}</span>
                                     </div>
                                   </div>
+                                  {(d.checkout_time || d.duration_minutes) && (
+                                    <div className="flex items-center gap-3 text-xs text-gray-500 pl-0.5">
+                                      {d.checkout_time && (
+                                        <span className="flex items-center gap-1">
+                                          <Clock className="w-3 h-3 text-blue-400" />
+                                          Checkout: {new Date(d.checkout_time).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' })}
+                                        </span>
+                                      )}
+                                      {d.duration_minutes && (
+                                        <span className="flex items-center gap-1">
+                                          <Timer className="w-3 h-3 text-purple-400" />
+                                          Durasi: {Math.round(d.duration_minutes)} mnt
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
                                   <div className="flex flex-wrap gap-2 text-xs">
                                     <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{VISIT_TYPE_LABELS[d.visit_type] || d.visit_type}</span>
                                     {d.total_billing > 0 && <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Tagihan: Rp {Number(d.total_billing).toLocaleString('id-ID')}</span>}
@@ -308,6 +376,53 @@ export default function VisitMonitorAdmin() {
           )}
         </>
       )}
+
+      {tab === 'notifikasi' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">Karyawan yang belum submit plan hari ini ({new Date().toLocaleDateString('id-ID')})</p>
+            <button onClick={loadNotifikasi} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              <RefreshCw className="w-4 h-4" /> Refresh
+            </button>
+          </div>
+          {notifLoading ? (
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 bg-gray-100 animate-pulse rounded-xl" />)}</div>
+          ) : notifRows.length === 0 ? (
+            <div className="text-center py-12 bg-emerald-50 rounded-xl border border-emerald-100">
+              <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-emerald-400" />
+              <p className="font-medium text-emerald-700">Semua karyawan sudah submit plan hari ini</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {notifRows.map(r => (
+                <div key={r.user_profile_id} className="bg-white rounded-xl border border-red-200 p-4 flex items-center gap-3">
+                  <div className="w-9 h-9 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900">{r.full_name}</p>
+                    <p className="text-xs text-gray-400">{r.email}</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      r.status === 'no_plan' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {r.status === 'no_plan' ? 'Belum buat plan' : 'Masih Draft'}
+                    </span>
+                    {r.plan_deadline && (
+                      <p className="text-xs text-gray-400 mt-1 text-right">Deadline: {r.plan_deadline}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === 'laporan' && <LaporanKaryawan />}
+
+      {tab === 'performa' && <PerformaKaryawan />}
 
       {tab === 'settings' && (
         <div className="space-y-4">

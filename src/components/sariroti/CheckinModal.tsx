@@ -1,7 +1,6 @@
-import { useState, useRef } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { X, Camera, Scan, Plus, Trash2, Package, Receipt, CheckSquare, Upload, AlertTriangle } from 'lucide-react';
+import { X, Camera, Scan, Trash2, Package, Receipt, CheckSquare, Upload, AlertTriangle, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface RegisteredStore {
   id: number;
@@ -32,8 +31,9 @@ type VisitType = 'drop_roti' | 'tagihan' | 'drop_dan_tagihan';
 
 const STEP_COUNT = 3;
 
+type GpsStatus = 'idle' | 'loading' | 'ok' | 'error';
+
 export default function CheckinModal({ visitPlanId, defaultStore, registeredStores = [], onClose, onSuccess }: Props) {
-  const { user } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(1);
@@ -50,8 +50,32 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
   const [barcodeInput, setBarcodeInput] = useState('');
   const [tarikBarcodeInput, setTarikBarcodeInput] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const [gpsStatus, setGpsStatus] = useState<GpsStatus>('idle');
+  const [gpsLat, setGpsLat] = useState<number | null>(null);
+  const [gpsLng, setGpsLng] = useState<number | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+
   const barcodeRef = useRef<HTMLInputElement>(null);
   const tarikRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setGpsStatus('loading');
+    if (!navigator.geolocation) {
+      setGpsStatus('error');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setGpsLat(pos.coords.latitude);
+        setGpsLng(pos.coords.longitude);
+        setGpsAccuracy(pos.coords.accuracy);
+        setGpsStatus('ok');
+      },
+      () => setGpsStatus('error'),
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  }, []);
 
   const handleSelfie = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,34 +130,41 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
     setSaving(true);
     try {
       const token = localStorage.getItem('sb_token');
-      let selfieUrl = '';
-      if (selfieFile) {
-        const fd = new FormData();
-        fd.append('file', selfieFile);
-        const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
-        const json = await res.json();
-        selfieUrl = json.data?.url || '';
+
+      const fd = new FormData();
+      fd.append('visit_plan_id', visitPlanId);
+      fd.append('store_name', storeName.trim());
+      fd.append('store_address', storeAddress.trim());
+      fd.append('visit_type', visitType);
+      fd.append('total_billing', totalBilling || '0');
+      fd.append('has_expired_bread', String(hasExpiredBread));
+      fd.append('notes', notes.trim());
+      if (gpsLat !== null) fd.append('gps_lat', String(gpsLat));
+      if (gpsLng !== null) fd.append('gps_lng', String(gpsLng));
+      if (gpsAccuracy !== null) fd.append('gps_accuracy', String(gpsAccuracy));
+      if (selfieFile) fd.append('selfie', selfieFile);
+
+      const res = await fetch('/api/checkin', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const json = await res.json();
+
+      if (res.status === 409) {
+        alert(json.error?.message || 'Toko ini sudah di-check-in hari ini.');
+        setSaving(false);
+        return;
+      }
+      if (!res.ok || json.error) {
+        throw new Error(json.error?.message || 'Gagal menyimpan check-in');
       }
 
-      const { data: checkin, error } = await supabase.from('visit_checkins').insert({
-        visit_plan_id: visitPlanId,
-        user_id: user?.id,
-        store_name: storeName.trim(),
-        store_address: storeAddress.trim(),
-        checkin_time: new Date().toISOString(),
-        selfie_url: selfieUrl,
-        visit_type: visitType,
-        total_billing: parseFloat(totalBilling || '0'),
-        has_expired_bread: hasExpiredBread,
-        notes: notes.trim(),
-        status: 'completed',
-      }).select('id').single();
-
-      if (error) throw error;
+      const checkin = json.data;
 
       const allScans = [
-        ...dropScans.map(s => ({ ...s, checkin_id: checkin.id, user_id: user?.id })),
-        ...tarikaScans.map(s => ({ ...s, checkin_id: checkin.id, user_id: user?.id })),
+        ...dropScans.map(s => ({ ...s, checkin_id: checkin.id, user_id: checkin.user_id })),
+        ...tarikaScans.map(s => ({ ...s, checkin_id: checkin.id, user_id: checkin.user_id })),
       ];
       if (allScans.length > 0) {
         await supabase.from('bread_scans').insert(allScans);
@@ -160,17 +191,37 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
     return true;
   };
 
+  const GpsIndicator = () => {
+    if (gpsStatus === 'loading') return (
+      <span className="flex items-center gap-1 text-xs text-blue-500">
+        <Loader2 className="w-3 h-3 animate-spin" /> Mengambil lokasi GPS...
+      </span>
+    );
+    if (gpsStatus === 'ok') return (
+      <span className="flex items-center gap-1 text-xs text-emerald-600">
+        <CheckCircle2 className="w-3 h-3" /> Lokasi didapat (±{Math.round(gpsAccuracy || 0)}m)
+      </span>
+    );
+    if (gpsStatus === 'error') return (
+      <span className="flex items-center gap-1 text-xs text-orange-500">
+        <AlertTriangle className="w-3 h-3" /> GPS tidak tersedia — check-in tetap bisa dilakukan
+      </span>
+    );
+    return null;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50">
       <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0">
           <div>
             <h3 className="text-base font-bold text-gray-900">Check-in Toko</h3>
-            <div className="flex gap-1 mt-1">
+            <div className="flex gap-1 mt-1 items-center">
               {Array.from({ length: STEP_COUNT }, (_, i) => (
                 <div key={i} className={`h-1 w-8 rounded-full transition-colors ${i + 1 <= step ? 'bg-blue-600' : 'bg-gray-200'}`} />
               ))}
               <span className="text-xs text-gray-400 ml-1 self-center">{step}/{STEP_COUNT}</span>
+              <span className="ml-2"><GpsIndicator /></span>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1"><X className="w-5 h-5" /></button>
@@ -357,6 +408,17 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                   {needsDrop && <div><p className="text-xs text-gray-400">Drop Roti</p><p className="font-medium">{dropScans.reduce((s,c)=>s+c.quantity,0)} item ({dropScans.length} SKU)</p></div>}
                   {needsBilling && <div><p className="text-xs text-gray-400">Total Tagihan</p><p className="font-medium">Rp {Number(totalBilling||0).toLocaleString('id-ID')}</p></div>}
                   {hasExpiredBread && <div><p className="text-xs text-gray-400">Roti Tarik</p><p className="font-medium text-orange-600">{tarikaScans.reduce((s,c)=>s+c.quantity,0)} item</p></div>}
+                  <div className="col-span-2">
+                    <p className="text-xs text-gray-400 mb-1 flex items-center gap-1"><MapPin className="w-3 h-3" />GPS</p>
+                    {gpsStatus === 'ok' ? (
+                      <a href={`https://www.google.com/maps?q=${gpsLat},${gpsLng}`} target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline">
+                        {gpsLat?.toFixed(6)}, {gpsLng?.toFixed(6)} (±{Math.round(gpsAccuracy||0)}m)
+                      </a>
+                    ) : (
+                      <p className="text-xs text-gray-400">{gpsStatus === 'loading' ? 'Mengambil lokasi...' : 'GPS tidak tersedia'}</p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div>

@@ -6,7 +6,7 @@ import CheckinModal from './CheckinModal';
 import {
   MapPin, Clock, CheckCircle2, Circle, Plus, Trash2,
   AlertCircle, Send, RefreshCw, Package, ClipboardList,
-  TrendingUp, ChevronRight, Navigation, Store
+  TrendingUp, Navigation, Store, LogOut, Timer, ExternalLink
 } from 'lucide-react';
 
 interface SariRotiSettings {
@@ -34,8 +34,12 @@ interface CheckinSummary {
   id: string;
   store_name: string;
   checkin_time: string;
+  checkout_time: string | null;
+  duration_minutes: number | null;
   visit_type: string;
   total_billing: number;
+  gps_lat: number | null;
+  gps_lng: number | null;
 }
 
 interface RegisteredStore {
@@ -68,6 +72,7 @@ export default function SariRotiDashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [checkinTarget, setCheckinTarget] = useState<PlannedStore | null>(null);
   const [showCheckin, setShowCheckin] = useState(false);
+  const [checkingOut, setCheckingOut] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -122,14 +127,34 @@ export default function SariRotiDashboard() {
   };
 
   const loadCheckins = async (planId: string) => {
-    const { data } = await supabase.from('visit_checkins').select('id, store_name, checkin_time, visit_type, total_billing')
+    const { data } = await supabase.from('visit_checkins')
+      .select('id, store_name, checkin_time, checkout_time, duration_minutes, visit_type, total_billing, gps_lat, gps_lng')
       .eq('visit_plan_id', planId).order('checkin_time');
     if (data) setCheckins(data as CheckinSummary[]);
+  };
+
+  const handleCheckout = async (checkinId: string) => {
+    setCheckingOut(checkinId);
+    const res = await fetch(`/api/checkout/${checkinId}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
+    });
+    const json = await res.json();
+    if (json.error) alert(json.error.message);
+    else if (todayPlan) loadCheckins(todayPlan.id);
+    setCheckingOut(null);
   };
 
   const isPastDeadline = () => {
     const [h, m] = settings.plan_deadline.split(':').map(Number);
     return now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m);
+  };
+
+  const isNearDeadline = () => {
+    const [h, m] = settings.plan_deadline.split(':').map(Number);
+    const deadlineMinutes = h * 60 + m;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    return deadlineMinutes - nowMinutes <= 30 && deadlineMinutes - nowMinutes > 0;
   };
 
   const canEditPlan = () => !todayPlan || todayPlan.status === 'draft';
@@ -207,6 +232,8 @@ export default function SariRotiDashboard() {
     return found ? String(found.id) : '';
   };
 
+  const showDeadlineAlert = !todayPlan || todayPlan.status === 'draft';
+
   if (loading) {
     return (
       <div className="space-y-4 max-w-2xl mx-auto">
@@ -226,6 +253,28 @@ export default function SariRotiDashboard() {
           <RefreshCw className="w-4 h-4" />
         </button>
       </div>
+
+      {showDeadlineAlert && isNearDeadline() && (
+        <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-yellow-800 text-sm">Segera kirim plan kunjungan!</p>
+            <p className="text-xs text-yellow-700 mt-0.5">Batas waktu {settings.plan_deadline} — kurang dari 30 menit lagi</p>
+          </div>
+        </div>
+      )}
+
+      {showDeadlineAlert && isPastDeadline() && (
+        <div className="bg-red-50 border border-red-300 rounded-xl p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-red-800 text-sm">Batas waktu pengiriman plan telah lewat!</p>
+            <p className="text-xs text-red-700 mt-0.5">
+              {todayPlan ? 'Plan Anda masih berstatus Draft. Kirim sekarang.' : `Plan belum dibuat. Batas ${settings.plan_deadline} sudah terlewat.`}
+            </p>
+          </div>
+        </div>
+      )}
 
       <AnnouncementBoard />
 
@@ -247,13 +296,37 @@ export default function SariRotiDashboard() {
             <span>Max: {settings.max_visits} toko</span>
           </div>
           {checkins.length > 0 && (
-            <div className="mt-3 space-y-1.5">
+            <div className="mt-3 space-y-2">
               {checkins.map(c => (
-                <div key={c.id} className="flex items-center gap-2 text-xs bg-emerald-50 rounded-lg px-3 py-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                  <span className="font-medium text-gray-800 flex-1">{c.store_name}</span>
-                  <span className="text-gray-400">{VISIT_TYPE_LABELS[c.visit_type] || c.visit_type}</span>
-                  <span className="text-gray-400">{new Date(c.checkin_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                <div key={c.id} className="bg-emerald-50 rounded-xl px-3 py-2.5 space-y-1.5">
+                  <div className="flex items-center gap-2 text-xs">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                    <span className="font-medium text-gray-800 flex-1">{c.store_name}</span>
+                    <span className="text-gray-400">{VISIT_TYPE_LABELS[c.visit_type] || c.visit_type}</span>
+                    <span className="text-gray-400">{new Date(c.checkin_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs pl-5">
+                    {c.duration_minutes ? (
+                      <span className="flex items-center gap-1 text-blue-600">
+                        <Timer className="w-3 h-3" />{Math.round(c.duration_minutes)} mnt
+                      </span>
+                    ) : !c.checkout_time ? (
+                      <button onClick={() => handleCheckout(c.id)} disabled={checkingOut === c.id}
+                        className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium disabled:opacity-50">
+                        <LogOut className="w-3 h-3" />
+                        {checkingOut === c.id ? 'Check-out...' : 'Check-out'}
+                      </button>
+                    ) : null}
+                    {c.gps_lat && c.gps_lng && (
+                      <a href={`https://www.google.com/maps?q=${c.gps_lat},${c.gps_lng}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-blue-500 hover:text-blue-600">
+                        <ExternalLink className="w-3 h-3" />GPS
+                      </a>
+                    )}
+                    {c.total_billing > 0 && (
+                      <span className="text-emerald-700">Rp {Number(c.total_billing).toLocaleString('id-ID')}</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -424,7 +497,8 @@ export default function SariRotiDashboard() {
               <li>• Plan harus diisi sebelum pukul <strong>{settings.plan_deadline}</strong></li>
               <li>• Minimal <strong>{settings.min_visits}</strong> toko per hari</li>
               <li>• Maksimal <strong>{settings.max_visits}</strong> toko per hari</li>
-              <li>• Setiap kunjungan wajib check-in dengan foto selfie</li>
+              <li>• Setiap kunjungan wajib check-in dengan foto selfie dan GPS</li>
+              <li>• Setiap toko hanya bisa di-check-in 1 kali per hari</li>
             </ul>
           </div>
         </div>

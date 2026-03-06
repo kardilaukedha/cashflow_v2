@@ -525,6 +525,272 @@ app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
   res.json({ data: { url }, error: null });
 });
 
+// ─── CHECKIN / CHECKOUT ENDPOINTS ────────────────────────────────────────────
+
+// POST /api/checkin - create checkin with server timestamp, GPS, dedup check
+app.post('/api/checkin', authMiddleware, upload.single('selfie'), async (req, res) => {
+  try {
+    const { visit_plan_id, store_name, store_address, visit_type, total_billing, has_expired_bread, notes, gps_lat, gps_lng, gps_accuracy } = req.body;
+    if (!store_name || !visit_plan_id || !visit_type) {
+      return res.status(400).json({ data: null, error: { message: 'visit_plan_id, store_name, visit_type wajib diisi.' } });
+    }
+    const selfie_url = req.file ? `/uploads/${req.file.filename}` : '';
+
+    // Anti-manipulation: server-side duplicate check — same store, same plan_date, same user
+    const { rows: planRows } = await pool.query('SELECT plan_date, user_id FROM visit_plans WHERE id = $1', [visit_plan_id]);
+    if (!planRows[0]) return res.status(404).json({ data: null, error: { message: 'Plan tidak ditemukan.' } });
+
+    const planDate = planRows[0].plan_date;
+    const { rows: dupCheck } = await pool.query(
+      `SELECT vc.id FROM visit_checkins vc
+       JOIN visit_plans vp ON vp.id = vc.visit_plan_id
+       WHERE vc.user_id = $1 AND LOWER(vc.store_name) = LOWER($2) AND vp.plan_date = $3`,
+      [planRows[0].user_id, store_name.trim(), planDate]
+    );
+    if (dupCheck.length > 0) {
+      return res.status(409).json({ data: null, error: { message: `Toko "${store_name}" sudah di-check-in hari ini.` } });
+    }
+
+    const { rows } = await pool.query(
+      `INSERT INTO visit_checkins
+         (visit_plan_id, user_id, store_name, store_address, checkin_time, selfie_url, visit_type, total_billing, has_expired_bread, notes, status, gps_lat, gps_lng, gps_accuracy)
+       VALUES ($1, $2, $3, $4, NOW(), $5, $6, $7, $8, $9, 'completed', $10, $11, $12)
+       RETURNING *`,
+      [
+        visit_plan_id, planRows[0].user_id, store_name.trim(), store_address || '',
+        selfie_url, visit_type,
+        parseFloat(total_billing || '0'), has_expired_bread === 'true' || has_expired_bread === true,
+        notes || '',
+        gps_lat ? parseFloat(gps_lat) : null,
+        gps_lng ? parseFloat(gps_lng) : null,
+        gps_accuracy ? parseFloat(gps_accuracy) : null,
+      ]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    console.error('checkin error:', err.message);
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// POST /api/checkout/:checkinId - record checkout time and duration
+app.post('/api/checkout/:checkinId', authMiddleware, async (req, res) => {
+  try {
+    const { rows: existing } = await pool.query('SELECT * FROM visit_checkins WHERE id = $1', [req.params.checkinId]);
+    if (!existing[0]) return res.status(404).json({ data: null, error: { message: 'Check-in tidak ditemukan.' } });
+    if (existing[0].user_id !== req.user.id && !['superadmin','admin_sariroti','admin_keuangan'].includes(req.user.role)) {
+      return res.status(403).json({ data: null, error: { message: 'Akses ditolak.' } });
+    }
+    if (existing[0].checkout_time) {
+      return res.status(400).json({ data: null, error: { message: 'Sudah di-checkout.' } });
+    }
+    const { rows } = await pool.query(
+      `UPDATE visit_checkins
+       SET checkout_time = NOW(),
+           duration_minutes = EXTRACT(EPOCH FROM (NOW() - checkin_time)) / 60
+       WHERE id = $1 RETURNING *`,
+      [req.params.checkinId]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// ─── LAPORAN & PERFORMA ──────────────────────────────────────────────────────
+
+// GET /api/laporan-karyawan?from=&to=&user_profile_id=
+app.get('/api/laporan-karyawan', authMiddleware, async (req, res) => {
+  try {
+    const { from, to, user_profile_id } = req.query;
+    const isAdmin = ['superadmin','admin_sariroti','admin_keuangan'].includes(req.user.role);
+    let upFilter = '';
+    const params = [];
+    let pIdx = 1;
+
+    if (!isAdmin) {
+      params.push(req.user.id);
+      upFilter = `AND u.id = $${pIdx++}`;
+    } else if (user_profile_id) {
+      params.push(user_profile_id);
+      upFilter = `AND up.id = $${pIdx++}`;
+    }
+    if (from) { params.push(from); upFilter += ` AND vp.plan_date >= $${pIdx++}`; }
+    if (to) { params.push(to); upFilter += ` AND vp.plan_date <= $${pIdx++}`; }
+
+    const { rows } = await pool.query(`
+      SELECT
+        vp.plan_date, up.id AS user_profile_id, up.full_name, up.email,
+        COUNT(DISTINCT vc.id) AS total_checkins,
+        COALESCE(SUM(vc.total_billing), 0) AS total_billing,
+        ROUND(AVG(vc.duration_minutes)) AS avg_duration_minutes,
+        vp.status AS plan_status, vp.id AS plan_id,
+        jsonb_array_length(vp.stores) AS planned_stores,
+        COUNT(DISTINCT vc.id) = jsonb_array_length(vp.stores) AS plan_completed
+      FROM visit_plans vp
+      JOIN users u ON u.id = vp.user_id
+      JOIN user_profiles up ON up.user_id = u.id
+      LEFT JOIN visit_checkins vc ON vc.visit_plan_id = vp.id
+      WHERE 1=1 ${upFilter}
+      GROUP BY vp.id, up.id, up.full_name, up.email
+      ORDER BY vp.plan_date DESC, up.full_name
+    `, params);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// GET /api/laporan-karyawan/export?from=&to=&user_profile_id=  (CSV download)
+app.get('/api/laporan-karyawan/export', authMiddleware, async (req, res) => {
+  try {
+    const { from, to, user_profile_id } = req.query;
+    const isAdmin = ['superadmin','admin_sariroti','admin_keuangan'].includes(req.user.role);
+    let whereClause = 'WHERE 1=1';
+    const params = [];
+    let pIdx = 1;
+    if (!isAdmin) { params.push(req.user.id); whereClause += ` AND u.id = $${pIdx++}`; }
+    else if (user_profile_id) { params.push(user_profile_id); whereClause += ` AND up.id = $${pIdx++}`; }
+    if (from) { params.push(from); whereClause += ` AND vp.plan_date >= $${pIdx++}`; }
+    if (to) { params.push(to); whereClause += ` AND vp.plan_date <= $${pIdx++}`; }
+
+    const { rows } = await pool.query(`
+      SELECT
+        vp.plan_date, up.full_name, up.email,
+        vc.store_name, vc.store_address, vc.visit_type, vc.total_billing,
+        vc.checkin_time, vc.checkout_time, vc.duration_minutes,
+        vc.has_expired_bread, vc.gps_lat, vc.gps_lng, vc.gps_accuracy, vc.notes
+      FROM visit_plans vp
+      JOIN users u ON u.id = vp.user_id
+      JOIN user_profiles up ON up.user_id = u.id
+      LEFT JOIN visit_checkins vc ON vc.visit_plan_id = vp.id
+      ${whereClause}
+      ORDER BY vp.plan_date DESC, up.full_name, vc.checkin_time
+    `, params);
+
+    const header = ['Tanggal','Nama Karyawan','Email','Nama Toko','Alamat Toko','Jenis Kunjungan','Total Tagihan',
+                    'Waktu Checkin','Waktu Checkout','Durasi (menit)','Ada Roti Tarik','GPS Lat','GPS Lng','Akurasi GPS (m)','Catatan'];
+    const escape = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+    const lines = [header.map(escape).join(',')];
+    rows.forEach(r => {
+      const row = [
+        r.plan_date, r.full_name, r.email, r.store_name || '', r.store_address || '',
+        r.visit_type || '', r.total_billing || 0,
+        r.checkin_time ? new Date(r.checkin_time).toLocaleString('id-ID') : '',
+        r.checkout_time ? new Date(r.checkout_time).toLocaleString('id-ID') : '',
+        r.duration_minutes || '', r.has_expired_bread ? 'Ya' : 'Tidak',
+        r.gps_lat || '', r.gps_lng || '', r.gps_accuracy || '', r.notes || '',
+      ];
+      lines.push(row.map(escape).join(','));
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="laporan-kunjungan-${from||'all'}-${to||'all'}.csv"`);
+    res.send('\uFEFF' + lines.join('\r\n'));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/performa-karyawan?bulan=&tahun=
+app.get('/api/performa-karyawan', authMiddleware, requireRole('superadmin','admin_sariroti','admin_keuangan'), async (req, res) => {
+  try {
+    const { bulan, tahun } = req.query;
+    const month = parseInt(bulan) || new Date().getMonth() + 1;
+    const year = parseInt(tahun) || new Date().getFullYear();
+
+    const { rows } = await pool.query(`
+      SELECT
+        up.id AS user_profile_id, up.full_name, up.email,
+        COUNT(DISTINCT vp.id) AS total_plans,
+        COUNT(DISTINCT CASE WHEN vp.status IN ('submitted','approved') THEN vp.id END) AS submitted_plans,
+        COUNT(DISTINCT vc.id) AS total_checkins,
+        COALESCE(SUM(vc.total_billing),0) AS total_billing,
+        ROUND(AVG(vc.duration_minutes)) AS avg_duration_minutes,
+        ROUND(
+          COUNT(DISTINCT CASE WHEN vp.status IN ('submitted','approved') THEN vp.id END)::numeric
+          / NULLIF(COUNT(DISTINCT vp.id),0) * 100
+        ) AS compliance_pct
+      FROM user_profiles up
+      JOIN users u ON u.id = up.user_id
+      LEFT JOIN visit_plans vp ON vp.user_id = u.id
+        AND EXTRACT(MONTH FROM vp.plan_date) = $1
+        AND EXTRACT(YEAR FROM vp.plan_date) = $2
+      LEFT JOIN visit_checkins vc ON vc.visit_plan_id = vp.id
+      WHERE up.role = 'karyawan_sariroti'
+      GROUP BY up.id, up.full_name, up.email
+      ORDER BY total_billing DESC
+    `, [month, year]);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// GET /api/store-visit-history/:storeId - histori kunjungan per toko
+app.get('/api/store-visit-history/:storeId', authMiddleware, requireRole('superadmin','admin_sariroti','admin_keuangan'), async (req, res) => {
+  try {
+    const { rows: store } = await pool.query('SELECT nama_toko FROM stores WHERE id = $1', [req.params.storeId]);
+    if (!store[0]) return res.status(404).json({ data: null, error: { message: 'Toko tidak ditemukan.' } });
+
+    const { rows } = await pool.query(`
+      SELECT vc.id, vc.checkin_time, vc.checkout_time, vc.duration_minutes,
+             vc.visit_type, vc.total_billing, vc.has_expired_bread, vc.gps_lat, vc.gps_lng, vc.notes,
+             up.full_name AS karyawan_name, vp.plan_date
+      FROM visit_checkins vc
+      JOIN visit_plans vp ON vp.id = vc.visit_plan_id
+      JOIN users u ON u.id = vc.user_id
+      JOIN user_profiles up ON up.user_id = u.id
+      WHERE LOWER(vc.store_name) = LOWER($1)
+      ORDER BY vc.checkin_time DESC
+      LIMIT 100
+    `, [store[0].nama_toko]);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// GET /api/notifikasi-deadline - siapa yang belum submit plan hari ini
+app.get('/api/notifikasi-deadline', authMiddleware, async (req, res) => {
+  try {
+    const isAdmin = ['superadmin','admin_sariroti','admin_keuangan'].includes(req.user.role);
+    const today = new Date().toISOString().split('T')[0];
+
+    if (isAdmin) {
+      const { rows } = await pool.query(`
+        SELECT up.id AS user_profile_id, up.full_name, up.email,
+               vp.status AS plan_status, vp.submitted_at,
+               ss.plan_deadline,
+               CASE WHEN vp.id IS NULL THEN 'no_plan' ELSE vp.status END AS status
+        FROM user_profiles up
+        JOIN users u ON u.id = up.user_id
+        LEFT JOIN visit_plans vp ON vp.user_id = u.id AND vp.plan_date = $1
+        LEFT JOIN sariroti_settings ss ON ss.user_profile_id = up.id
+        WHERE up.role = 'karyawan_sariroti'
+          AND (vp.id IS NULL OR vp.status = 'draft')
+        ORDER BY up.full_name
+      `, [today]);
+      res.json({ data: rows, error: null });
+    } else {
+      const { rows: profile } = await pool.query('SELECT id FROM user_profiles WHERE user_id = $1', [req.user.id]);
+      if (!profile[0]) return res.json({ data: null, error: null });
+      const { rows } = await pool.query(`
+        SELECT vp.status, vp.submitted_at, ss.plan_deadline,
+               CASE WHEN vp.id IS NULL THEN 'no_plan' ELSE vp.status END AS plan_status
+        FROM user_profiles up
+        LEFT JOIN users u ON u.id = up.user_id
+        LEFT JOIN visit_plans vp ON vp.user_id = u.id AND vp.plan_date = $1
+        LEFT JOIN sariroti_settings ss ON ss.user_profile_id = up.id
+        WHERE up.id = $2
+      `, [today, profile[0].id]);
+      res.json({ data: rows[0] || null, error: null });
+    }
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
 // GET /api/sariroti-settings/:userProfileId - get settings for a user
 app.get('/api/sariroti-settings/:userProfileId', authMiddleware, async (req, res) => {
   try {
@@ -602,9 +868,17 @@ app.use((err, req, res, _next) => {
 
 const PORT = 8000;
 app.listen(PORT, '127.0.0.1', async () => {
-  // Verify DB connection on startup
   try {
     await pool.query('SELECT 1');
+    // Auto-migrate: add GPS and checkout columns if not exist
+    await pool.query(`
+      ALTER TABLE visit_checkins
+        ADD COLUMN IF NOT EXISTS gps_lat DECIMAL(10,8),
+        ADD COLUMN IF NOT EXISTS gps_lng DECIMAL(11,8),
+        ADD COLUMN IF NOT EXISTS gps_accuracy DECIMAL,
+        ADD COLUMN IF NOT EXISTS checkout_time TIMESTAMPTZ,
+        ADD COLUMN IF NOT EXISTS duration_minutes INTEGER
+    `);
     console.log(`API server running on http://localhost:${PORT} (DB connected)`);
   } catch (err) {
     console.error('DB connection failed:', err.message);
