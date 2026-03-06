@@ -296,7 +296,25 @@ app.delete('/api/:table', authMiddleware, async (req, res) => {
   }
 });
 
+// Global error handler
+app.use((err, req, res, _next) => {
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ data: null, error: { message: err.message } });
+});
+
 const PORT = 8000;
-app.listen(PORT, 'localhost', () => {
-  console.log(`API server running on http://localhost:${PORT}`);
+app.listen(PORT, '127.0.0.1', async () => {
+  // Verify DB connection on startup
+  try {
+    await pool.query('SELECT 1');
+    console.log(`API server running on http://localhost:${PORT} (DB connected)`);
+  } catch (err) {
+    console.error('DB connection failed:', err.message);
+    console.log(`API server running on http://localhost:${PORT} (DB unavailable)`);
+  }
+});
+
+// Prevent crash on unhandled promise rejections
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
 });

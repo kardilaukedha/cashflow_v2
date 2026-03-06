@@ -184,12 +184,24 @@ export const supabase = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const result = await res.json();
+        const text = await res.text();
+        if (!text) {
+          return { data: null, error: { message: 'Server tidak merespons. Coba lagi beberapa saat.' } };
+        }
+        let result: any;
+        try {
+          result = JSON.parse(text);
+        } catch {
+          return { data: null, error: { message: 'Server sedang tidak tersedia. Coba lagi beberapa saat.' } };
+        }
         if (result.error) return { data: null, error: result.error };
         setToken(result.data.session.access_token);
         authStateCallbacks.forEach(cb => cb('SIGNED_IN', result.data.session));
         return { data: result.data, error: null };
       } catch (err: any) {
+        if (err.message?.includes('fetch')) {
+          return { data: null, error: { message: 'Tidak dapat terhubung ke server. Periksa koneksi Anda.' } };
+        }
         return { data: null, error: { message: err.message } };
       }
     },
