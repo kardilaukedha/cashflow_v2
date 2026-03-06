@@ -82,5 +82,5 @@ export const DEFAULT_VIEW_BY_ROLE: Record<string, string> = {
   admin_keuangan:    'dashboard',
   admin_sariroti:    'dashboard',
   karyawan:          'loans',
-  karyawan_sariroti: 'sariroti',
+  karyawan_sariroti: 'sariroti_home',
 };

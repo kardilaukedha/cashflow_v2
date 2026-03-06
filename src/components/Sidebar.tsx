@@ -60,7 +60,8 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {can(role, 'view_dashboard') && navBtn('dashboard', BarChart3, 'Dashboard')}
 
-          {role === 'karyawan_sariroti' && navBtn('sariroti', MapPin, 'Dashboard Kunjungan')}
+          {role === 'karyawan_sariroti' && navBtn('sariroti_home', BarChart3, 'Dashboard')}
+          {role === 'karyawan_sariroti' && navBtn('sariroti', MapPin, 'Kunjungan Harian')}
           {can(role, 'register_store') && navBtn('toko', Store, 'Toko Saya')}
           {can(role, 'manage_stores') && navBtn('toko_admin', Store, 'Monitor Toko')}
 

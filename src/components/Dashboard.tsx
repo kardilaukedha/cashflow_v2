@@ -16,6 +16,7 @@ import Settings from './Settings';
 import AnnouncementManager from './AnnouncementManager';
 import AnnouncementBoard from './AnnouncementBoard';
 import SariRotiDashboard from './sariroti/SariRotiDashboard';
+import SariRotiHomeDashboard from './sariroti/SariRotiHomeDashboard';
 import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import TokoManager from './sariroti/TokoManager';
 import TokoAdminView from './sariroti/TokoAdminView';
@@ -303,6 +304,8 @@ export default function Dashboard() {
             can(role, 'manage_announcements') ? <AnnouncementManager /> : <AccessDenied />
           ) : currentView === 'visit_monitor' ? (
             can(role, 'monitor_visits') ? <VisitMonitorAdmin /> : <AccessDenied />
+          ) : currentView === 'sariroti_home' ? (
+            <SariRotiHomeDashboard onNavigate={setCurrentView} />
           ) : currentView === 'sariroti' ? (
             <SariRotiDashboard />
           ) : currentView === 'toko' ? (
