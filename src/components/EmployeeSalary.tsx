@@ -19,6 +19,7 @@ interface UserProfileRef {
   id: string;
   full_name: string;
   email: string;
+  role: string;
   employee_id: string | null;
 }
 
@@ -182,7 +183,7 @@ export default function EmployeeSalary() {
   };
 
   const loadUserProfiles = async () => {
-    const { data } = await supabase.from('user_profiles').select('id, full_name, email, employee_id').order('full_name');
+    const { data } = await supabase.from('user_profiles').select('id, full_name, email, role, employee_id').order('full_name');
     if (data) setUserProfiles(data);
   };
 
@@ -341,7 +342,7 @@ export default function EmployeeSalary() {
             <div>
               <p className="font-semibold text-amber-800">Akun belum terhubung ke data karyawan</p>
               <p className="text-sm text-amber-600 mt-1">
-                Hubungi admin untuk menghubungkan akun Anda ke data karyawan agar informasi gaji bisa ditampilkan.
+                Minta admin untuk menambahkan data karyawan Anda di menu <strong>Gaji Karyawan → Tambah Karyawan</strong>, lalu hubungkan ke akun ini melalui dropdown <em>"Hubungkan ke Akun User"</em>.
               </p>
             </div>
           </div>
@@ -576,6 +577,9 @@ export default function EmployeeSalary() {
                           <div className="flex items-center gap-1 mt-1 text-xs text-blue-600">
                             <Link className="w-3 h-3" />
                             {linkedProfile.full_name || linkedProfile.email}
+                            {linkedProfile.role === 'karyawan_sariroti' && (
+                              <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded text-xs font-medium">Sari Roti</span>
+                            )}
                           </div>
                         )}
                       </div>
@@ -748,11 +752,14 @@ export default function EmployeeSalary() {
                   onChange={e => setEmployeeForm({ ...employeeForm, linked_user_profile_id: e.target.value })}
                   className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
                   <option value="">— Tidak dihubungkan —</option>
-                  {availableProfiles(editingEmployee?.id).map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.full_name || p.email} {p.employee_id === editingEmployee?.id ? '(terhubung saat ini)' : ''}
-                    </option>
-                  ))}
+                  {availableProfiles(editingEmployee?.id).map(p => {
+                    const roleLabel = p.role === 'karyawan_sariroti' ? 'Karyawan Sari Roti' : p.role === 'karyawan' ? 'Karyawan' : p.role;
+                    return (
+                      <option key={p.id} value={p.id}>
+                        {p.full_name || p.email} [{roleLabel}] {p.employee_id === editingEmployee?.id ? '(terhubung saat ini)' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
                 <p className="text-xs text-blue-600 mt-1">Menghubungkan akun agar karyawan bisa melihat gaji & pinjaman sendiri di dashboard</p>
               </div>

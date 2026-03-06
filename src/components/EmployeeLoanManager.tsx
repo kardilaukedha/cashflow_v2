@@ -239,7 +239,7 @@ export default function EmployeeLoanManager() {
           <div>
             <p className="font-medium text-amber-800">Akun belum terhubung ke data karyawan</p>
             <p className="text-sm text-amber-600 mt-1">
-              Hubungi admin untuk menghubungkan akun Anda ke data karyawan agar riwayat pinjaman bisa ditampilkan.
+              Minta admin untuk menambahkan data karyawan Anda di menu <strong>Gaji Karyawan → Tambah Karyawan</strong>, lalu hubungkan ke akun ini melalui dropdown <em>"Hubungkan ke Akun User"</em>.
             </p>
           </div>
         </div>
