@@ -94,7 +94,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, onClose, onSuc
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('sb_token');
       let selfieUrl = '';
       if (selfieFile) {
         const fd = new FormData();

@@ -73,7 +73,7 @@ export default function VisitMonitorAdmin() {
   const [savingSettings, setSavingSettings] = useState<string | null>(null);
   const [selfieModal, setSelfieModal] = useState<string | null>(null);
 
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('sb_token');
 
   const loadSummary = useCallback(async () => {
     setLoading(true);

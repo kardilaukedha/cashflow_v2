@@ -77,7 +77,7 @@ export default function SariRotiDashboard() {
   const loadSettings = async () => {
     if (!userProfile?.id) return;
     const res = await fetch(`/api/sariroti-settings/${userProfile.id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
     });
     const json = await res.json();
     if (json.data) {
