@@ -26,7 +26,7 @@ interface EmployeeLoan {
 }
 
 export default function EmployeeLoanManager() {
-  const { user, userRole } = useAuth();
+  const { user, userRole, userProfile } = useAuth();
   const [loans, setLoans] = useState<EmployeeLoan[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,21 +42,32 @@ export default function EmployeeLoanManager() {
 
   const role = userRole || 'karyawan';
   const canManage = can(role, 'manage_loans');
+  const myEmployeeId = userProfile?.employee_id;
 
   useEffect(() => {
     fetchLoans();
     if (canManage) {
       fetchEmployees();
     }
-  }, [canManage]);
+  }, [canManage, myEmployeeId]);
 
   const fetchLoans = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('employee_loans')
         .select('*, employees(name)')
         .order('created_at', { ascending: false });
 
+      if (!canManage) {
+        if (!myEmployeeId) {
+          setLoans([]);
+          setLoading(false);
+          return;
+        }
+        query = query.eq('employee_id', myEmployeeId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       setLoans(data || []);
     } catch (error) {
@@ -221,6 +232,18 @@ export default function EmployeeLoanManager() {
           </button>
         )}
       </div>
+
+      {!canManage && !myEmployeeId && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-3">
+          <Wallet className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-amber-800">Akun belum terhubung ke data karyawan</p>
+            <p className="text-sm text-amber-600 mt-1">
+              Hubungi admin untuk menghubungkan akun Anda ke data karyawan agar riwayat pinjaman bisa ditampilkan.
+            </p>
+          </div>
+        </div>
+      )}
 
       {showForm && canManage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

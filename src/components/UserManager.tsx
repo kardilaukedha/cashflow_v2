@@ -26,6 +26,12 @@ interface UserProfile {
   status: 'active' | 'inactive';
 }
 
+interface Employee {
+  id: string;
+  name: string;
+  employee_code: string;
+}
+
 interface InviteLink {
   id: string;
   invite_token: string;
@@ -50,11 +56,13 @@ const EMPTY_FORM = {
   hire_date: '',
   phone: '',
   status: 'active' as 'active' | 'inactive',
+  employee_id: '',
 };
 
 export default function UserManager() {
   const { user } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
@@ -77,7 +85,13 @@ export default function UserManager() {
   useEffect(() => {
     fetchUsers();
     fetchInviteLinks();
+    fetchEmployees();
   }, []);
+
+  const fetchEmployees = async () => {
+    const { data } = await supabase.from('employees').select('id, name, employee_code').eq('status', 'active').order('name');
+    if (data) setEmployees(data);
+  };
 
   const fetchUsers = async () => {
     try {
@@ -148,12 +162,22 @@ export default function UserManager() {
           date_of_birth: formData.date_of_birth || null,
           address: formData.address,
           status: formData.status,
+          employee_id: formData.employee_id || null,
         })
         .eq('id', editingUser.id);
       if (error) throw error;
+
+      if (formData.employee_id) {
+        await supabase.from('user_profiles')
+          .update({ employee_id: null })
+          .eq('employee_id', formData.employee_id)
+          .neq('id', editingUser.id);
+      }
+
       setShowEditForm(false);
       setEditingUser(null);
       fetchUsers();
+      fetchEmployees();
     } catch (err) {
       alert('Gagal mengupdate user');
     } finally {
@@ -200,6 +224,7 @@ export default function UserManager() {
       hire_date: profile.hire_date ? profile.hire_date.split('T')[0] : '',
       phone: profile.phone || '',
       status: profile.status || 'active',
+      employee_id: profile.employee_id || '',
     });
     setShowEditForm(true);
   };
@@ -391,6 +416,26 @@ export default function UserManager() {
                 onChange={e => setFormData({ ...formData, hire_date: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
+            {isEdit && (
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-blue-700 mb-1 flex items-center gap-1">
+                  <LinkIcon className="w-4 h-4" /> Hubungkan ke Data Karyawan (Opsional)
+                </label>
+                <select value={formData.employee_id}
+                  onChange={e => setFormData({ ...formData, employee_id: e.target.value })}
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-blue-50">
+                  <option value="">— Tidak dihubungkan —</option>
+                  {employees.filter(emp =>
+                    !users.some(u => u.employee_id === emp.id && u.id !== editingUser?.id)
+                  ).map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.employee_code})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-blue-500 mt-1">Agar user bisa melihat data gaji dan pinjaman mereka sendiri</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -577,6 +622,18 @@ export default function UserManager() {
                               <p className="text-xs text-gray-400">Terdaftar Sejak</p>
                               <p className="font-medium text-gray-800">{new Date(up.created_at).toLocaleDateString('id-ID')}</p>
                             </div>
+                            {up.employee_id && (() => {
+                              const linked = employees.find(e => e.id === up.employee_id);
+                              return linked ? (
+                                <div className="flex items-start gap-2 col-span-2">
+                                  <LinkIcon className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                  <div>
+                                    <p className="text-xs text-blue-400">Terhubung ke Karyawan</p>
+                                    <p className="font-medium text-blue-700">{linked.name} <span className="text-gray-400 font-normal">({linked.employee_code})</span></p>
+                                  </div>
+                                </div>
+                              ) : null;
+                            })()}
                           </div>
                         </td>
                       </tr>
