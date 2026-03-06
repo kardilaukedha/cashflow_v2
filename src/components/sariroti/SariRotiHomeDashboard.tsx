@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import AnnouncementBoard from '../AnnouncementBoard';
+import CheckinModal from './CheckinModal';
 import {
-  TrendingUp, CheckCircle2, Store, Plus, RefreshCw,
-  Clock, AlertCircle, Timer, ExternalLink, LogOut, Navigation
+  TrendingUp, CheckCircle2, Circle, Store, Plus, RefreshCw,
+  Clock, AlertCircle, Timer, ExternalLink, LogOut, Navigation, MapPin
 } from 'lucide-react';
 
 interface SariRotiSettings {
@@ -13,9 +14,14 @@ interface SariRotiSettings {
   plan_deadline: string;
 }
 
+interface PlannedStore {
+  name: string;
+  address: string;
+}
+
 interface VisitPlan {
   id: string;
-  stores: { name: string; address: string }[];
+  stores: PlannedStore[];
   status: 'draft' | 'submitted' | 'approved' | 'rejected';
 }
 
@@ -34,6 +40,7 @@ interface CheckinSummary {
 interface RegisteredStore {
   id: number;
   nama_toko: string;
+  alamat: string;
   status: string;
 }
 
@@ -46,10 +53,10 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600',
+  draft:     'bg-gray-100 text-gray-600',
   submitted: 'bg-blue-100 text-blue-700',
-  approved: 'bg-emerald-100 text-emerald-700',
-  rejected: 'bg-red-100 text-red-700',
+  approved:  'bg-emerald-100 text-emerald-700',
+  rejected:  'bg-red-100 text-red-700',
 };
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Draft', submitted: 'Terkirim', approved: 'Disetujui', rejected: 'Ditolak',
@@ -67,6 +74,8 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
   const [registeredStores, setRegisteredStores] = useState<RegisteredStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState<string | null>(null);
+  const [checkinTarget, setCheckinTarget] = useState<PlannedStore | null>(null);
+  const [showCheckin, setShowCheckin] = useState(false);
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -116,6 +125,9 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
       const plan = data[0] as VisitPlan;
       setTodayPlan(plan);
       await loadCheckins(plan.id);
+    } else {
+      setTodayPlan(null);
+      setCheckins([]);
     }
   };
 
@@ -137,6 +149,17 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
     else if (todayPlan) await loadCheckins(todayPlan.id);
     setCheckingOut(null);
   };
+
+  const startCheckin = (store: PlannedStore) => {
+    setCheckinTarget(store);
+    setShowCheckin(true);
+  };
+
+  const isStoreCheckedIn = (storeName: string) =>
+    checkins.some(c => c.store_name.toLowerCase() === storeName.toLowerCase());
+
+  const getCheckinForStore = (storeName: string) =>
+    checkins.find(c => c.store_name.toLowerCase() === storeName.toLowerCase());
 
   const isPastDeadline = () => {
     const [h, m] = settings.plan_deadline.split(':').map(Number);
@@ -199,103 +222,150 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
       <AnnouncementBoard />
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-gray-900 text-sm">Progress Kunjungan Hari Ini</span>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              <span className="font-semibold text-gray-900 text-sm">Progress Kunjungan Hari Ini</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {todayPlan && (
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[todayPlan.status]}`}>
+                  {STATUS_LABEL[todayPlan.status]}
+                </span>
+              )}
+              <span className="text-xs text-gray-500 font-medium">{checkinCount} / {totalStores} toko</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {todayPlan && (
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[todayPlan.status]}`}>
-                {STATUS_LABEL[todayPlan.status]}
-              </span>
-            )}
-            <span className="text-xs text-gray-500">{checkinCount} / {totalStores} toko</span>
-          </div>
+
+          {todayPlan && (
+            <div className="mt-3">
+              <div className="w-full bg-gray-100 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full transition-all duration-500 ${progressPct === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>Min {settings.min_visits}</span>
+                <span className={progressPct === 100 ? 'text-emerald-600 font-semibold' : 'text-gray-500 font-medium'}>
+                  {progressPct}% selesai
+                </span>
+                <span>Max {settings.max_visits}</span>
+              </div>
+            </div>
+          )}
         </div>
 
-        {todayPlan ? (
-          <>
-            <div className="w-full bg-gray-100 rounded-full h-2.5 mb-2">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 mb-3">
-              <span>Min: {settings.min_visits} toko</span>
-              <span className={progressPct === 100 ? 'text-emerald-600 font-medium' : ''}>{progressPct}% selesai</span>
-              <span>Max: {settings.max_visits} toko</span>
-            </div>
+        <div className="p-3 space-y-2">
+          {todayPlan ? (
+            <>
+              {todayPlan.stores.map((store, i) => {
+                const checked = isStoreCheckedIn(store.name);
+                const checkin = getCheckinForStore(store.name);
 
-            {checkins.length > 0 ? (
-              <div className="space-y-2">
-                {checkins.map(c => (
-                  <div key={c.id} className="bg-emerald-50 rounded-xl px-3 py-2.5 space-y-1.5">
-                    <div className="flex items-center gap-2 text-xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                      <span className="font-medium text-gray-800 flex-1">{c.store_name}</span>
-                      <span className="text-gray-400">{VISIT_TYPE_LABELS[c.visit_type] || c.visit_type}</span>
-                      <span className="text-gray-400">{new Date(c.checkin_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs pl-5">
-                      {c.duration_minutes ? (
-                        <span className="flex items-center gap-1 text-blue-600">
-                          <Timer className="w-3 h-3" />{Math.round(c.duration_minutes)} mnt
-                        </span>
-                      ) : !c.checkout_time ? (
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-xl border transition-all ${
+                      checked
+                        ? 'bg-emerald-50 border-emerald-200'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 px-3 py-2.5">
+                      <div className={`flex-shrink-0 ${checked ? 'text-emerald-500' : 'text-gray-300'}`}>
+                        {checked
+                          ? <CheckCircle2 className="w-4 h-4" />
+                          : <Circle className="w-4 h-4" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-sm truncate">{store.name}</p>
+                        {store.address && (
+                          <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 flex-shrink-0" />
+                            <span className="truncate">{store.address}</span>
+                          </p>
+                        )}
+                      </div>
+                      {!checked ? (
                         <button
-                          onClick={() => handleCheckout(c.id)}
-                          disabled={checkingOut === c.id}
-                          className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium disabled:opacity-50"
+                          onClick={() => startCheckin(store)}
+                          className="flex-shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
                         >
-                          <LogOut className="w-3 h-3" />
-                          {checkingOut === c.id ? 'Check-out...' : 'Check-out'}
+                          <Navigation className="w-3 h-3" />
+                          Check-in
                         </button>
-                      ) : null}
-                      {c.gps_lat && c.gps_lng && (
-                        <a
-                          href={`https://www.google.com/maps?q=${c.gps_lat},${c.gps_lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-blue-500 hover:text-blue-600"
-                        >
-                          <ExternalLink className="w-3 h-3" />GPS
-                        </a>
-                      )}
-                      {c.total_billing > 0 && (
-                        <span className="text-emerald-700">Rp {Number(c.total_billing).toLocaleString('id-ID')}</span>
+                      ) : (
+                        <span className="flex-shrink-0 text-xs text-emerald-600 font-medium">Selesai</span>
                       )}
                     </div>
+
+                    {checkin && (
+                      <div className="px-3 pb-2.5 pl-10 flex flex-wrap items-center gap-3 text-xs border-t border-emerald-100 pt-1.5">
+                        <span className="text-gray-500">
+                          {new Date(checkin.checkin_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                          {VISIT_TYPE_LABELS[checkin.visit_type] || checkin.visit_type}
+                        </span>
+                        {checkin.duration_minutes ? (
+                          <span className="flex items-center gap-1 text-blue-600">
+                            <Timer className="w-3 h-3" />{Math.round(checkin.duration_minutes)} mnt
+                          </span>
+                        ) : !checkin.checkout_time ? (
+                          <button
+                            onClick={() => handleCheckout(checkin.id)}
+                            disabled={checkingOut === checkin.id}
+                            className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium disabled:opacity-50"
+                          >
+                            <LogOut className="w-3 h-3" />
+                            {checkingOut === checkin.id ? 'Check-out...' : 'Check-out'}
+                          </button>
+                        ) : null}
+                        {checkin.gps_lat && checkin.gps_lng && (
+                          <a
+                            href={`https://www.google.com/maps?q=${checkin.gps_lat},${checkin.gps_lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-500 hover:text-blue-600"
+                          >
+                            <ExternalLink className="w-3 h-3" />GPS
+                          </a>
+                        )}
+                        {checkin.total_billing > 0 && (
+                          <span className="text-emerald-700 font-medium">
+                            Rp {Number(checkin.total_billing).toLocaleString('id-ID')}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <Navigation className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p className="text-sm text-gray-400">Belum ada check-in hari ini</p>
-                <button
-                  onClick={() => onNavigate('sariroti')}
-                  className="mt-2 text-xs text-blue-600 hover:underline"
-                >
-                  Mulai kunjungan →
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-6">
-            <AlertCircle className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-            <p className="text-sm text-gray-500 font-medium">Belum ada plan kunjungan hari ini</p>
-            <button
-              onClick={() => onNavigate('sariroti')}
-              className="mt-2 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
-            >
-              Buat plan sekarang →
-            </button>
-          </div>
-        )}
+                );
+              })}
+
+              <button
+                onClick={() => startCheckin({ name: '', address: '' })}
+                className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-500 py-2.5 rounded-xl transition-colors text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Check-in Toko Tambahan
+              </button>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <AlertCircle className="w-10 h-10 mx-auto mb-2 text-gray-200" />
+              <p className="text-sm text-gray-500 font-medium">Belum ada plan kunjungan hari ini</p>
+              <button
+                onClick={() => onNavigate('sariroti')}
+                className="mt-2 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
+              >
+                Buat plan sekarang →
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -345,6 +415,20 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
           </div>
         </div>
       </div>
+
+      {showCheckin && todayPlan && (
+        <CheckinModal
+          visitPlanId={todayPlan.id}
+          defaultStore={checkinTarget}
+          registeredStores={registeredStores}
+          onClose={() => { setShowCheckin(false); setCheckinTarget(null); }}
+          onSuccess={() => {
+            setShowCheckin(false);
+            setCheckinTarget(null);
+            loadCheckins(todayPlan.id);
+          }}
+        />
+      )}
     </div>
   );
 }
