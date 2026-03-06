@@ -196,12 +196,19 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
     }
     setSaving(true);
     const isNewPlan = !todayPlan;
+    let saveError = null;
     if (todayPlan) {
-      await supabase.from('visit_plans').update({ stores: validStores, updated_at: new Date().toISOString() }).eq('id', todayPlan.id);
+      const { error } = await supabase.from('visit_plans').update({ stores: validStores, updated_at: new Date().toISOString() }).eq('id', todayPlan.id);
+      saveError = error;
     } else {
-      await supabase.from('visit_plans').insert({ user_id: user?.id, plan_date: todayStr(), stores: validStores, status: 'draft' });
+      const { error } = await supabase.from('visit_plans').insert({ user_id: user?.id, plan_date: todayStr(), stores: validStores, status: 'draft' });
+      saveError = error;
     }
     setSaving(false);
+    if (saveError) {
+      alert('Gagal menyimpan plan: ' + saveError.message);
+      return;
+    }
     await loadTodayPlan();
     if (isNewPlan && onNavigate) {
       onNavigate('sariroti_home');

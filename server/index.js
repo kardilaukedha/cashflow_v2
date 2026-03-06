@@ -439,7 +439,11 @@ app.post('/api/:table', authMiddleware, async (req, res) => {
     const data = req.body;
 
     const keys = Object.keys(data).filter(k => data[k] !== undefined);
-    const values = keys.map(k => data[k]);
+    const values = keys.map(k => {
+      const v = data[k];
+      if (v !== null && typeof v === 'object') return JSON.stringify(v);
+      return v;
+    });
     const cols = keys.join(', ');
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
 
@@ -468,7 +472,11 @@ app.put('/api/:table', authMiddleware, async (req, res) => {
     const filters = parseFilters(req.query);
 
     const keys = Object.keys(data).filter(k => data[k] !== undefined);
-    const values = keys.map(k => data[k]);
+    const values = keys.map(k => {
+      const v = data[k];
+      if (v !== null && typeof v === 'object') return JSON.stringify(v);
+      return v;
+    });
 
     if (keys.length === 0) return res.json({ data: null, error: { message: 'No data to update' } });
     if (filters.length === 0) return res.json({ data: null, error: { message: 'No filter specified' } });
