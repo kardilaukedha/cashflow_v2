@@ -17,6 +17,8 @@ import AnnouncementManager from './AnnouncementManager';
 import AnnouncementBoard from './AnnouncementBoard';
 import SariRotiDashboard from './sariroti/SariRotiDashboard';
 import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
+import TokoManager from './sariroti/TokoManager';
+import TokoAdminView from './sariroti/TokoAdminView';
 import { Plus, Lock } from 'lucide-react';
 import { can, DEFAULT_VIEW_BY_ROLE } from '../lib/permissions';
 
@@ -303,6 +305,10 @@ export default function Dashboard() {
             can(role, 'monitor_visits') ? <VisitMonitorAdmin /> : <AccessDenied />
           ) : currentView === 'sariroti' ? (
             <SariRotiDashboard />
+          ) : currentView === 'toko' ? (
+            <TokoManager />
+          ) : currentView === 'toko_admin' ? (
+            can(role, 'manage_stores') ? <TokoAdminView /> : <AccessDenied />
           ) : currentView === 'settings' ? (
             <Settings />
           ) : null}

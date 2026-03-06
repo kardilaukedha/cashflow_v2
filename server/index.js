@@ -500,6 +500,100 @@ app.get('/api/visit-detail/:planId', authMiddleware, async (req, res) => {
   }
 });
 
+// ─── STORES ───────────────────────────────────────────────────────────────────
+
+// GET /api/stores - list stores (admin: all, karyawan_sariroti: own)
+app.get('/api/stores', authMiddleware, async (req, res) => {
+  try {
+    const userRole = req.user?.role || 'karyawan';
+    const adminRoles = ['superadmin', 'admin_sariroti', 'admin_keuangan'];
+    let query, params;
+    if (adminRoles.includes(userRole)) {
+      query = `
+        SELECT s.*, up.full_name AS karyawan_name, up.email AS karyawan_email
+        FROM stores s
+        LEFT JOIN user_profiles up ON up.id = s.user_profile_id
+        ORDER BY s.created_at DESC`;
+      params = [];
+    } else {
+      const { rows: profile } = await pool.query('SELECT id FROM user_profiles WHERE user_id = $1', [req.user.id]);
+      if (!profile[0]) return res.json({ data: [], error: null });
+      query = 'SELECT * FROM stores WHERE user_profile_id = $1 ORDER BY created_at DESC';
+      params = [profile[0].id];
+    }
+    const { rows } = await pool.query(query, params);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// POST /api/stores - register store (karyawan_sariroti)
+app.post('/api/stores', authMiddleware, upload.single('foto_toko'), async (req, res) => {
+  try {
+    const userRole = req.user?.role || 'karyawan';
+    if (!['karyawan_sariroti', 'superadmin', 'admin_sariroti', 'admin_keuangan'].includes(userRole)) {
+      return res.status(403).json({ data: null, error: { message: 'Akses ditolak.' } });
+    }
+    const { rows: profile } = await pool.query('SELECT id FROM user_profiles WHERE user_id = $1', [req.user.id]);
+    if (!profile[0]) return res.status(400).json({ data: null, error: { message: 'Profil tidak ditemukan.' } });
+    const { nama_toko, nama_pemilik, alamat, nomor_hp, sharelok } = req.body;
+    const foto_toko = req.file ? `/uploads/${req.file.filename}` : '';
+    const { rows } = await pool.query(
+      `INSERT INTO stores (user_profile_id, nama_toko, nama_pemilik, alamat, nomor_hp, sharelok, foto_toko)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [profile[0].id, nama_toko, nama_pemilik, alamat || '', nomor_hp || '', sharelok || '', foto_toko]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// PUT /api/stores/:id - edit store (admin only)
+app.put('/api/stores/:id', authMiddleware, requireRole('superadmin', 'admin_sariroti', 'admin_keuangan'), upload.single('foto_toko'), async (req, res) => {
+  try {
+    const { nama_toko, nama_pemilik, alamat, nomor_hp, sharelok, status } = req.body;
+    const { rows: existing } = await pool.query('SELECT * FROM stores WHERE id = $1', [req.params.id]);
+    if (!existing[0]) return res.status(404).json({ data: null, error: { message: 'Toko tidak ditemukan.' } });
+    const foto_toko = req.file ? `/uploads/${req.file.filename}` : existing[0].foto_toko;
+    const { rows } = await pool.query(
+      `UPDATE stores SET nama_toko=$1, nama_pemilik=$2, alamat=$3, nomor_hp=$4, sharelok=$5, foto_toko=$6, status=$7, updated_at=now()
+       WHERE id=$8 RETURNING *`,
+      [nama_toko, nama_pemilik, alamat || '', nomor_hp || '', sharelok || '', foto_toko, status || 'active', req.params.id]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// PUT /api/stores/:id/transfer - transfer store to another karyawan_sariroti (admin only)
+app.put('/api/stores/:id/transfer', authMiddleware, requireRole('superadmin', 'admin_sariroti', 'admin_keuangan'), async (req, res) => {
+  try {
+    const { new_user_profile_id } = req.body;
+    if (!new_user_profile_id) return res.status(400).json({ data: null, error: { message: 'Target karyawan wajib diisi.' } });
+    const { rows } = await pool.query(
+      `UPDATE stores SET user_profile_id=$1, updated_at=now() WHERE id=$2 RETURNING *`,
+      [new_user_profile_id, req.params.id]
+    );
+    if (!rows[0]) return res.status(404).json({ data: null, error: { message: 'Toko tidak ditemukan.' } });
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// DELETE /api/stores/:id - delete store (admin only)
+app.delete('/api/stores/:id', authMiddleware, requireRole('superadmin', 'admin_sariroti', 'admin_keuangan'), async (req, res) => {
+  try {
+    await pool.query('DELETE FROM stores WHERE id = $1', [req.params.id]);
+    res.json({ data: null, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
 // Global error handler
 app.use((err, req, res, _next) => {
   console.error('Unhandled error:', err.message);

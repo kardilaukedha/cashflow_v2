@@ -23,7 +23,9 @@ export type AppFeature =
   | 'manage_announcements'
   | 'view_visit_plan'
   | 'manage_visit_settings'
-  | 'monitor_visits';
+  | 'monitor_visits'
+  | 'register_store'
+  | 'manage_stores';
 
 const PERMISSIONS: Record<AppFeature, AppRole[]> = {
   view_dashboard:             ['superadmin', 'admin_keuangan', 'admin_sariroti'],
@@ -49,6 +51,8 @@ const PERMISSIONS: Record<AppFeature, AppRole[]> = {
   view_visit_plan:            ['karyawan_sariroti'],
   manage_visit_settings:      ['superadmin', 'admin_sariroti', 'admin_keuangan'],
   monitor_visits:             ['superadmin', 'admin_sariroti', 'admin_keuangan'],
+  register_store:             ['karyawan_sariroti'],
+  manage_stores:              ['superadmin', 'admin_sariroti', 'admin_keuangan'],
 };
 
 export function can(role: string, feature: AppFeature): boolean {

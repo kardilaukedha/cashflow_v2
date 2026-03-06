@@ -4,7 +4,7 @@ import type { Category } from '../lib/supabase';
 import { can, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
 import {
   Wallet, LogOut, BarChart3, Download, Upload, Tag, Users,
-  Briefcase, UserCircle, Settings, Megaphone, MapPin, Eye,
+  Briefcase, UserCircle, Settings, Megaphone, MapPin, Eye, Store,
 } from 'lucide-react';
 import CategoryManager from './CategoryManager';
 import ImportExport from './ImportExport';
@@ -61,6 +61,8 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
           {can(role, 'view_dashboard') && navBtn('dashboard', BarChart3, 'Dashboard')}
 
           {role === 'karyawan_sariroti' && navBtn('sariroti', MapPin, 'Dashboard Kunjungan')}
+          {can(role, 'register_store') && navBtn('toko', Store, 'Toko Saya')}
+          {can(role, 'manage_stores') && navBtn('toko_admin', Store, 'Monitor Toko')}
 
           {can(role, 'view_own_salary') && navBtn('salary', Users, 'Gaji Karyawan')}
 
