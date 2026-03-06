@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -459,8 +459,8 @@ export default function UserManager() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {users.map((up, idx) => (
-                  <>
-                    <tr key={up.id} className="hover:bg-gray-50 transition-colors">
+                  <React.Fragment key={up.id}>
+                    <tr className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -513,7 +513,7 @@ export default function UserManager() {
                       </td>
                     </tr>
                     {expandedUser === up.id && (
-                      <tr key={`${up.id}-detail`} className="bg-blue-50">
+                      <tr className="bg-blue-50">
                         <td colSpan={8} className="px-6 py-4">
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div className="flex items-start gap-2">
@@ -581,7 +581,7 @@ export default function UserManager() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
