@@ -32,6 +32,198 @@ interface Employee {
   employee_code: string;
 }
 
+type FormData = {
+  email: string;
+  password: string;
+  full_name: string;
+  role: UserProfile['role'];
+  nik: string;
+  gender: string;
+  date_of_birth: string;
+  address: string;
+  department: string;
+  job_title: string;
+  hire_date: string;
+  phone: string;
+  status: 'active' | 'inactive';
+  employee_id: string;
+};
+
+interface UserFormProps {
+  isEdit: boolean;
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  showPassword: boolean;
+  setShowPassword: (v: boolean) => void;
+  saving: boolean;
+  employees: Employee[];
+  users: UserProfile[];
+  editingUser: UserProfile | null;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+}
+
+function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword, saving, employees, users, editingUser, onSubmit, onCancel }: UserFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 gap-6">
+        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Akun</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input type="email" value={formData.email} disabled={isEdit}
+                onChange={e => setFormData(f => ({ ...f, email: e.target.value }))}
+                required={!isEdit}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500" />
+            </div>
+            {!isEdit && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                <div className="relative">
+                  <input type={showPassword ? 'text' : 'password'} value={formData.password}
+                    onChange={e => setFormData(f => ({ ...f, password: e.target.value }))}
+                    required minLength={6}
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+              <select value={formData.role} onChange={e => setFormData(f => ({ ...f, role: e.target.value as UserProfile['role'] }))}
+                required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                <option value="karyawan">Karyawan</option>
+                <option value="karyawan_sariroti">Karyawan Sari Roti</option>
+                <option value="admin_sariroti">Admin Sariroti</option>
+                <option value="admin_keuangan">Admin Keuangan</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select value={formData.status} onChange={e => setFormData(f => ({ ...f, status: e.target.value as 'active' | 'inactive' }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                <option value="active">Aktif</option>
+                <option value="inactive">Non-Aktif</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Identitas Pribadi</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+              <input type="text" value={formData.full_name}
+                onChange={e => setFormData(f => ({ ...f, full_name: e.target.value }))}
+                required placeholder="Nama sesuai KTP"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">NIK (No. Induk Karyawan)</label>
+              <input type="text" value={formData.nik}
+                onChange={e => setFormData(f => ({ ...f, nik: e.target.value }))}
+                placeholder="Contoh: EMP-001"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+              <select value={formData.gender} onChange={e => setFormData(f => ({ ...f, gender: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                <option value="">Pilih</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+              <input type="date" value={formData.date_of_birth}
+                onChange={e => setFormData(f => ({ ...f, date_of_birth: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+              <input type="tel" value={formData.phone}
+                onChange={e => setFormData(f => ({ ...f, phone: e.target.value }))}
+                placeholder="08xx-xxxx-xxxx"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+              <textarea value={formData.address}
+                onChange={e => setFormData(f => ({ ...f, address: e.target.value }))}
+                rows={2} placeholder="Alamat lengkap sesuai KTP"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 resize-none" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Informasi Pekerjaan</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+              <input type="text" value={formData.department}
+                onChange={e => setFormData(f => ({ ...f, department: e.target.value }))}
+                placeholder="Contoh: Finance, HRD, Operasional"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
+              <input type="text" value={formData.job_title}
+                onChange={e => setFormData(f => ({ ...f, job_title: e.target.value }))}
+                placeholder="Contoh: Staff Keuangan"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Bergabung</label>
+              <input type="date" value={formData.hire_date}
+                onChange={e => setFormData(f => ({ ...f, hire_date: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            {isEdit && (
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-blue-700 mb-1 flex items-center gap-1">
+                  <LinkIcon className="w-4 h-4" /> Hubungkan ke Data Karyawan (Opsional)
+                </label>
+                <select value={formData.employee_id}
+                  onChange={e => setFormData(f => ({ ...f, employee_id: e.target.value }))}
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-blue-50">
+                  <option value="">— Tidak dihubungkan —</option>
+                  {employees.filter(emp =>
+                    !users.some(u => u.employee_id === emp.id && u.id !== editingUser?.id)
+                  ).map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.employee_code})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-blue-500 mt-1">Agar user bisa melihat data gaji dan pinjaman mereka sendiri</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <button type="submit" disabled={saving}
+          className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50">
+          {saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah User'}
+        </button>
+        <button type="button" onClick={onCancel}
+          className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+          Batal
+        </button>
+      </div>
+    </form>
+  );
+}
+
 interface InviteLink {
   id: string;
   invite_token: string;
@@ -296,164 +488,7 @@ export default function UserManager() {
     return <div className="text-center py-8 text-gray-500">Memuat data...</div>;
   }
 
-  const UserForm = ({ isEdit }: { isEdit: boolean }) => (
-    <form onSubmit={isEdit ? handleEditUser : handleAddUser} className="space-y-6">
-      <div className="grid grid-cols-1 gap-6">
-        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Akun</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-              <input type="email" value={formData.email} disabled={isEdit}
-                onChange={e => setFormData({ ...formData, email: e.target.value })}
-                required={!isEdit}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500" />
-            </div>
-            {!isEdit && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                <div className="relative">
-                  <input type={showPassword ? 'text' : 'password'} value={formData.password}
-                    onChange={e => setFormData({ ...formData, password: e.target.value })}
-                    required minLength={6}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
-              <select value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value as UserProfile['role'] })}
-                required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                <option value="karyawan">Karyawan</option>
-                <option value="karyawan_sariroti">Karyawan Sari Roti</option>
-                <option value="admin_sariroti">Admin Sariroti</option>
-                <option value="admin_keuangan">Admin Keuangan</option>
-                <option value="superadmin">Super Admin</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                <option value="active">Aktif</option>
-                <option value="inactive">Non-Aktif</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Identitas Pribadi</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
-              <input type="text" value={formData.full_name}
-                onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                required placeholder="Nama sesuai KTP"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">NIK (No. Induk Karyawan)</label>
-              <input type="text" value={formData.nik}
-                onChange={e => setFormData({ ...formData, nik: e.target.value })}
-                placeholder="Contoh: EMP-001"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-              <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                <option value="">Pilih</option>
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
-              <input type="date" value={formData.date_of_birth}
-                onChange={e => setFormData({ ...formData, date_of_birth: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
-              <input type="tel" value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="08xx-xxxx-xxxx"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-              <textarea value={formData.address}
-                onChange={e => setFormData({ ...formData, address: e.target.value })}
-                rows={2} placeholder="Alamat lengkap sesuai KTP"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 resize-none" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Informasi Pekerjaan</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-              <input type="text" value={formData.department}
-                onChange={e => setFormData({ ...formData, department: e.target.value })}
-                placeholder="Contoh: Finance, HRD, Operasional"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
-              <input type="text" value={formData.job_title}
-                onChange={e => setFormData({ ...formData, job_title: e.target.value })}
-                placeholder="Contoh: Staff Keuangan"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Bergabung</label>
-              <input type="date" value={formData.hire_date}
-                onChange={e => setFormData({ ...formData, hire_date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
-            </div>
-            {isEdit && (
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-blue-700 mb-1 flex items-center gap-1">
-                  <LinkIcon className="w-4 h-4" /> Hubungkan ke Data Karyawan (Opsional)
-                </label>
-                <select value={formData.employee_id}
-                  onChange={e => setFormData({ ...formData, employee_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-blue-50">
-                  <option value="">— Tidak dihubungkan —</option>
-                  {employees.filter(emp =>
-                    !users.some(u => u.employee_id === emp.id && u.id !== editingUser?.id)
-                  ).map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name} ({emp.employee_code})
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-blue-500 mt-1">Agar user bisa melihat data gaji dan pinjaman mereka sendiri</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-3 pt-2">
-        <button type="submit" disabled={saving}
-          className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50">
-          {saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah User'}
-        </button>
-        <button type="button" onClick={() => { setShowAddForm(false); setShowEditForm(false); setEditingUser(null); setFormData(EMPTY_FORM); }}
-          className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-          Batal
-        </button>
-      </div>
-    </form>
-  );
+  const handleCancel = () => { setShowAddForm(false); setShowEditForm(false); setEditingUser(null); setFormData(EMPTY_FORM); };
 
   return (
     <div className="space-y-6">
@@ -660,13 +695,24 @@ export default function UserManager() {
                   {showEditForm ? `Edit User — ${editingUser?.full_name || editingUser?.email}` : 'Tambah User Manual'}
                 </h3>
               </div>
-              <button onClick={() => { setShowAddForm(false); setShowEditForm(false); setEditingUser(null); setFormData(EMPTY_FORM); }}
-                className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleCancel} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6">
-              <UserForm isEdit={showEditForm} />
+              <UserForm
+                isEdit={showEditForm}
+                formData={formData}
+                setFormData={setFormData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                saving={saving}
+                employees={employees}
+                users={users}
+                editingUser={editingUser}
+                onSubmit={showEditForm ? handleEditUser : handleAddUser}
+                onCancel={handleCancel}
+              />
             </div>
           </div>
         </div>
