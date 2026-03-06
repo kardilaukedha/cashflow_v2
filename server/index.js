@@ -195,6 +195,64 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// POST /api/auth/create-user  (superadmin only)
+app.post('/api/auth/create-user', authMiddleware, requireRole('superadmin'), async (req, res) => {
+  try {
+    const {
+      email, password, full_name = '', role = 'karyawan',
+      phone = '', department = '', job_title = '', hire_date = null,
+      nik = '', gender = '', date_of_birth = null, address = '', status = 'active',
+    } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ data: null, error: { message: 'Email dan password wajib diisi.' } });
+    }
+
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return res.json({ data: null, error: { message: 'Email sudah terdaftar.' } });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    const { rows } = await pool.query(
+      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
+      [email, hash]
+    );
+    const newUser = rows[0];
+
+    await pool.query(
+      `INSERT INTO user_profiles
+        (user_id, role, full_name, email, phone, department, job_title, hire_date, nik, gender, date_of_birth, address, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      [newUser.id, role, full_name, email, phone, department, job_title,
+       hire_date || null, nik, gender, date_of_birth || null, address, status]
+    );
+
+    res.json({ data: { id: newUser.id, email: newUser.email }, error: null });
+  } catch (err) {
+    console.error('create-user error:', err.message);
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// DELETE /api/auth/delete-user/:userId  (superadmin only)
+app.delete('/api/auth/delete-user/:userId', authMiddleware, requireRole('superadmin'), async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Protect main superadmin
+    const profile = await pool.query('SELECT email FROM user_profiles WHERE user_id = $1', [userId]);
+    if (profile.rows[0]?.email === 'admin@admin.com') {
+      return res.json({ data: null, error: { message: 'Tidak bisa menghapus akun superadmin utama.' } });
+    }
+    await pool.query('DELETE FROM user_profiles WHERE user_id = $1', [userId]);
+    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+    res.json({ data: null, error: null });
+  } catch (err) {
+    console.error('delete-user error:', err.message);
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
 // POST /api/auth/update-password
 app.post('/api/auth/update-password', authMiddleware, async (req, res) => {
   try {
