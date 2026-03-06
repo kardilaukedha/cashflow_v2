@@ -60,7 +60,11 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
   drop_dan_tagihan: 'Drop & Tagihan',
 };
 
-export default function SariRotiDashboard() {
+interface Props {
+  onNavigate?: (view: string) => void;
+}
+
+export default function SariRotiDashboard({ onNavigate }: Props) {
   const { user, userProfile } = useAuth();
   const [settings, setSettings] = useState<SariRotiSettings>({ min_visits: 5, max_visits: 20, plan_deadline: '10:00' });
   const [todayPlan, setTodayPlan] = useState<VisitPlan | null>(null);
@@ -191,6 +195,7 @@ export default function SariRotiDashboard() {
       return;
     }
     setSaving(true);
+    const isNewPlan = !todayPlan;
     if (todayPlan) {
       await supabase.from('visit_plans').update({ stores: validStores, updated_at: new Date().toISOString() }).eq('id', todayPlan.id);
     } else {
@@ -198,6 +203,9 @@ export default function SariRotiDashboard() {
     }
     setSaving(false);
     await loadTodayPlan();
+    if (isNewPlan && onNavigate) {
+      onNavigate('sariroti_home');
+    }
   };
 
   const submitPlan = async () => {
@@ -213,6 +221,7 @@ export default function SariRotiDashboard() {
     }).eq('id', todayPlan.id);
     setSubmitting(false);
     await loadTodayPlan();
+    if (onNavigate) onNavigate('sariroti_home');
   };
 
   const startCheckin = (store: PlannedStore) => {

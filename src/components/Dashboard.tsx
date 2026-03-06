@@ -17,6 +17,7 @@ import AnnouncementManager from './AnnouncementManager';
 import AnnouncementBoard from './AnnouncementBoard';
 import SariRotiDashboard from './sariroti/SariRotiDashboard';
 import SariRotiHomeDashboard from './sariroti/SariRotiHomeDashboard';
+import HistoryKunjungan from './sariroti/HistoryKunjungan';
 import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import TokoManager from './sariroti/TokoManager';
 import TokoAdminView from './sariroti/TokoAdminView';
@@ -307,7 +308,9 @@ export default function Dashboard() {
           ) : currentView === 'sariroti_home' ? (
             <SariRotiHomeDashboard onNavigate={setCurrentView} />
           ) : currentView === 'sariroti' ? (
-            <SariRotiDashboard />
+            <SariRotiDashboard onNavigate={setCurrentView} />
+          ) : currentView === 'history_kunjungan' ? (
+            <HistoryKunjungan />
           ) : currentView === 'toko' ? (
             <TokoManager />
           ) : currentView === 'toko_admin' ? (
