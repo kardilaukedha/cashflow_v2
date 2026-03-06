@@ -1,11 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+let supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
+
+// Normalize URL: ensure it starts with https:// and has no trailing slash
+if (!supabaseUrl.startsWith('http')) {
+  supabaseUrl = 'https://' + supabaseUrl;
+}
+supabaseUrl = supabaseUrl.replace(/\/+$/, '');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

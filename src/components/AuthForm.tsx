@@ -26,7 +26,11 @@ export default function AuthForm() {
     const { error } = await signIn(email, password);
 
     if (error) {
-      setError(error.message);
+      if (error.message === 'Failed to fetch' || error.message?.includes('fetch')) {
+        setError('Tidak dapat terhubung ke server. Pastikan konfigurasi Supabase sudah benar dan project Supabase Anda aktif.');
+      } else {
+        setError(error.message);
+      }
     }
 
     setLoading(false);
