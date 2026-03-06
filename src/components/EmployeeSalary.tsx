@@ -71,7 +71,7 @@ interface EmployeeFormData {
   motorcycle_rental: number;
   meal_allowance: number;
   status: 'active' | 'inactive';
-  linked_user_profile_id: string;
+  linked_user_profile_ids: string[];
 }
 
 interface PaymentFormData {
@@ -112,7 +112,7 @@ export default function EmployeeSalary() {
   const EMPTY_EMP_FORM: EmployeeFormData = {
     name: '', employee_code: '', job_position_id: '',
     basic_salary: 0, transport_allowance: 0, communication_allowance: 0,
-    motorcycle_rental: 0, meal_allowance: 0, status: 'active', linked_user_profile_id: '',
+    motorcycle_rental: 0, meal_allowance: 0, status: 'active', linked_user_profile_ids: [],
   };
 
   const [employeeForm, setEmployeeForm] = useState<EmployeeFormData>(EMPTY_EMP_FORM);
@@ -216,8 +216,8 @@ export default function EmployeeSalary() {
 
     if (savedEmployeeId) {
       await supabase.from('user_profiles').update({ employee_id: null }).eq('employee_id', savedEmployeeId);
-      if (employeeForm.linked_user_profile_id) {
-        await supabase.from('user_profiles').update({ employee_id: savedEmployeeId }).eq('id', employeeForm.linked_user_profile_id);
+      for (const profileId of employeeForm.linked_user_profile_ids) {
+        await supabase.from('user_profiles').update({ employee_id: savedEmployeeId }).eq('id', profileId);
       }
     }
 
@@ -284,7 +284,7 @@ export default function EmployeeSalary() {
   };
 
   const editEmployee = (employee: Employee) => {
-    const linkedProfile = userProfiles.find(p => p.employee_id === employee.id);
+    const linkedProfiles = userProfiles.filter(p => p.employee_id === employee.id);
     setEmployeeForm({
       name: employee.name,
       employee_code: employee.employee_code,
@@ -295,7 +295,7 @@ export default function EmployeeSalary() {
       motorcycle_rental: employee.motorcycle_rental,
       meal_allowance: employee.meal_allowance,
       status: employee.status,
-      linked_user_profile_id: linkedProfile?.id || '',
+      linked_user_profile_ids: linkedProfiles.map(p => p.id),
     });
     setEditingEmployee(employee);
     setShowEmployeeForm(true);
@@ -551,7 +551,7 @@ export default function EmployeeSalary() {
           </div>
           <div className="p-4 space-y-3">
             {employees.filter(e => e.status === 'active').map(employee => {
-              const linkedProfile = userProfiles.find(p => p.employee_id === employee.id);
+              const linkedProfiles = userProfiles.filter(p => p.employee_id === employee.id);
               const empLoans = loans[employee.id] || [];
               const gross = totalGross(employee);
               const net = calculateNet(employee.id, gross);
@@ -573,13 +573,17 @@ export default function EmployeeSalary() {
                             {employee.job_positions?.name || '—'}
                           </span>
                         </div>
-                        {linkedProfile && (
-                          <div className="flex items-center gap-1 mt-1 text-xs text-blue-600">
-                            <Link className="w-3 h-3" />
-                            {linkedProfile.full_name || linkedProfile.email}
-                            {linkedProfile.role === 'karyawan_sariroti' && (
-                              <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded text-xs font-medium">Sari Roti</span>
-                            )}
+                        {linkedProfiles.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1 mt-1">
+                            {linkedProfiles.map(lp => (
+                              <span key={lp.id} className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                                <Link className="w-3 h-3" />
+                                {lp.full_name || lp.email}
+                                {lp.role === 'karyawan_sariroti' && (
+                                  <span className="ml-0.5 px-1 bg-orange-100 text-orange-600 rounded font-medium">SR</span>
+                                )}
+                              </span>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -745,23 +749,53 @@ export default function EmployeeSalary() {
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <label className="block text-sm font-medium text-blue-800 mb-1 flex items-center gap-2">
+                <label className="block text-sm font-medium text-blue-800 mb-2 flex items-center gap-2">
                   <Link className="w-4 h-4" /> Hubungkan ke Akun User (Opsional)
+                  {employeeForm.linked_user_profile_ids.length > 0 && (
+                    <span className="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
+                      {employeeForm.linked_user_profile_ids.length} dipilih
+                    </span>
+                  )}
                 </label>
-                <select value={employeeForm.linked_user_profile_id}
-                  onChange={e => setEmployeeForm({ ...employeeForm, linked_user_profile_id: e.target.value })}
-                  className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
-                  <option value="">— Tidak dihubungkan —</option>
-                  {availableProfiles(editingEmployee?.id).map(p => {
-                    const roleLabel = p.role === 'karyawan_sariroti' ? 'Karyawan Sari Roti' : p.role === 'karyawan' ? 'Karyawan' : p.role;
-                    return (
-                      <option key={p.id} value={p.id}>
-                        {p.full_name || p.email} [{roleLabel}] {p.employee_id === editingEmployee?.id ? '(terhubung saat ini)' : ''}
-                      </option>
-                    );
-                  })}
-                </select>
-                <p className="text-xs text-blue-600 mt-1">Menghubungkan akun agar karyawan bisa melihat gaji & pinjaman sendiri di dashboard</p>
+                <div className="max-h-40 overflow-y-auto border border-blue-200 rounded-lg bg-white divide-y divide-gray-100">
+                  {availableProfiles(editingEmployee?.id).length === 0 ? (
+                    <p className="text-xs text-gray-400 p-3 text-center">Tidak ada akun yang tersedia</p>
+                  ) : (
+                    availableProfiles(editingEmployee?.id).map(p => {
+                      const checked = employeeForm.linked_user_profile_ids.includes(p.id);
+                      const roleLabel = p.role === 'karyawan_sariroti' ? 'Karyawan Sari Roti' : p.role === 'karyawan' ? 'Karyawan' : p.role;
+                      const toggleProfile = () => {
+                        const ids = employeeForm.linked_user_profile_ids;
+                        setEmployeeForm(f => ({
+                          ...f,
+                          linked_user_profile_ids: checked
+                            ? ids.filter(id => id !== p.id)
+                            : [...ids, p.id],
+                        }));
+                      };
+                      return (
+                        <label key={p.id} className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-blue-50 transition-colors ${checked ? 'bg-blue-50' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={toggleProfile}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{p.full_name || p.email}</p>
+                            <p className="text-xs text-gray-500 truncate">{p.email}</p>
+                          </div>
+                          <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${
+                            p.role === 'karyawan_sariroti' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {roleLabel}
+                          </span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+                <p className="text-xs text-blue-600 mt-1.5">Pilih satu atau lebih akun agar dapat melihat gaji &amp; pinjaman sendiri</p>
               </div>
 
               <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
