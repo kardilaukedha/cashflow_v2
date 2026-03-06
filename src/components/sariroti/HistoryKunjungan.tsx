@@ -7,7 +7,7 @@ import {
   Timer, ExternalLink, AlertCircle, Filter
 } from 'lucide-react';
 
-interface PlannedStore { name: string; address: string; }
+interface PlannedStore { name: string; address: string; planned_skus?: { kode: string; nama: string }[]; }
 
 interface VisitPlan {
   id: string;
@@ -328,15 +328,27 @@ export default function HistoryKunjungan() {
                         {plan.stores.map((s, i) => {
                           const done = plan.checkins.some(c => c.store_name.toLowerCase() === s.name.toLowerCase());
                           return (
-                            <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${done ? 'bg-emerald-50 text-gray-700' : 'bg-gray-50 text-gray-500'}`}>
-                              {done
-                                ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                                : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />}
-                              <span className="flex-1 truncate">{s.name}</span>
-                              {s.address && (
-                                <span className="flex items-center gap-1 text-xs text-gray-400">
-                                  <MapPin className="w-3 h-3" />{s.address}
-                                </span>
+                            <div key={i} className={`px-3 py-2 rounded-lg text-sm ${done ? 'bg-emerald-50 text-gray-700' : 'bg-gray-50 text-gray-500'}`}>
+                              <div className="flex items-center gap-2">
+                                {done
+                                  ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                                  : <Circle className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />}
+                                <span className="flex-1 truncate font-medium">{s.name}</span>
+                                {s.address && (
+                                  <span className="flex items-center gap-1 text-xs text-gray-400">
+                                    <MapPin className="w-3 h-3" />{s.address}
+                                  </span>
+                                )}
+                              </div>
+                              {s.planned_skus && s.planned_skus.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1.5 ml-5">
+                                  {s.planned_skus.slice(0, 6).map(sk => (
+                                    <span key={sk.kode} className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">{sk.kode}</span>
+                                  ))}
+                                  {s.planned_skus.length > 6 && (
+                                    <span className="text-xs text-gray-400">+{s.planned_skus.length - 6} SKU</span>
+                                  )}
+                                </div>
                               )}
                             </div>
                           );

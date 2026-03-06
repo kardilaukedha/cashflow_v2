@@ -17,6 +17,7 @@ interface SariRotiSettings {
 interface PlannedStore {
   name: string;
   address: string;
+  planned_skus?: { kode: string; nama: string; kategori: string }[];
 }
 
 interface VisitPlan {
@@ -287,6 +288,16 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
                             <MapPin className="w-3 h-3 flex-shrink-0" />
                             <span className="truncate">{store.address}</span>
                           </p>
+                        )}
+                        {store.planned_skus && store.planned_skus.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {store.planned_skus.slice(0, 4).map(s => (
+                              <span key={s.kode} className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">{s.kode}</span>
+                            ))}
+                            {store.planned_skus.length > 4 && (
+                              <span className="text-xs text-gray-400">+{store.planned_skus.length - 4} SKU</span>
+                            )}
+                          </div>
                         )}
                       </div>
                       {!checked ? (

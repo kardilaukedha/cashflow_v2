@@ -3,6 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import AnnouncementBoard from '../AnnouncementBoard';
 import CheckinModal from './CheckinModal';
+import SkuPickerModal from './SkuPickerModal';
+import type { SkuItem } from '../../lib/skuList';
 import {
   MapPin, Clock, CheckCircle2, Circle, Plus, Trash2,
   AlertCircle, Send, RefreshCw, Package, ClipboardList,
@@ -18,6 +20,7 @@ interface SariRotiSettings {
 interface PlannedStore {
   name: string;
   address: string;
+  planned_skus?: SkuItem[];
 }
 
 interface VisitPlan {
@@ -78,6 +81,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
   const [showCheckin, setShowCheckin] = useState(false);
   const [checkingOut, setCheckingOut] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
+  const [skuPickerIdx, setSkuPickerIdx] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000);
@@ -175,19 +179,33 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
 
   const selectStore = (i: number, storeId: string) => {
     if (!storeId) {
-      setStoreInputs(prev => prev.map((s, idx) => idx === i ? { name: '', address: '' } : s));
+      setStoreInputs(prev => prev.map((s, idx) => idx === i ? { name: '', address: '', planned_skus: [] } : s));
       return;
     }
     const found = registeredStores.find(s => String(s.id) === storeId);
     if (found) {
-      setStoreInputs(prev => prev.map((s, idx) => idx === i ? { name: found.nama_toko, address: found.alamat || '' } : s));
+      setStoreInputs(prev => prev.map((s, idx) => idx === i
+        ? { name: found.nama_toko, address: found.alamat || '', planned_skus: s.planned_skus || [] }
+        : s
+      ));
     }
+  };
+
+  const handleSkuConfirm = (skus: SkuItem[]) => {
+    if (skuPickerIdx === null) return;
+    setStoreInputs(prev => prev.map((s, idx) => idx === skuPickerIdx ? { ...s, planned_skus: skus } : s));
+    setSkuPickerIdx(null);
   };
 
   const savePlan = async () => {
     const validStores = storeInputs.filter(s => s.name.trim());
     if (validStores.length < settings.min_visits) {
       alert(`Minimal ${settings.min_visits} toko harus direncanakan`);
+      return;
+    }
+    const missingSkus = validStores.filter(s => !s.planned_skus || s.planned_skus.length === 0);
+    if (missingSkus.length > 0) {
+      alert(`Setiap toko wajib memiliki minimal 1 SKU yang dipilih.\nToko belum ada SKU: ${missingSkus.map(s => s.name).join(', ')}`);
       return;
     }
     if (isPastDeadline() && !todayPlan) {
@@ -395,32 +413,66 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
                   {storeInputs.map((store, i) => {
                     const selectedId = getSelectedStoreId(store.name);
                     const selectedStoreData = registeredStores.find(s => s.nama_toko === store.name);
+                    const skuCount = store.planned_skus?.length || 0;
+                    const hasStore = !!store.name;
                     return (
-                      <div key={i} className="flex gap-2 items-start">
-                        <div className="flex-1 space-y-1.5">
-                          <select
-                            value={selectedId}
-                            onChange={e => selectStore(i, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white"
-                          >
-                            <option value="">-- Pilih Toko {i + 1} --</option>
-                            {registeredStores.map(s => (
-                              <option key={s.id} value={String(s.id)}>{s.nama_toko}</option>
-                            ))}
-                          </select>
-                          {selectedStoreData && (
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg">
-                              <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                              <span className="text-xs text-gray-500 truncate">
-                                {selectedStoreData.alamat || 'Alamat belum diisi'}
-                              </span>
-                            </div>
-                          )}
+                      <div key={i} className="border border-gray-200 rounded-xl p-3 space-y-2 bg-white">
+                        <div className="flex gap-2 items-start">
+                          <div className="flex-1">
+                            <select
+                              value={selectedId}
+                              onChange={e => selectStore(i, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white"
+                            >
+                              <option value="">-- Pilih Toko {i + 1} --</option>
+                              {registeredStores.map(s => (
+                                <option key={s.id} value={String(s.id)}>{s.nama_toko}</option>
+                              ))}
+                            </select>
+                            {selectedStoreData && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg mt-1.5">
+                                <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                                <span className="text-xs text-gray-500 truncate">
+                                  {selectedStoreData.alamat || 'Alamat belum diisi'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <button onClick={() => removeStore(i)} disabled={storeInputs.length <= 1}
+                            className="mt-1 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button onClick={() => removeStore(i)} disabled={storeInputs.length <= 1}
-                          className="mt-2 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {hasStore && (
+                          <div>
+                            <button
+                              onClick={() => setSkuPickerIdx(i)}
+                              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                                skuCount === 0
+                                  ? 'border-orange-300 bg-orange-50 text-orange-600 hover:bg-orange-100'
+                                  : 'border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100'
+                              }`}
+                            >
+                              <Package className="w-4 h-4 flex-shrink-0" />
+                              <span className="flex-1 text-left">
+                                {skuCount === 0 ? 'Pilih SKU Drop (wajib)' : `${skuCount} SKU dipilih`}
+                              </span>
+                              {skuCount === 0 && (
+                                <span className="text-xs bg-orange-200 text-orange-700 px-1.5 py-0.5 rounded font-semibold">Wajib</span>
+                              )}
+                            </button>
+                            {skuCount > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1.5 px-1">
+                                {store.planned_skus!.slice(0, 5).map(s => (
+                                  <span key={s.kode} className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">{s.kode}</span>
+                                ))}
+                                {skuCount > 5 && (
+                                  <span className="text-xs text-gray-400 self-center">+{skuCount - 5} lagi</span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -527,6 +579,15 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
           registeredStores={registeredStores}
           onClose={() => { setShowCheckin(false); setCheckinTarget(null); }}
           onSuccess={() => { setShowCheckin(false); setCheckinTarget(null); loadCheckins(todayPlan.id); }}
+        />
+      )}
+
+      {skuPickerIdx !== null && storeInputs[skuPickerIdx] && (
+        <SkuPickerModal
+          storeName={storeInputs[skuPickerIdx].name || `Toko ${skuPickerIdx + 1}`}
+          selected={storeInputs[skuPickerIdx].planned_skus || []}
+          onConfirm={handleSkuConfirm}
+          onClose={() => setSkuPickerIdx(null)}
         />
       )}
     </div>
