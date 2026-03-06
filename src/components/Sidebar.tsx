@@ -3,16 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Category } from '../lib/supabase';
 import { can, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
 import {
-  Wallet,
-  LogOut,
-  BarChart3,
-  Download,
-  Upload,
-  Tag,
-  Users,
-  Briefcase,
-  UserCircle,
-  Settings,
+  Wallet, LogOut, BarChart3, Download, Upload, Tag, Users,
+  Briefcase, UserCircle, Settings, Megaphone, MapPin, Eye,
 } from 'lucide-react';
 import CategoryManager from './CategoryManager';
 import ImportExport from './ImportExport';
@@ -35,6 +27,7 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
 
   const navBtn = (view: string, Icon: React.ElementType, label: string) => (
     <button
+      key={view}
       onClick={() => onViewChange(view)}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
         currentView === view ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'
@@ -57,11 +50,9 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
               <h2 className="font-bold text-gray-900">Cashflow App</h2>
               <p className="text-xs text-gray-600">{userProfile?.full_name || 'User'}</p>
               <p className="text-xs text-gray-500">{user?.email}</p>
-              {role !== 'karyawan' && (
-                <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
-                  {roleLabel}
-                </span>
-              )}
+              <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
+                {roleLabel}
+              </span>
             </div>
           </div>
         </div>
@@ -69,11 +60,17 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {can(role, 'view_dashboard') && navBtn('dashboard', BarChart3, 'Dashboard')}
 
+          {role === 'karyawan_sariroti' && navBtn('sariroti', MapPin, 'Dashboard Kunjungan')}
+
           {can(role, 'view_own_salary') && navBtn('salary', Users, 'Gaji Karyawan')}
 
           {can(role, 'view_own_loans') && navBtn('loans', Wallet, 'Pinjaman Karyawan')}
 
           {can(role, 'manage_positions') && navBtn('positions', Briefcase, 'Kelola Jabatan')}
+
+          {can(role, 'monitor_visits') && navBtn('visit_monitor', Eye, 'Monitor Kunjungan')}
+
+          {can(role, 'manage_announcements') && navBtn('announcements', Megaphone, 'Pengumuman')}
 
           {can(role, 'manage_categories') && (
             <button

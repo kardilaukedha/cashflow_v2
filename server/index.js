@@ -3,13 +3,26 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const JWT_SECRET = process.env.SESSION_SECRET || 'cashflow_secret_key';
 
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+  filename: (_req, file, cb) => cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${path.extname(file.originalname)}`),
+});
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // FK registry: table -> { relatedTable -> fkColumn }
 const FK_REGISTRY = {
@@ -119,16 +132,24 @@ function requireRole(...roles) {
 }
 
 const ADMIN_ROLES = ['superadmin', 'admin_keuangan', 'admin_sariroti'];
+const ALL_ADMIN_ROLES = ['superadmin', 'admin_keuangan', 'admin_sariroti'];
 const SUPERADMIN_ONLY = ['superadmin'];
+const SARIROTI_USER = ['karyawan_sariroti'];
+const SARIROTI_AND_ADMIN = ['superadmin', 'admin_sariroti', 'admin_keuangan', 'karyawan_sariroti'];
 
 // Tables that require specific roles for write operations
 const WRITE_ROLE_MAP = {
-  job_positions:  SUPERADMIN_ONLY,
-  invite_links:   SUPERADMIN_ONLY,
-  user_profiles:  SUPERADMIN_ONLY,
-  employees:      ADMIN_ROLES,
-  salary_payments: ADMIN_ROLES,
-  employee_loans: ADMIN_ROLES,
+  job_positions:    SUPERADMIN_ONLY,
+  invite_links:     SUPERADMIN_ONLY,
+  user_profiles:    SUPERADMIN_ONLY,
+  employees:        ADMIN_ROLES,
+  salary_payments:  ADMIN_ROLES,
+  employee_loans:   ADMIN_ROLES,
+  announcements:    ALL_ADMIN_ROLES,
+  sariroti_settings: ALL_ADMIN_ROLES,
+  visit_plans:      SARIROTI_AND_ADMIN,
+  visit_checkins:   SARIROTI_AND_ADMIN,
+  bread_scans:      SARIROTI_AND_ADMIN,
 };
 
 // POST /api/auth/login
@@ -399,6 +420,82 @@ app.delete('/api/:table', authMiddleware, async (req, res) => {
     res.json({ data: null, error: null });
   } catch (err) {
     console.error('DELETE error:', err.message);
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// POST /api/upload - image upload for selfies etc
+app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ data: null, error: { message: 'No file uploaded' } });
+  const url = `/uploads/${req.file.filename}`;
+  res.json({ data: { url }, error: null });
+});
+
+// GET /api/sariroti-settings/:userProfileId - get settings for a user
+app.get('/api/sariroti-settings/:userProfileId', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM sariroti_settings WHERE user_profile_id = $1', [req.params.userProfileId]);
+    res.json({ data: rows[0] || null, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// PUT /api/sariroti-settings/:userProfileId - upsert settings
+app.put('/api/sariroti-settings/:userProfileId', authMiddleware, requireRole('superadmin', 'admin_sariroti', 'admin_keuangan'), async (req, res) => {
+  try {
+    const { min_visits, max_visits, plan_deadline } = req.body;
+    const { rows } = await pool.query(
+      `INSERT INTO sariroti_settings (user_profile_id, min_visits, max_visits, plan_deadline)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (user_profile_id) DO UPDATE SET min_visits=$2, max_visits=$3, plan_deadline=$4, updated_at=now()
+       RETURNING *`,
+      [req.params.userProfileId, min_visits, max_visits, plan_deadline]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// GET /api/visit-summary - admin summary of visits per user per date
+app.get('/api/visit-summary', authMiddleware, requireRole('superadmin', 'admin_sariroti', 'admin_keuangan'), async (req, res) => {
+  try {
+    const { date } = req.query;
+    let whereClause = date ? `WHERE vp.plan_date = $1` : '';
+    const params = date ? [date] : [];
+    const { rows } = await pool.query(`
+      SELECT vp.id, vp.plan_date, vp.status, vp.submitted_at, vp.stores,
+             up.full_name, up.email, up.id AS user_profile_id,
+             COUNT(vc.id) AS checkin_count,
+             COALESCE(SUM(vc.total_billing), 0) AS total_billing
+      FROM visit_plans vp
+      JOIN users u ON u.id = vp.user_id
+      JOIN user_profiles up ON up.user_id = u.id
+      LEFT JOIN visit_checkins vc ON vc.visit_plan_id = vp.id
+      ${whereClause}
+      GROUP BY vp.id, up.full_name, up.email, up.id
+      ORDER BY vp.plan_date DESC, up.full_name
+    `, params);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// GET /api/visit-detail/:planId - admin get detail of one plan
+app.get('/api/visit-detail/:planId', authMiddleware, async (req, res) => {
+  try {
+    const { rows: checkins } = await pool.query(
+      `SELECT vc.*, array_agg(bs.*) FILTER (WHERE bs.id IS NOT NULL) AS bread_scans
+       FROM visit_checkins vc
+       LEFT JOIN bread_scans bs ON bs.checkin_id = vc.id
+       WHERE vc.visit_plan_id = $1
+       GROUP BY vc.id ORDER BY vc.checkin_time`,
+      [req.params.planId]
+    );
+    res.json({ data: checkins, error: null });
+  } catch (err) {
     res.status(500).json({ data: null, error: { message: err.message } });
   }
 });

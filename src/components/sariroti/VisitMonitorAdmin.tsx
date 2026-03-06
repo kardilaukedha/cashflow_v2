@@ -1,0 +1,375 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../../lib/supabase';
+import {
+  Users, MapPin, Calendar, RefreshCw, ChevronDown, ChevronRight,
+  CheckCircle2, Clock, AlertTriangle, Package, Receipt, Image,
+  Settings as SettingsIcon, Save, Eye, X
+} from 'lucide-react';
+
+interface VisitSummaryRow {
+  id: string;
+  plan_date: string;
+  status: string;
+  submitted_at: string | null;
+  stores: { name: string; address: string }[];
+  full_name: string;
+  email: string;
+  user_profile_id: string;
+  checkin_count: number;
+  total_billing: number;
+}
+
+interface CheckinDetail {
+  id: string;
+  store_name: string;
+  store_address: string;
+  checkin_time: string;
+  selfie_url: string;
+  visit_type: string;
+  total_billing: number;
+  has_expired_bread: boolean;
+  notes: string;
+  bread_scans: BreadScan[] | null;
+}
+
+interface BreadScan {
+  id: string;
+  barcode: string;
+  bread_name: string;
+  quantity: number;
+  scan_type: 'drop' | 'tarik';
+}
+
+interface SariRotiUser {
+  id: string;
+  full_name: string;
+  email: string;
+  user_id: string;
+}
+
+const VISIT_TYPE_LABELS: Record<string, string> = {
+  drop_roti: 'Drop Roti',
+  tagihan: 'Tagihan',
+  drop_dan_tagihan: 'Drop & Tagihan',
+};
+
+const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  draft:     { label: 'Draft',     color: 'bg-gray-100 text-gray-600' },
+  submitted: { label: 'Terkirim',  color: 'bg-blue-100 text-blue-700' },
+  approved:  { label: 'Disetujui', color: 'bg-emerald-100 text-emerald-700' },
+  rejected:  { label: 'Ditolak',   color: 'bg-red-100 text-red-700' },
+};
+
+export default function VisitMonitorAdmin() {
+  const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
+  const [summaries, setSummaries] = useState<VisitSummaryRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedPlan, setExpandedPlan] = useState<string | null>(null);
+  const [planDetails, setPlanDetails] = useState<Record<string, CheckinDetail[]>>({});
+  const [loadingDetail, setLoadingDetail] = useState<string | null>(null);
+  const [tab, setTab] = useState<'monitor' | 'settings'>('monitor');
+  const [sariUsers, setSariUsers] = useState<SariRotiUser[]>([]);
+  const [settingsMap, setSettingsMap] = useState<Record<string, { min_visits: number; max_visits: number; plan_deadline: string }>>({});
+  const [savingSettings, setSavingSettings] = useState<string | null>(null);
+  const [selfieModal, setSelfieModal] = useState<string | null>(null);
+
+  const token = localStorage.getItem('access_token');
+
+  const loadSummary = useCallback(async () => {
+    setLoading(true);
+    const url = filterDate ? `/api/visit-summary?date=${filterDate}` : '/api/visit-summary';
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    if (json.data) setSummaries(json.data);
+    setLoading(false);
+  }, [filterDate, token]);
+
+  useEffect(() => { loadSummary(); }, [loadSummary]);
+
+  useEffect(() => {
+    if (tab === 'settings') loadSariUsers();
+  }, [tab]);
+
+  const loadSariUsers = async () => {
+    const { data } = await supabase.from('user_profiles').select('id, full_name, email, user_id').eq('role', 'karyawan_sariroti').order('full_name');
+    if (data) {
+      setSariUsers(data as SariRotiUser[]);
+      data.forEach(u => loadUserSettings(u.id));
+    }
+  };
+
+  const loadUserSettings = async (userProfileId: string) => {
+    const res = await fetch(`/api/sariroti-settings/${userProfileId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    if (json.data) {
+      setSettingsMap(prev => ({ ...prev, [userProfileId]: { min_visits: json.data.min_visits, max_visits: json.data.max_visits, plan_deadline: json.data.plan_deadline?.substring(0,5) || '10:00' } }));
+    } else {
+      setSettingsMap(prev => ({ ...prev, [userProfileId]: { min_visits: 5, max_visits: 20, plan_deadline: '10:00' } }));
+    }
+  };
+
+  const saveSettings = async (userProfileId: string) => {
+    const s = settingsMap[userProfileId];
+    if (!s) return;
+    setSavingSettings(userProfileId);
+    await fetch(`/api/sariroti-settings/${userProfileId}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(s),
+    });
+    setSavingSettings(null);
+    alert('Pengaturan disimpan');
+  };
+
+  const togglePlan = async (planId: string) => {
+    if (expandedPlan === planId) { setExpandedPlan(null); return; }
+    setExpandedPlan(planId);
+    if (planDetails[planId]) return;
+    setLoadingDetail(planId);
+    const res = await fetch(`/api/visit-detail/${planId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    if (json.data) setPlanDetails(prev => ({ ...prev, [planId]: json.data }));
+    setLoadingDetail(null);
+  };
+
+  const updateStatus = async (planId: string, status: string) => {
+    await supabase.from('visit_plans').update({ status, updated_at: new Date().toISOString() }).eq('id', planId);
+    loadSummary();
+  };
+
+  const updateSetting = (uid: string, field: string, val: string | number) => {
+    setSettingsMap(prev => ({ ...prev, [uid]: { ...prev[uid], [field]: val } }));
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-orange-600" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Monitor Kunjungan Sari Roti</h2>
+            <p className="text-sm text-gray-500">Pantau aktivitas kunjungan toko karyawan</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => setTab('monitor')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'monitor' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <Users className="w-4 h-4 inline mr-1.5" />Monitor
+          </button>
+          <button onClick={() => setTab('settings')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'settings' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            <SettingsIcon className="w-4 h-4 inline mr-1.5" />Pengaturan
+          </button>
+        </div>
+      </div>
+
+      {tab === 'monitor' && (
+        <>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <button onClick={loadSummary} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              <RefreshCw className="w-4 h-4" /> Refresh
+            </button>
+            <div className="text-sm text-gray-500">{summaries.length} plan ditemukan</div>
+          </div>
+
+          {loading ? (
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-100 animate-pulse rounded-xl" />)}</div>
+          ) : summaries.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <MapPin className="w-12 h-12 mx-auto mb-3 opacity-20" />
+              <p>Tidak ada data kunjungan untuk tanggal ini</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {summaries.map(row => {
+                const sc = STATUS_CONFIG[row.status] || STATUS_CONFIG.draft;
+                const isExpanded = expandedPlan === row.id;
+                const details = planDetails[row.id];
+                const progressPct = row.stores?.length ? Math.round((row.checkin_count / row.stores.length) * 100) : 0;
+
+                return (
+                  <div key={row.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => togglePlan(row.id)}>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-orange-700 text-xs font-bold">{row.full_name?.charAt(0)?.toUpperCase()}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 text-sm">{row.full_name}</p>
+                          <p className="text-xs text-gray-400">{row.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="text-right hidden sm:block">
+                          <p className="text-xs text-gray-500">{row.checkin_count}/{row.stores?.length || 0} toko</p>
+                          <div className="w-20 bg-gray-100 rounded-full h-1.5 mt-1">
+                            <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${progressPct}%` }} />
+                          </div>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${sc.color}`}>{sc.label}</span>
+                        {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-4 text-sm flex-wrap">
+                            <span className="flex items-center gap-1 text-gray-600"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{row.checkin_count} check-in</span>
+                            {row.total_billing > 0 && <span className="flex items-center gap-1 text-gray-600"><Receipt className="w-3.5 h-3.5 text-blue-500" />Rp {Number(row.total_billing).toLocaleString('id-ID')}</span>}
+                            {row.submitted_at && <span className="flex items-center gap-1 text-gray-500 text-xs"><Clock className="w-3 h-3" />{new Date(row.submitted_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>}
+                          </div>
+                          <div className="flex gap-2">
+                            {row.status === 'submitted' && (
+                              <>
+                                <button onClick={() => updateStatus(row.id, 'approved')} className="px-3 py-1 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition-colors">Setujui</button>
+                                <button onClick={() => updateStatus(row.id, 'rejected')} className="px-3 py-1 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600 transition-colors">Tolak</button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {row.stores?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 mb-2">PLAN KUNJUNGAN ({row.stores.length} toko)</p>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {row.stores.map((s, i) => (
+                                <div key={i} className="bg-white rounded-lg px-3 py-2 text-xs border border-gray-200">
+                                  <p className="font-medium text-gray-800">{s.name}</p>
+                                  {s.address && <p className="text-gray-400 mt-0.5">{s.address}</p>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {loadingDetail === row.id && <div className="h-16 bg-gray-200 animate-pulse rounded-lg" />}
+
+                        {details && details.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 mb-2">HASIL CHECK-IN ({details.length})</p>
+                            <div className="space-y-2">
+                              {details.map(d => (
+                                <div key={d.id} className="bg-white rounded-xl border border-gray-200 p-3 space-y-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <p className="font-semibold text-gray-900 text-sm">{d.store_name}</p>
+                                      {d.store_address && <p className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" />{d.store_address}</p>}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                                      {d.selfie_url && (
+                                        <button onClick={() => setSelfieModal(d.selfie_url)} className="flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-100 transition-colors">
+                                          <Image className="w-3 h-3" />Selfie
+                                        </button>
+                                      )}
+                                      <span className="text-xs text-gray-400">{new Date(d.checkin_time).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' })}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2 text-xs">
+                                    <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{VISIT_TYPE_LABELS[d.visit_type] || d.visit_type}</span>
+                                    {d.total_billing > 0 && <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Tagihan: Rp {Number(d.total_billing).toLocaleString('id-ID')}</span>}
+                                    {d.has_expired_bread && <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Ada Roti Tarik</span>}
+                                  </div>
+                                  {d.bread_scans && d.bread_scans.length > 0 && (
+                                    <div className="bg-gray-50 rounded-lg p-2 space-y-1">
+                                      {d.bread_scans.map(bs => (
+                                        <div key={bs.id} className="flex items-center gap-2 text-xs">
+                                          {bs.scan_type === 'drop' ? <Package className="w-3 h-3 text-blue-400" /> : <AlertTriangle className="w-3 h-3 text-orange-400" />}
+                                          <span className="font-medium">{bs.barcode}</span>
+                                          <span className="text-gray-400">×{bs.quantity}</span>
+                                          <span className={`px-1.5 rounded ${bs.scan_type === 'drop' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50'}`}>
+                                            {bs.scan_type === 'drop' ? 'Drop' : 'Tarik'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {d.notes && <p className="text-xs text-gray-500 italic">{d.notes}</p>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {details && details.length === 0 && (
+                          <p className="text-xs text-gray-400 text-center py-3">Belum ada check-in untuk plan ini</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      {tab === 'settings' && (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">Atur target kunjungan untuk setiap karyawan Sari Roti</p>
+          {sariUsers.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <Users className="w-10 h-10 mx-auto mb-2 opacity-20" />
+              <p>Belum ada karyawan dengan role Karyawan Sari Roti</p>
+              <p className="text-xs mt-1">Buat akun dengan role "Karyawan Sari Roti" di menu Kelola User</p>
+            </div>
+          ) : (
+            sariUsers.map(u => {
+              const s = settingsMap[u.id] || { min_visits: 5, max_visits: 20, plan_deadline: '10:00' };
+              return (
+                <div key={u.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="font-semibold text-gray-900">{u.full_name}</p>
+                      <p className="text-xs text-gray-400">{u.email}</p>
+                    </div>
+                    <button onClick={() => saveSettings(u.id)} disabled={savingSettings === u.id}
+                      className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                      <Save className="w-4 h-4" /> {savingSettings === u.id ? 'Menyimpan...' : 'Simpan'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Min Kunjungan/Hari</label>
+                      <input type="number" min="1" max="50" value={s.min_visits}
+                        onChange={e => updateSetting(u.id, 'min_visits', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Max Kunjungan/Hari</label>
+                      <input type="number" min="1" max="100" value={s.max_visits}
+                        onChange={e => updateSetting(u.id, 'max_visits', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Batas Input Plan</label>
+                      <input type="time" value={s.plan_deadline}
+                        onChange={e => updateSetting(u.id, 'plan_deadline', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {selfieModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setSelfieModal(null)}>
+          <div className="relative max-w-lg w-full">
+            <button onClick={() => setSelfieModal(null)} className="absolute -top-10 right-0 text-white hover:text-gray-300 p-2">
+              <X className="w-6 h-6" />
+            </button>
+            <img src={selfieModal} alt="Selfie check-in" className="w-full rounded-2xl shadow-2xl" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

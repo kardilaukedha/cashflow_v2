@@ -13,6 +13,10 @@ import JobPositionManager from './JobPositionManager';
 import EmployeeLoanManager from './EmployeeLoanManager';
 import UserManager from './UserManager';
 import Settings from './Settings';
+import AnnouncementManager from './AnnouncementManager';
+import AnnouncementBoard from './AnnouncementBoard';
+import SariRotiDashboard from './sariroti/SariRotiDashboard';
+import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import { Plus, Lock } from 'lucide-react';
 import { can, DEFAULT_VIEW_BY_ROLE } from '../lib/permissions';
 
@@ -261,6 +265,8 @@ export default function Dashboard() {
                     </div>
                   )}
 
+                  <AnnouncementBoard />
+
                   <SummaryCards transactions={filteredTransactions} />
 
                   <FilterPanel
@@ -291,6 +297,12 @@ export default function Dashboard() {
             <EmployeeLoanManager />
           ) : currentView === 'users' ? (
             can(role, 'manage_users') ? <UserManager /> : <AccessDenied />
+          ) : currentView === 'announcements' ? (
+            can(role, 'manage_announcements') ? <AnnouncementManager /> : <AccessDenied />
+          ) : currentView === 'visit_monitor' ? (
+            can(role, 'monitor_visits') ? <VisitMonitorAdmin /> : <AccessDenied />
+          ) : currentView === 'sariroti' ? (
+            <SariRotiDashboard />
           ) : currentView === 'settings' ? (
             <Settings />
           ) : null}

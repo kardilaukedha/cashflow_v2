@@ -10,7 +10,7 @@ import {
 interface UserProfile {
   id: string;
   user_id: string;
-  role: 'superadmin' | 'admin_keuangan' | 'admin_sariroti' | 'karyawan';
+  role: 'superadmin' | 'admin_keuangan' | 'admin_sariroti' | 'karyawan' | 'karyawan_sariroti';
   full_name: string;
   email: string;
   employee_id: string | null;
@@ -267,7 +267,7 @@ export default function UserManager() {
   const getRoleName = (role: string) => {
     const map: Record<string, string> = {
       superadmin: 'Super Admin', admin_keuangan: 'Admin Keuangan',
-      admin_sariroti: 'Admin Sariroti', karyawan: 'Karyawan',
+      admin_sariroti: 'Admin Sariroti', karyawan: 'Karyawan', karyawan_sariroti: 'Karyawan Sari Roti',
     };
     return map[role] || role;
   };
@@ -276,6 +276,7 @@ export default function UserManager() {
     const map: Record<string, string> = {
       superadmin: 'bg-red-100 text-red-800', admin_keuangan: 'bg-blue-100 text-blue-800',
       admin_sariroti: 'bg-green-100 text-green-800', karyawan: 'bg-gray-100 text-gray-700',
+      karyawan_sariroti: 'bg-orange-100 text-orange-700',
     };
     return map[role] || 'bg-gray-100 text-gray-700';
   };
@@ -286,7 +287,7 @@ export default function UserManager() {
   const getAvatarColor = (role: string) => {
     const map: Record<string, string> = {
       superadmin: 'bg-red-500', admin_keuangan: 'bg-blue-500',
-      admin_sariroti: 'bg-green-500', karyawan: 'bg-gray-400',
+      admin_sariroti: 'bg-green-500', karyawan: 'bg-gray-400', karyawan_sariroti: 'bg-orange-400',
     };
     return map[role] || 'bg-gray-400';
   };
@@ -328,6 +329,7 @@ export default function UserManager() {
               <select value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value as UserProfile['role'] })}
                 required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
                 <option value="karyawan">Karyawan</option>
+                <option value="karyawan_sariroti">Karyawan Sari Roti</option>
                 <option value="admin_sariroti">Admin Sariroti</option>
                 <option value="admin_keuangan">Admin Keuangan</option>
                 <option value="superadmin">Super Admin</option>
@@ -710,6 +712,7 @@ export default function UserManager() {
                   <select value={inviteRole} onChange={e => setInviteRole(e.target.value as UserProfile['role'])}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="karyawan">Karyawan</option>
+                    <option value="karyawan_sariroti">Karyawan Sari Roti</option>
                     <option value="admin_sariroti">Admin Sariroti</option>
                     <option value="admin_keuangan">Admin Keuangan</option>
                     <option value="superadmin">Super Admin</option>
