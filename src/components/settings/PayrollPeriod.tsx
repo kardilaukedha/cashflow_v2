@@ -78,31 +78,31 @@ export default function PayrollPeriod() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-blue-100 rounded-lg">
-          <Calendar className="w-6 h-6 text-blue-600" />
+        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+          <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Periode Gaji</h2>
-          <p className="text-sm text-gray-600">Atur periode penggajian dan jam kerja</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Periode Gaji</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Atur periode penggajian dan jam kerja</p>
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-2">Periode Absensi</h3>
-        <p className="text-sm text-blue-700">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Periode Absensi</h3>
+        <p className="text-sm text-blue-700 dark:text-blue-400">
           Tanggal {settings.attendance_start_day} bulan lalu s/d tanggal {settings.attendance_end_day} bulan ini
         </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Mulai Absensi (Tgl)
           </label>
           <input
@@ -111,13 +111,13 @@ export default function PayrollPeriod() {
             max="31"
             value={settings.attendance_start_day}
             onChange={(e) => setSettings({ ...settings, attendance_start_day: parseInt(e.target.value) })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
           />
-          <p className="text-xs text-gray-500 mt-1">Biasanya tgl 21 bulan lalu</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Biasanya tgl 21 bulan lalu</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Akhir Absensi (Tgl)
           </label>
           <input
@@ -126,13 +126,13 @@ export default function PayrollPeriod() {
             max="31"
             value={settings.attendance_end_day}
             onChange={(e) => setSettings({ ...settings, attendance_end_day: parseInt(e.target.value) })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
           />
-          <p className="text-xs text-gray-500 mt-1">Biasanya tgl 20 bulan ini</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Biasanya tgl 20 bulan ini</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Tanggal Pembayaran
           </label>
           <input
@@ -141,21 +141,21 @@ export default function PayrollPeriod() {
             max="31"
             value={settings.payment_day}
             onChange={(e) => setSettings({ ...settings, payment_day: parseInt(e.target.value) })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
           />
-          <p className="text-xs text-gray-500 mt-1">Biasanya tgl 25 atau akhir bulan</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Biasanya tgl 25 atau akhir bulan</p>
         </div>
       </div>
 
-      <div className="border-t border-gray-200 pt-6">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Clock className="w-5 h-5" />
           Jam Kerja & Lembur
         </h3>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Jam Kerja Normal per Hari
             </label>
             <input
@@ -165,13 +165,13 @@ export default function PayrollPeriod() {
               max="24"
               value={settings.working_hours_per_day}
               onChange={(e) => setSettings({ ...settings, working_hours_per_day: parseFloat(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
             />
-            <p className="text-xs text-gray-500 mt-1">Standar: 8 jam</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Standar: 8 jam</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Multiplier Lembur
             </label>
             <input
@@ -181,14 +181,14 @@ export default function PayrollPeriod() {
               max="3"
               value={settings.overtime_multiplier}
               onChange={(e) => setSettings({ ...settings, overtime_multiplier: parseFloat(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
             />
-            <p className="text-xs text-gray-500 mt-1">Standar: 1.5x upah normal</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Standar: 1.5x upah normal</p>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleSave}
           disabled={saving}

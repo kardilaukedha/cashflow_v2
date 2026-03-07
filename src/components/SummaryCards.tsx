@@ -49,35 +49,35 @@ export default function SummaryCards({ transactions }: SummaryCardsProps) {
   return (
     <div className="space-y-4 mb-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-        <div className="bg-white rounded-xl p-3 md:p-6 border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 md:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="flex items-center justify-between mb-1 md:mb-2">
-            <span className="text-xs md:text-sm font-medium text-gray-600">Saldo Kas</span>
-            <Wallet className="w-4 h-4 md:w-5 md:h-5 text-slate-500" />
+            <span className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">Saldo Kas</span>
+            <Wallet className="w-4 h-4 md:w-5 md:h-5 text-slate-500 dark:text-slate-400" />
           </div>
-          <p className="text-lg md:text-3xl font-bold text-slate-900 font-mono truncate">{formatCurrency(balance)}</p>
-          <p className={`text-xs md:text-sm mt-1 ${balance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+          <p className="text-lg md:text-3xl font-bold text-slate-900 dark:text-slate-100 font-mono truncate">{formatCurrency(balance)}</p>
+          <p className={`text-xs md:text-sm mt-1 ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {balance >= 0 ? 'Surplus' : 'Defisit'}
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-3 md:p-6 border border-emerald-200">
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-xl p-3 md:p-6 border border-emerald-200 dark:border-emerald-700">
           <div className="flex items-center justify-between mb-1 md:mb-2">
-            <span className="text-xs md:text-sm font-medium text-emerald-700">Pemasukan Bulan Ini</span>
-            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
+            <span className="text-xs md:text-sm font-medium text-emerald-700 dark:text-emerald-300">Pemasukan Bulan Ini</span>
+            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <p className="text-lg md:text-2xl font-bold text-emerald-900 font-mono truncate">{formatCurrency(monthlyIncome)}</p>
-          <p className="text-xs md:text-sm text-emerald-600 mt-1">
+          <p className="text-lg md:text-2xl font-bold text-emerald-900 dark:text-emerald-100 font-mono truncate">{formatCurrency(monthlyIncome)}</p>
+          <p className="text-xs md:text-sm text-emerald-600 dark:text-emerald-400 mt-1">
             {thisMonthTransactions.filter(t => t.type === 'income').length} transaksi
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-3 md:p-6 border border-rose-200">
+        <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 rounded-xl p-3 md:p-6 border border-rose-200 dark:border-rose-700">
           <div className="flex items-center justify-between mb-1 md:mb-2">
-            <span className="text-xs md:text-sm font-medium text-rose-700">Pengeluaran Bulan Ini</span>
-            <TrendingDown className="w-4 h-4 md:w-5 md:h-5 text-rose-600" />
+            <span className="text-xs md:text-sm font-medium text-rose-700 dark:text-rose-300">Pengeluaran Bulan Ini</span>
+            <TrendingDown className="w-4 h-4 md:w-5 md:h-5 text-rose-600 dark:text-rose-400" />
           </div>
-          <p className="text-lg md:text-2xl font-bold text-rose-900 font-mono truncate">{formatCurrency(monthlyExpense)}</p>
-          <p className="text-xs md:text-sm text-rose-600 mt-1">
+          <p className="text-lg md:text-2xl font-bold text-rose-900 dark:text-rose-100 font-mono truncate">{formatCurrency(monthlyExpense)}</p>
+          <p className="text-xs md:text-sm text-rose-600 dark:text-rose-400 mt-1">
             {thisMonthTransactions.filter(t => t.type === 'expense').length} transaksi
           </p>
         </div>

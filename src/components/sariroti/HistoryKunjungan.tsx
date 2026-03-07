@@ -39,7 +39,7 @@ interface PlanWithCheckins extends VisitPlan {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  draft:     { label: 'Draft',     bg: 'bg-gray-100',    text: 'text-gray-600',    dot: 'bg-gray-400'    },
+  draft:     { label: 'Draft',     bg: 'bg-gray-100 dark:bg-gray-700',    text: 'text-gray-600 dark:text-gray-400',    dot: 'bg-gray-400'    },
   submitted: { label: 'Terkirim',  bg: 'bg-blue-100',    text: 'text-blue-700',    dot: 'bg-blue-500'    },
   approved:  { label: 'Disetujui', bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-500' },
   rejected:  { label: 'Ditolak',   bg: 'bg-red-100',     text: 'text-red-700',     dot: 'bg-red-500'     },
@@ -143,10 +143,10 @@ export default function HistoryKunjungan() {
     <div className="max-w-3xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">History Kunjungan</h1>
-          <p className="text-sm text-gray-500">Riwayat kunjungan dan check-in Anda</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">History Kunjungan</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Riwayat kunjungan dan check-in Anda</p>
         </div>
-        <button onClick={load} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+        <button onClick={load} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
           <RefreshCw className="w-4 h-4" />
         </button>
       </div>
@@ -158,22 +158,22 @@ export default function HistoryKunjungan() {
           { label: 'Disetujui',     value: approvedPlans,            icon: TrendingUp, color: 'text-purple-600',  bg: 'bg-purple-50'  },
           { label: 'Total Billing', value: formatRupiah(totalBilling), icon: Package,  color: 'text-orange-600',  bg: 'bg-orange-50'  },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-xl border border-gray-200 p-4">
+          <div key={label} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
             <div className={`w-8 h-8 ${bg} rounded-lg flex items-center justify-center mb-2`}>
               <Icon className={`w-4 h-4 ${color}`} />
             </div>
-            <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-            <p className="font-bold text-gray-900 text-sm">{value}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{label}</p>
+            <p className="font-bold text-gray-900 dark:text-white text-sm">{value}</p>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2 items-center bg-white rounded-xl border border-gray-200 p-3">
+      <div className="flex flex-wrap gap-2 items-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
         <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <select
           value={filterStatus}
           onChange={e => setFilterStatus(e.target.value as FilterStatus)}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 bg-white"
+          className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 dark:text-gray-100 bg-white dark:bg-gray-800"
         >
           <option value="all">Semua Status</option>
           <option value="draft">Draft</option>
@@ -184,7 +184,7 @@ export default function HistoryKunjungan() {
         <select
           value={filterMonth}
           onChange={e => setFilterMonth(e.target.value)}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 bg-white"
+          className="text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 dark:text-gray-100 bg-white dark:bg-gray-800"
         >
           <option value="">Semua Bulan</option>
           {monthOptions.map(m => {
@@ -197,12 +197,12 @@ export default function HistoryKunjungan() {
 
       {loading ? (
         <div className="space-y-3">
-          {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 animate-pulse rounded-xl" />)}
+          {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />)}
         </div>
       ) : plans.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <History className="w-12 h-12 mx-auto mb-3 text-gray-200" />
-          <p className="font-medium text-gray-500">Belum ada riwayat kunjungan</p>
+          <p className="font-medium text-gray-500 dark:text-gray-400">Belum ada riwayat kunjungan</p>
           <p className="text-sm text-gray-400 mt-1">Riwayat plan kunjungan akan muncul di sini</p>
         </div>
       ) : (
@@ -214,9 +214,9 @@ export default function HistoryKunjungan() {
               ? Math.round((plan.checkinCount / plan.stores.length) * 100) : 0;
 
             return (
-              <div key={plan.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div key={plan.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <button
-                  className="w-full text-left px-4 py-4 hover:bg-gray-50 transition-colors"
+                  className="w-full text-left px-4 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors"
                   onClick={() => setExpanded(isOpen ? null : plan.id)}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -228,7 +228,7 @@ export default function HistoryKunjungan() {
                         </span>
                         <span className="text-xs text-gray-400">{formatDate(plan.plan_date)}</span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-600">
+                      <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                           {plan.checkinCount}/{plan.stores.length} check-in
@@ -248,13 +248,13 @@ export default function HistoryKunjungan() {
                       </div>
                       <div className="mt-2">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                          <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
                             <div
                               className={`h-1.5 rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
-                          <span className={`text-xs font-medium ${pct === 100 ? 'text-emerald-600' : 'text-gray-500'}`}>
+                          <span className={`text-xs font-medium ${pct === 100 ? 'text-emerald-600' : 'text-gray-500 dark:text-gray-400'}`}>
                             {pct}%
                           </span>
                         </div>
@@ -267,25 +267,25 @@ export default function HistoryKunjungan() {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-gray-100 px-4 pb-4 pt-3 space-y-3">
+                  <div className="border-t border-gray-100 dark:border-gray-700 px-4 pb-4 pt-3 space-y-3">
                     {plan.checkins.length > 0 ? (
                       <div className="space-y-2">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Check-in Dilakukan</p>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check-in Dilakukan</p>
                         {plan.checkins.map(c => (
                           <div key={c.id} className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 space-y-2">
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-2">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                                <span className="font-medium text-gray-900 text-sm">{c.store_name}</span>
+                                <span className="font-medium text-gray-900 dark:text-white text-sm">{c.store_name}</span>
                               </div>
-                              <span className="text-xs text-gray-500">{formatTime(c.checkin_time)}</span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">{formatTime(c.checkin_time)}</span>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 pl-6 text-xs">
                               <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
                                 {VISIT_TYPE_LABELS[c.visit_type] || c.visit_type}
                               </span>
                               {c.duration_minutes && (
-                                <span className="flex items-center gap-1 text-gray-600">
+                                <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                   <Timer className="w-3 h-3" />{Math.round(c.duration_minutes)} mnt
                                 </span>
                               )}
@@ -310,7 +310,7 @@ export default function HistoryKunjungan() {
                               )}
                             </div>
                             {c.notes && (
-                              <p className="text-xs text-gray-500 pl-6 italic">"{c.notes}"</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 pl-6 italic">"{c.notes}"</p>
                             )}
                           </div>
                         ))}
@@ -324,11 +324,11 @@ export default function HistoryKunjungan() {
 
                     {plan.stores.length > 0 && (
                       <div className="space-y-1.5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Toko Direncanakan</p>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Toko Direncanakan</p>
                         {plan.stores.map((s, i) => {
                           const done = plan.checkins.some(c => c.store_name.toLowerCase() === s.name.toLowerCase());
                           return (
-                            <div key={i} className={`px-3 py-2 rounded-lg text-sm ${done ? 'bg-emerald-50 text-gray-700' : 'bg-gray-50 text-gray-500'}`}>
+                            <div key={i} className={`px-3 py-2 rounded-lg text-sm ${done ? 'bg-emerald-50 text-gray-700 dark:text-gray-300' : 'bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400'}`}>
                               <div className="flex items-center gap-2">
                                 {done
                                   ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />

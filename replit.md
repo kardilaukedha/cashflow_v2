@@ -97,6 +97,15 @@ The server also auto-migrates on startup:
 - Users can select a plan date from today up to 3 days in the future
 - Date picker enforced via min/max attributes on the date input
 
+## Dark Mode
+- **Strategy**: Tailwind `darkMode: 'class'` — `dark` class toggled on `<html>` element
+- **Context**: `src/contexts/ThemeContext.tsx` — exports `useTheme()` hook (`{ theme, toggleTheme, isDark }`)
+- **Persistence**: Theme saved to `localStorage` key `app_theme`; on first load detects system preference
+- **Toggle**: Sun/Moon button in Sidebar nav and mobile Dashboard header
+- **Pattern**: `bg-white dark:bg-gray-800`, `text-gray-900 dark:text-white`, `border-gray-200 dark:border-gray-700`, inputs: `dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100`
+- **Charts**: Recharts uses dynamic colors via `useTheme()` hook (axes, tooltips, grid)
+- **Coverage**: All components including auth, dashboard, financial, HR, settings, Sariroti, announcements
+
 ## Mobile-Responsive Design
 - **Sidebar**: Responsive drawer — visible as sidebar on desktop (lg+), hamburger menu overlay on mobile (<lg)
 - **Dashboard**: Sticky top nav bar on mobile with hamburger + app title + role badge; `p-4` mobile / `p-6` desktop

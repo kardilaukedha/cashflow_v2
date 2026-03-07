@@ -36,10 +36,10 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  superadmin: 'bg-red-100 text-red-700 border-red-200',
-  admin_keuangan: 'bg-blue-100 text-blue-700 border-blue-200',
-  admin_sariroti: 'bg-green-100 text-green-700 border-green-200',
-  karyawan: 'bg-gray-100 text-gray-700 border-gray-200',
+  superadmin: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+  admin_keuangan: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+  admin_sariroti: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+  karyawan: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
 };
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -124,24 +124,24 @@ export default function UserProfile() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-400">Memuat profil...</div>;
+    return <div className="text-center py-12 text-gray-400 dark:text-gray-500">Memuat profil...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-100 rounded-lg">
-            <User className="w-6 h-6 text-blue-600" />
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+            <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Profil Saya</h2>
-            <p className="text-sm text-gray-500">Informasi akun dan data karyawan Anda</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Profil Saya</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Informasi akun dan data karyawan Anda</p>
           </div>
         </div>
         {!editMode && (
           <button onClick={openEdit}
-            className="flex items-center gap-2 bg-blue-50 text-blue-600 border border-blue-200 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium">
+            className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 px-4 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium">
             <Edit2 className="w-4 h-4" /> Edit Profil
           </button>
         )}
@@ -180,33 +180,33 @@ export default function UserProfile() {
       </div>
 
       {editMode && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-semibold text-blue-900">Edit Informasi Pribadi</h4>
-            <button onClick={() => setEditMode(false)} className="text-blue-400 hover:text-blue-600">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300">Edit Informasi Pribadi</h4>
+            <button onClick={() => setEditMode(false)} className="text-blue-400 hover:text-blue-600 dark:hover:text-blue-300">
               <X className="w-5 h-5" />
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap *</label>
               <input type="text" value={editData.full_name}
                 onChange={e => setEditData({ ...editData, full_name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor Telepon</label>
               <input type="tel" value={editData.phone}
                 onChange={e => setEditData({ ...editData, phone: e.target.value })}
                 placeholder="08xx-xxxx-xxxx"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alamat</label>
               <textarea value={editData.address}
                 onChange={e => setEditData({ ...editData, address: e.target.value })}
                 rows={2} placeholder="Alamat lengkap"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 resize-none" />
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 resize-none dark:bg-gray-700 dark:text-gray-100" />
             </div>
           </div>
           <div className="flex gap-3 pt-1">
@@ -216,7 +216,7 @@ export default function UserProfile() {
               {saving ? 'Menyimpan...' : 'Simpan'}
             </button>
             <button onClick={() => setEditMode(false)}
-              className="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+              className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-5 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
               Batal
             </button>
           </div>
@@ -224,61 +224,61 @@ export default function UserProfile() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Identitas Pribadi</h4>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+          <div className="bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Identitas Pribadi</h4>
           </div>
           <div className="p-5 space-y-4">
-            <InfoRow icon={<Mail className="w-4 h-4 text-gray-400" />} label="Email" value={profile.email} />
-            <InfoRow icon={<Hash className="w-4 h-4 text-gray-400" />} label="NIK" value={profile.nik} mono />
-            <InfoRow icon={<User className="w-4 h-4 text-gray-400" />} label="Jenis Kelamin" value={profile.gender} />
-            <InfoRow icon={<Calendar className="w-4 h-4 text-gray-400" />} label="Tanggal Lahir" value={formatDate(profile.date_of_birth)} />
-            <InfoRow icon={<Phone className="w-4 h-4 text-gray-400" />} label="Nomor Telepon" value={profile.phone} editable onClick={openEdit} />
-            <InfoRow icon={<MapPin className="w-4 h-4 text-gray-400" />} label="Alamat" value={profile.address} editable onClick={openEdit} />
+            <InfoRow icon={<Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Email" value={profile.email} />
+            <InfoRow icon={<Hash className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="NIK" value={profile.nik} mono />
+            <InfoRow icon={<User className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Jenis Kelamin" value={profile.gender} />
+            <InfoRow icon={<Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Tanggal Lahir" value={formatDate(profile.date_of_birth)} />
+            <InfoRow icon={<Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Nomor Telepon" value={profile.phone} editable onClick={openEdit} />
+            <InfoRow icon={<MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Alamat" value={profile.address} editable onClick={openEdit} />
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Informasi Pekerjaan</h4>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Informasi Pekerjaan</h4>
             </div>
             <div className="p-5 space-y-4">
-              <InfoRow icon={<Building2 className="w-4 h-4 text-gray-400" />} label="Departemen" value={profile.department} />
-              <InfoRow icon={<Briefcase className="w-4 h-4 text-gray-400" />} label="Jabatan" value={profile.job_title} />
-              <InfoRow icon={<Calendar className="w-4 h-4 text-gray-400" />} label="Tanggal Bergabung" value={formatDate(profile.hire_date)} />
-              <InfoRow icon={<ShieldCheck className="w-4 h-4 text-gray-400" />} label="Role Sistem" value={ROLE_LABELS[profile.role] || profile.role} badge roleKey={profile.role} />
+              <InfoRow icon={<Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Departemen" value={profile.department} />
+              <InfoRow icon={<Briefcase className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Jabatan" value={profile.job_title} />
+              <InfoRow icon={<Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Tanggal Bergabung" value={formatDate(profile.hire_date)} />
+              <InfoRow icon={<ShieldCheck className="w-4 h-4 text-gray-400 dark:text-gray-500" />} label="Role Sistem" value={ROLE_LABELS[profile.role] || profile.role} badge roleKey={profile.role} />
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Status Akun</h4>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-900 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Status Akun</h4>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <BadgeCheck className={`w-5 h-5 ${profile.status === 'inactive' ? 'text-red-500' : 'text-emerald-500'}`} />
                   <div>
-                    <p className="text-xs text-gray-500">Status Karyawan</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Status Karyawan</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
                       {profile.status === 'inactive' ? 'Non-Aktif' : 'Aktif'}
                     </p>
                   </div>
                 </div>
                 <span className={`px-3 py-1 text-xs font-medium rounded-full border ${
                   profile.status === 'inactive'
-                    ? 'bg-red-50 text-red-700 border-red-200'
-                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'
                 }`}>
                   {profile.status === 'inactive' ? 'Non-Aktif' : 'Aktif'}
                 </span>
               </div>
-              <div className="flex items-center gap-3 pt-1 border-t border-gray-100">
-                <Calendar className="w-5 h-5 text-gray-400" />
+              <div className="flex items-center gap-3 pt-1 border-t border-gray-100 dark:border-gray-700">
+                <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <div>
-                  <p className="text-xs text-gray-500">Terdaftar Sejak</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatDate(profile.created_at)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Terdaftar Sejak</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{formatDate(profile.created_at)}</p>
                 </div>
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function UserProfile() {
         </div>
       </div>
 
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
         Informasi departemen, jabatan, dan tanggal bergabung hanya dapat diubah oleh admin.
         Hubungi admin jika ada perubahan data pekerjaan.
       </p>
@@ -307,29 +307,29 @@ function InfoRow({
   roleKey?: string;
 }) {
   const ROLE_COLORS: Record<string, string> = {
-    superadmin: 'bg-red-100 text-red-700 border-red-200',
-    admin_keuangan: 'bg-blue-100 text-blue-700 border-blue-200',
-    admin_sariroti: 'bg-green-100 text-green-700 border-green-200',
-    karyawan: 'bg-gray-100 text-gray-700 border-gray-200',
+    superadmin: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+    admin_keuangan: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+    admin_sariroti: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+    karyawan: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600',
   };
 
   return (
     <div className="flex items-start gap-3">
       <div className="mt-0.5 flex-shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-400">{label}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">{label}</p>
         {badge ? (
           <span className={`inline-flex items-center gap-1 mt-0.5 px-2.5 py-0.5 text-xs font-medium rounded-full border ${ROLE_COLORS[roleKey] || ROLE_COLORS.karyawan}`}>
             {value || '—'}
           </span>
         ) : (
-          <p className={`text-sm font-medium text-gray-900 break-words ${mono ? 'font-mono' : ''}`}>
+          <p className={`text-sm font-medium text-gray-900 dark:text-white break-words ${mono ? 'font-mono' : ''}`}>
             {value || '—'}
           </p>
         )}
       </div>
       {editable && onClick && (
-        <button onClick={onClick} className="text-gray-300 hover:text-blue-500 transition-colors flex-shrink-0" title="Edit">
+        <button onClick={onClick} className="text-gray-300 dark:text-gray-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex-shrink-0" title="Edit">
           <Edit2 className="w-3.5 h-3.5" />
         </button>
       )}

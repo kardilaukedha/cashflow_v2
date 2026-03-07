@@ -14,10 +14,10 @@ interface Announcement {
 }
 
 const PRIORITY_CONFIG = {
-  low:    { label: 'Info',     border: 'border-l-gray-300',  bg: 'bg-gray-50',    badge: 'bg-gray-100 text-gray-600',   icon: Info },
-  normal: { label: 'Info',     border: 'border-l-blue-400',  bg: 'bg-blue-50',    badge: 'bg-blue-100 text-blue-700',   icon: Info },
-  high:   { label: 'Penting',  border: 'border-l-orange-400', bg: 'bg-orange-50', badge: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
-  urgent: { label: 'Mendesak', border: 'border-l-red-500',   bg: 'bg-red-50',     badge: 'bg-red-100 text-red-700',     icon: AlertTriangle },
+  low:    { label: 'Info',     border: 'border-l-gray-300 dark:border-l-gray-600',  bg: 'bg-gray-50 dark:bg-gray-900',    badge: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',   icon: Info },
+  normal: { label: 'Info',     border: 'border-l-blue-400',  bg: 'bg-blue-50 dark:bg-blue-950',    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',   icon: Info },
+  high:   { label: 'Penting',  border: 'border-l-orange-400', bg: 'bg-orange-50 dark:bg-orange-950', badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300', icon: AlertTriangle },
+  urgent: { label: 'Mendesak', border: 'border-l-red-500',   bg: 'bg-red-50 dark:bg-red-950',     badge: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',     icon: AlertTriangle },
 };
 
 export default function AnnouncementBoard() {
@@ -44,15 +44,15 @@ export default function AnnouncementBoard() {
     setLoading(false);
   };
 
-  if (loading) return <div className="h-20 bg-gray-100 animate-pulse rounded-xl" />;
+  if (loading) return <div className="h-20 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />;
   if (announcements.length === 0) return null;
 
   return (
     <div className="space-y-2 mb-6">
       <div className="flex items-center gap-2 mb-3">
-        <Megaphone className="w-4 h-4 text-yellow-600" />
-        <span className="text-sm font-semibold text-gray-700">Pengumuman</span>
-        <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">{announcements.length}</span>
+        <Megaphone className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pengumuman</span>
+        <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full font-medium">{announcements.length}</span>
       </div>
       {announcements.map(a => {
         const cfg = PRIORITY_CONFIG[a.priority];
@@ -67,15 +67,15 @@ export default function AnnouncementBoard() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${cfg.badge}`}>{cfg.label}</span>
-                    <span className="text-xs text-gray-400">{new Date(a.created_at).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(a.created_at).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' })}</span>
                   </div>
-                  <p className="font-semibold text-gray-900 text-sm">{a.title}</p>
-                  {isExpanded && <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{a.content}</p>}
-                  {!isExpanded && <p className="text-sm text-gray-600 mt-1 line-clamp-1">{a.content}</p>}
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">{a.title}</p>
+                  {isExpanded && <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 whitespace-pre-wrap">{a.content}</p>}
+                  {!isExpanded && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">{a.content}</p>}
                 </div>
               </div>
               <div className="flex-shrink-0">
-                {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
               </div>
             </div>
           </div>

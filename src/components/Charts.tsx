@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { TransactionWithCategory, Category } from '../lib/supabase';
-import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { TrendingUp } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ChartsProps {
   transactions: TransactionWithCategory[];
@@ -10,6 +11,11 @@ interface ChartsProps {
 
 export default function Charts({ transactions, categories }: ChartsProps) {
   const [showForecast, setShowForecast] = useState(false);
+  const { isDark } = useTheme();
+  const axisColor = isDark ? '#9ca3af' : '#6b7280';
+  const gridColor = isDark ? '#374151' : '#f0f0f0';
+  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
+  const tooltipBorder = isDark ? '#374151' : '#e5e7eb';
   const expensesByCategory = categories
     .filter(c => c.type === 'expense')
     .map(category => {
@@ -106,8 +112,8 @@ export default function Charts({ transactions, categories }: ChartsProps) {
 
   if (transactions.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 mb-6 text-center">
-        <p className="text-gray-500">Belum ada data untuk ditampilkan. Tambahkan transaksi pertama Anda!</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 mb-6 text-center">
+        <p className="text-gray-500 dark:text-gray-400">Belum ada data untuk ditampilkan. Tambahkan transaksi pertama Anda!</p>
       </div>
     );
   }
@@ -116,8 +122,8 @@ export default function Charts({ transactions, categories }: ChartsProps) {
     <div className="space-y-6 mb-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {expensesByCategory.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Pengeluaran per Kategori</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 md:mb-4">Pengeluaran per Kategori</h3>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -134,15 +140,15 @@ export default function Charts({ transactions, categories }: ChartsProps) {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: axisColor }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         )}
 
         {incomeByCategory.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Pemasukan per Kategori</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 md:mb-4">Pemasukan per Kategori</h3>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -159,7 +165,7 @@ export default function Charts({ transactions, categories }: ChartsProps) {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: axisColor }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -167,15 +173,15 @@ export default function Charts({ transactions, categories }: ChartsProps) {
       </div>
 
       {monthlyData.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
-            <h3 className="text-base md:text-lg font-semibold text-gray-900">Tren Arus Kas (6 Bulan Terakhir)</h3>
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100">Tren Arus Kas (6 Bulan Terakhir)</h3>
             <button
               onClick={() => setShowForecast(!showForecast)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors self-start ${
                 showForecast
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -184,11 +190,11 @@ export default function Charts({ transactions, categories }: ChartsProps) {
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={[...monthlyData, ...forecastData]}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" style={{ fontSize: '12px' }} />
-              <YAxis tickFormatter={formatShortCurrency} style={{ fontSize: '12px' }} />
-              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="month" style={{ fontSize: '12px' }} tick={{ fill: axisColor }} />
+              <YAxis tickFormatter={formatShortCurrency} style={{ fontSize: '12px' }} tick={{ fill: axisColor }} />
+              <Tooltip formatter={(value) => formatCurrency(Number(value))} contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: axisColor }} />
+              <Legend wrapperStyle={{ color: axisColor }} />
               <Line
                 type="monotone"
                 dataKey="income"

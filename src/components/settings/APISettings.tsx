@@ -150,7 +150,7 @@ export default function APISettings() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   const availableCategories = [
@@ -174,21 +174,21 @@ export default function APISettings() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-purple-100 rounded-lg">
-          <Key className="w-6 h-6 text-purple-600" />
+        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <Key className="w-6 h-6 text-purple-600 dark:text-purple-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">API & Integrasi AI</h2>
-          <p className="text-sm text-gray-600">Kelola API keys dan pengaturan AI Tips</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">API & Integrasi AI</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Kelola API keys dan pengaturan AI Tips</p>
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
         <div className="flex items-start gap-4">
-          <Sparkles className="w-8 h-8 text-purple-600 flex-shrink-0 mt-1" />
+          <Sparkles className="w-8 h-8 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="font-bold text-purple-900 text-lg mb-2">Google Gemini 2.5 Flash</h3>
-            <p className="text-sm text-purple-800 mb-4">
+            <h3 className="font-bold text-purple-900 dark:text-purple-300 text-lg mb-2">Google Gemini 2.5 Flash</h3>
+            <p className="text-sm text-purple-800 dark:text-purple-400 mb-4">
               Aktifkan AI untuk mendapatkan tips keuangan personal, analisis cashflow, dan rekomendasi otomatis
               berdasarkan data bisnis Anda.
             </p>
@@ -196,7 +196,7 @@ export default function APISettings() {
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
+              className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium underline"
             >
               Dapatkan API Key dari Google AI Studio →
             </a>
@@ -206,7 +206,7 @@ export default function APISettings() {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Google Gemini API Key *
           </label>
           <div className="flex gap-2">
@@ -214,7 +214,7 @@ export default function APISettings() {
               type="password"
               value={apiSettings.api_key}
               onChange={(e) => setApiSettings({ ...apiSettings, api_key: e.target.value })}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm dark:bg-gray-700 dark:text-gray-100"
               placeholder="AIzaSy..."
             />
             <button
@@ -239,17 +239,17 @@ export default function APISettings() {
                   <span className="text-red-600">Koneksi gagal</span>
                 </>
               )}
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 • {new Date(apiSettings.last_tested_at).toLocaleString('id-ID')}
               </span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
           <div>
-            <h3 className="font-semibold text-gray-900">Aktifkan API</h3>
-            <p className="text-sm text-gray-600">Izinkan aplikasi menggunakan Gemini API</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Aktifkan API</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Izinkan aplikasi menggunakan Gemini API</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -258,22 +258,22 @@ export default function APISettings() {
               onChange={(e) => setApiSettings({ ...apiSettings, is_active: e.target.checked })}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+            <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
           </label>
         </div>
       </div>
 
-      <div className="border-t border-gray-200 pt-6">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
           Pengaturan AI Tips
         </h3>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div>
-              <h4 className="font-semibold text-gray-900">Aktifkan AI Tips</h4>
-              <p className="text-sm text-gray-600">Terima tips dan rekomendasi dari AI</p>
+              <h4 className="font-semibold text-gray-900 dark:text-white">Aktifkan AI Tips</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Terima tips dan rekomendasi dari AI</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -282,7 +282,7 @@ export default function APISettings() {
                 onChange={(e) => setAiSettings({ ...aiSettings, is_enabled: e.target.checked })}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
           </div>
 
@@ -290,13 +290,13 @@ export default function APISettings() {
             <>
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Bahasa
                   </label>
                   <select
                     value={aiSettings.language}
                     onChange={(e) => setAiSettings({ ...aiSettings, language: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-gray-100"
                   >
                     <option value="id">Bahasa Indonesia</option>
                     <option value="en">English</option>
@@ -304,13 +304,13 @@ export default function APISettings() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tone
                   </label>
                   <select
                     value={aiSettings.tone}
                     onChange={(e) => setAiSettings({ ...aiSettings, tone: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-gray-100"
                   >
                     <option value="formal">Formal</option>
                     <option value="friendly">Friendly</option>
@@ -319,13 +319,13 @@ export default function APISettings() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Frekuensi
                   </label>
                   <select
                     value={aiSettings.frequency}
                     onChange={(e) => setAiSettings({ ...aiSettings, frequency: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-gray-100"
                   >
                     <option value="daily">Harian</option>
                     <option value="weekly">Mingguan</option>
@@ -335,14 +335,14 @@ export default function APISettings() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Kategori Tips yang Diinginkan
                 </label>
                 <div className="grid md:grid-cols-2 gap-3">
                   {availableCategories.map((category) => (
                     <label
                       key={category}
-                      className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:bg-purple-50 cursor-pointer transition-colors"
+                      className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -350,7 +350,7 @@ export default function APISettings() {
                         onChange={() => toggleCategory(category)}
                         className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                       />
-                      <span className="text-sm text-gray-700">{categoryLabels[category]}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{categoryLabels[category]}</span>
                     </label>
                   ))}
                 </div>
@@ -360,7 +360,7 @@ export default function APISettings() {
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleSave}
           disabled={saving}

@@ -24,3 +24,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+html {
+  transition: background-color 0.2s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+  background-color: #111827;
+}

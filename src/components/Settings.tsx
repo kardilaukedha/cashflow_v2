@@ -94,11 +94,11 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Pengaturan</h1>
-          <p className="text-gray-600">Kelola pengaturan aplikasi dan preferensi Anda</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pengaturan</h1>
+          <p className="text-gray-600 dark:text-gray-400">Kelola pengaturan aplikasi dan preferensi Anda</p>
         </div>
 
         <div className="md:hidden overflow-x-auto -mx-4 px-4 pb-2">
@@ -112,7 +112,7 @@ export default function Settings() {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                     activeTab === tab.id
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -123,9 +123,9 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="grid grid-cols-12 gap-0">
-            <div className="hidden md:block col-span-3 border-r border-gray-200 bg-gray-50">
+            <div className="hidden md:block col-span-3 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
               <nav className="p-4 space-y-1">
                 {visibleTabs.map((tab) => {
                   const Icon = tab.icon;
@@ -136,7 +136,7 @@ export default function Settings() {
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
                           ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                     >
                       <Icon className="w-5 h-5" />

@@ -205,19 +205,19 @@ export default function EmployeeLoanManager() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 sm:p-3 bg-orange-100 rounded-lg">
-            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
+          <div className="p-2 sm:p-3 bg-orange-100 dark:bg-orange-900/50 rounded-lg">
+            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Pinjaman Karyawan</h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Pinjaman Karyawan</h2>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               {!canManage ? 'Lihat pinjaman Anda' : 'Kelola pinjaman karyawan'}
             </p>
           </div>
@@ -234,11 +234,11 @@ export default function EmployeeLoanManager() {
       </div>
 
       {!canManage && !myEmployeeId && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-3">
-          <Wallet className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-5 flex items-start gap-3">
+          <Wallet className="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium text-amber-800">Akun belum terhubung ke data karyawan</p>
-            <p className="text-sm text-amber-600 mt-1">
+            <p className="font-medium text-amber-800 dark:text-amber-300">Akun belum terhubung ke data karyawan</p>
+            <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
               Minta admin untuk menambahkan data karyawan Anda di menu <strong>Gaji Karyawan → Tambah Karyawan</strong>, lalu hubungkan ke akun ini melalui dropdown <em>"Hubungkan ke Akun User"</em>.
             </p>
           </div>
@@ -247,25 +247,25 @@ export default function EmployeeLoanManager() {
 
       {showForm && canManage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingLoan ? 'Edit Pinjaman' : 'Tambah Pinjaman'}
               </h3>
-              <button onClick={cancelForm} className="text-gray-400 hover:text-gray-600">
+              <button onClick={cancelForm} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Karyawan
                 </label>
                 <select
                   value={formData.employee_id}
                   onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 >
                   <option value="">Pilih Karyawan</option>
@@ -278,14 +278,14 @@ export default function EmployeeLoanManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Jumlah Pinjaman (Rp)
                 </label>
                 <input
                   type="number"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                   min="0"
                   step="1000"
@@ -293,14 +293,14 @@ export default function EmployeeLoanManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Potongan per Bulan (Rp)
                 </label>
                 <input
                   type="number"
                   value={formData.monthly_deduction}
                   onChange={(e) => setFormData({ ...formData, monthly_deduction: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                   min="0"
                   step="1000"
@@ -308,26 +308,26 @@ export default function EmployeeLoanManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Tanggal Mulai
                 </label>
                 <input
                   type="date"
                   value={formData.start_date}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Catatan
                 </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   rows={3}
                 />
               </div>
@@ -342,7 +342,7 @@ export default function EmployeeLoanManager() {
                 <button
                   type="button"
                   onClick={cancelForm}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
                 >
                   Batal
                 </button>
@@ -352,17 +352,17 @@ export default function EmployeeLoanManager() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {loans.length === 0 ? (
           <div className="text-center py-12">
-            <Wallet className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">
+            <Wallet className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">
               {!canManage ? 'Tidak ada pinjaman' : 'Belum ada pinjaman'}
             </p>
             {canManage && (
               <button
                 onClick={() => setShowForm(true)}
-                className="mt-4 text-orange-600 hover:text-orange-700 font-medium"
+                className="mt-4 text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium"
               >
                 Tambah pinjaman pertama
               </button>
@@ -371,76 +371,76 @@ export default function EmployeeLoanManager() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px]">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Karyawan
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Jumlah
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Sisa
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Potongan/Bulan
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
                   {canManage && (
-                    <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Aksi
                     </th>
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {loans.map((loan) => {
                   const progress = ((loan.amount - loan.remaining_amount) / loan.amount) * 100;
                   return (
-                    <tr key={loan.id} className="hover:bg-gray-50">
+                    <tr key={loan.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="px-4 sm:px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {loan.employees.name}
                         </div>
                         {loan.notes && (
-                          <div className="text-xs text-gray-500">{loan.notes}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{loan.notes}</div>
                         )}
-                        <div className="text-xs text-gray-400 mt-1">
+                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                           Mulai: {formatDate(loan.start_date, 'short')}
                         </div>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900 font-mono">
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white font-mono">
                           {formatCurrency(loan.amount)}
                         </div>
                       </td>
                       <td className="px-4 sm:px-6 py-4">
-                        <div className="text-sm font-semibold text-rose-600 font-mono mb-2">
+                        <div className="text-sm font-semibold text-rose-600 dark:text-rose-400 font-mono mb-2">
                           {formatCurrency(loan.remaining_amount)}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                           <div
                             className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           Lunas {progress.toFixed(0)}%
                         </p>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-mono text-gray-900">
+                        <div className="text-sm font-mono text-gray-900 dark:text-white">
                           {formatCurrency(loan.monthly_deduction)}
                         </div>
-                        <div className="text-xs text-gray-500">per bulan</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">per bulan</div>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                           loan.status === 'active'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                         }`}>
                           {loan.status === 'active' ? 'Aktif' : 'Lunas'}
                         </span>
@@ -451,20 +451,20 @@ export default function EmployeeLoanManager() {
                             <>
                               <button
                                 onClick={() => markAsPaidOff(loan.id)}
-                                className="text-emerald-600 hover:text-emerald-900 mr-4"
+                                className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 mr-4"
                                 title="Tandai Lunas"
                               >
                                 <Check className="w-4 h-4 inline" />
                               </button>
                               <button
                                 onClick={() => handleEdit(loan)}
-                                className="text-blue-600 hover:text-blue-900 mr-4"
+                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4"
                               >
                                 <Edit2 className="w-4 h-4 inline" />
                               </button>
                               <button
                                 onClick={() => handleDelete(loan.id)}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                               >
                                 <Trash2 className="w-4 h-4 inline" />
                               </button>

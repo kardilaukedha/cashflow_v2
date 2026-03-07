@@ -25,30 +25,30 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   if (transactions.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-        <p className="text-gray-500">Tidak ada transaksi yang sesuai dengan filter</p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <p className="text-gray-500 dark:text-gray-400">Tidak ada transaksi yang sesuai dengan filter</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
-        <h3 className="text-base md:text-lg font-semibold text-gray-900">Daftar Transaksi</h3>
-        <p className="text-xs md:text-sm text-gray-600 mt-1">{transactions.length} transaksi</p>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100">Daftar Transaksi</h3>
+        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1">{transactions.length} transaksi</p>
       </div>
 
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-gray-200 dark:divide-gray-700">
         {sortedDates.map(date => (
           <div key={date} className="p-3 md:p-6">
-            <h4 className="text-xs md:text-sm font-semibold text-gray-700 mb-2 md:mb-3">{formatDate(date)}</h4>
+            <h4 className="text-xs md:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 md:mb-3">{formatDate(date)}</h4>
             <div className="space-y-2">
               {groupedTransactions[date].map(transaction => {
                 const IconComponent = (Icons as any)[transaction.category.icon] || Icons.Circle;
                 return (
                   <div
                     key={transaction.id}
-                    className="flex items-start md:items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                    className="flex items-start md:items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
                   >
                     <div
                       className="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -61,7 +61,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm md:text-base font-medium text-gray-900 truncate">{transaction.description}</p>
+                      <p className="text-sm md:text-base font-medium text-gray-900 dark:text-gray-100 truncate">{transaction.description}</p>
                       <div className="flex items-center gap-2 mt-0.5 md:mt-1">
                         <span
                           className="inline-flex items-center gap-1 text-xs font-medium px-1.5 md:px-2 py-0.5 rounded"
@@ -99,14 +99,14 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
                       <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => onEdit(transaction)}
-                          className="p-1.5 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-1.5 md:p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                         <button
                           onClick={() => onDelete(transaction.id)}
-                          className="p-1.5 md:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 md:p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="Hapus"
                         >
                           <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />

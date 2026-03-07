@@ -71,7 +71,7 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  draft:     { label: 'Draft',     color: 'bg-gray-100 text-gray-600' },
+  draft:     { label: 'Draft',     color: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' },
   submitted: { label: 'Terkirim',  color: 'bg-blue-100 text-blue-700' },
   approved:  { label: 'Disetujui', color: 'bg-emerald-100 text-emerald-700' },
   rejected:  { label: 'Ditolak',   color: 'bg-red-100 text-red-700' },
@@ -187,8 +187,8 @@ export default function VisitMonitorAdmin() {
             <MapPin className="w-5 h-5 text-orange-600" />
           </div>
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Monitor Kunjungan Sari Roti</h2>
-            <p className="text-xs sm:text-sm text-gray-500">Pantau aktivitas kunjungan toko karyawan</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Monitor Kunjungan Sari Roti</h2>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Pantau aktivitas kunjungan toko karyawan</p>
           </div>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function VisitMonitorAdmin() {
         <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
           {tabs.map(({ key, label, Icon, badge }) => (
             <button key={key} onClick={() => setTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative whitespace-nowrap ${tab === key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative whitespace-nowrap ${tab === key ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'}`}>
               <Icon className="w-4 h-4" />
               {label}
               {badge !== undefined && (
@@ -216,16 +216,16 @@ export default function VisitMonitorAdmin() {
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-400" />
               <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
             </div>
-            <button onClick={loadSummary} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+            <button onClick={loadSummary} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
-            <div className="text-sm text-gray-500">{summaries.length} plan ditemukan</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{summaries.length} plan ditemukan</div>
           </div>
 
           {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-100 animate-pulse rounded-xl" />)}</div>
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />)}</div>
           ) : summaries.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
               <MapPin className="w-12 h-12 mx-auto mb-3 opacity-20" />
@@ -240,21 +240,21 @@ export default function VisitMonitorAdmin() {
                 const progressPct = row.stores?.length ? Math.round((row.checkin_count / row.stores.length) * 100) : 0;
 
                 return (
-                  <div key={row.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => togglePlan(row.id)}>
+                  <div key={row.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 dark:bg-gray-900 transition-colors" onClick={() => togglePlan(row.id)}>
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-orange-700 text-xs font-bold">{row.full_name?.charAt(0)?.toUpperCase()}</span>
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 text-sm">{row.full_name}</p>
+                          <p className="font-semibold text-gray-900 dark:text-white text-sm">{row.full_name}</p>
                           <p className="text-xs text-gray-400">{row.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="text-right hidden sm:block">
-                          <p className="text-xs text-gray-500">{row.checkin_count}/{row.stores?.length || 0} toko</p>
-                          <div className="w-20 bg-gray-100 rounded-full h-1.5 mt-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{row.checkin_count}/{row.stores?.length || 0} toko</p>
+                          <div className="w-20 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 mt-1">
                             <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${progressPct}%` }} />
                           </div>
                         </div>
@@ -264,12 +264,12 @@ export default function VisitMonitorAdmin() {
                     </div>
 
                     {isExpanded && (
-                      <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
+                      <div className="border-t border-gray-100 dark:border-gray-700 p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
                         <div className="flex items-center justify-between flex-wrap gap-2">
                           <div className="flex items-center gap-4 text-sm flex-wrap">
-                            <span className="flex items-center gap-1 text-gray-600"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{row.checkin_count} check-in</span>
-                            {row.total_billing > 0 && <span className="flex items-center gap-1 text-gray-600"><Receipt className="w-3.5 h-3.5 text-blue-500" />Rp {Number(row.total_billing).toLocaleString('id-ID')}</span>}
-                            {row.submitted_at && <span className="flex items-center gap-1 text-gray-500 text-xs"><Clock className="w-3 h-3" />{new Date(row.submitted_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>}
+                            <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{row.checkin_count} check-in</span>
+                            {row.total_billing > 0 && <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400"><Receipt className="w-3.5 h-3.5 text-blue-500" />Rp {Number(row.total_billing).toLocaleString('id-ID')}</span>}
+                            {row.submitted_at && <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs"><Clock className="w-3 h-3" />{new Date(row.submitted_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>}
                           </div>
                           <div className="flex gap-2">
                             {row.status === 'submitted' && (
@@ -283,11 +283,11 @@ export default function VisitMonitorAdmin() {
 
                         {row.stores?.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-500 mb-2">PLAN KUNJUNGAN ({row.stores.length} toko)</p>
+                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">PLAN KUNJUNGAN ({row.stores.length} toko)</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                               {row.stores.map((s, i) => (
-                                <div key={i} className="bg-white rounded-lg px-3 py-2 text-xs border border-gray-200">
-                                  <p className="font-medium text-gray-800">{s.name}</p>
+                                <div key={i} className="bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-xs border border-gray-200 dark:border-gray-700">
+                                  <p className="font-medium text-gray-800 dark:text-gray-200">{s.name}</p>
                                   {s.address && <p className="text-gray-400 mt-0.5">{s.address}</p>}
                                 </div>
                               ))}
@@ -299,13 +299,13 @@ export default function VisitMonitorAdmin() {
 
                         {details && details.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-500 mb-2">HASIL CHECK-IN ({details.length})</p>
+                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">HASIL CHECK-IN ({details.length})</p>
                             <div className="space-y-2">
                               {details.map(d => (
-                                <div key={d.id} className="bg-white rounded-xl border border-gray-200 p-3 space-y-2">
+                                <div key={d.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 space-y-2">
                                   <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
-                                      <p className="font-semibold text-gray-900 text-sm">{d.store_name}</p>
+                                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{d.store_name}</p>
                                       {d.store_address && <p className="text-xs text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" />{d.store_address}</p>}
                                     </div>
                                     <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
@@ -325,7 +325,7 @@ export default function VisitMonitorAdmin() {
                                     </div>
                                   </div>
                                   {(d.checkout_time || d.duration_minutes) && (
-                                    <div className="flex items-center gap-3 text-xs text-gray-500 pl-0.5">
+                                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 pl-0.5">
                                       {d.checkout_time && (
                                         <span className="flex items-center gap-1">
                                           <Clock className="w-3 h-3 text-blue-400" />
@@ -346,7 +346,7 @@ export default function VisitMonitorAdmin() {
                                     {d.has_expired_bread && <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full flex items-center gap-1"><AlertTriangle className="w-3 h-3" />Ada Roti Tarik</span>}
                                   </div>
                                   {d.bread_scans && d.bread_scans.length > 0 && (
-                                    <div className="bg-gray-50 rounded-lg p-2 space-y-1">
+                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-2 space-y-1">
                                       {d.bread_scans.map(bs => (
                                         <div key={bs.id} className="flex items-center gap-2 text-xs">
                                           {bs.scan_type === 'drop' ? <Package className="w-3 h-3 text-blue-400" /> : <AlertTriangle className="w-3 h-3 text-orange-400" />}
@@ -359,7 +359,7 @@ export default function VisitMonitorAdmin() {
                                       ))}
                                     </div>
                                   )}
-                                  {d.notes && <p className="text-xs text-gray-500 italic">{d.notes}</p>}
+                                  {d.notes && <p className="text-xs text-gray-500 dark:text-gray-400 italic">{d.notes}</p>}
                                 </div>
                               ))}
                             </div>
@@ -382,13 +382,13 @@ export default function VisitMonitorAdmin() {
       {tab === 'notifikasi' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">Karyawan yang belum submit plan hari ini ({new Date().toLocaleDateString('id-ID')})</p>
-            <button onClick={loadNotifikasi} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+            <p className="text-sm text-gray-600 dark:text-gray-400">Karyawan yang belum submit plan hari ini ({new Date().toLocaleDateString('id-ID')})</p>
+            <button onClick={loadNotifikasi} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
           </div>
           {notifLoading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 bg-gray-100 animate-pulse rounded-xl" />)}</div>
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />)}</div>
           ) : notifRows.length === 0 ? (
             <div className="text-center py-12 bg-emerald-50 rounded-xl border border-emerald-100">
               <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-emerald-400" />
@@ -397,12 +397,12 @@ export default function VisitMonitorAdmin() {
           ) : (
             <div className="space-y-3">
               {notifRows.map(r => (
-                <div key={r.user_profile_id} className="bg-white rounded-xl border border-red-200 p-4 flex items-center gap-3">
+                <div key={r.user_profile_id} className="bg-white dark:bg-gray-800 rounded-xl border border-red-200 p-4 flex items-center gap-3">
                   <div className="w-9 h-9 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <AlertTriangle className="w-4 h-4 text-red-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900">{r.full_name}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{r.full_name}</p>
                     <p className="text-xs text-gray-400">{r.email}</p>
                   </div>
                   <div className="flex-shrink-0">
@@ -428,7 +428,7 @@ export default function VisitMonitorAdmin() {
 
       {tab === 'settings' && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">Atur target kunjungan untuk setiap karyawan Sari Roti</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Atur target kunjungan untuk setiap karyawan Sari Roti</p>
           {sariUsers.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <Users className="w-10 h-10 mx-auto mb-2 opacity-20" />
@@ -439,10 +439,10 @@ export default function VisitMonitorAdmin() {
             sariUsers.map(u => {
               const s = settingsMap[u.id] || { min_visits: 5, max_visits: 20, plan_deadline: '10:00' };
               return (
-                <div key={u.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                <div key={u.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="font-semibold text-gray-900">{u.full_name}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{u.full_name}</p>
                       <p className="text-xs text-gray-400">{u.email}</p>
                     </div>
                     <button onClick={() => saveSettings(u.id)} disabled={savingSettings === u.id}
@@ -452,22 +452,22 @@ export default function VisitMonitorAdmin() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Min Kunjungan/Hari</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Min Kunjungan/Hari</label>
                       <input type="number" min="1" max="50" value={s.min_visits}
                         onChange={e => updateSetting(u.id, 'min_visits', parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Max Kunjungan/Hari</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Max Kunjungan/Hari</label>
                       <input type="number" min="1" max="100" value={s.max_visits}
                         onChange={e => updateSetting(u.id, 'max_visits', parseInt(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Batas Input Plan</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Batas Input Plan</label>
                       <input type="time" value={s.plan_deadline}
                         onChange={e => updateSetting(u.id, 'plan_deadline', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                     </div>
                   </div>
                 </div>

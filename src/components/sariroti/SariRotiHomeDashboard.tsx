@@ -54,7 +54,7 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  draft:     'bg-gray-100 text-gray-600',
+  draft:     'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400',
   submitted: 'bg-blue-100 text-blue-700',
   approved:  'bg-emerald-100 text-emerald-700',
   rejected:  'bg-red-100 text-red-700',
@@ -182,7 +182,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
   if (loading) {
     return (
       <div className="space-y-4 max-w-2xl mx-auto">
-        {[1, 2, 3].map(i => <div key={i} className="h-28 bg-gray-100 animate-pulse rounded-xl" />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-28 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />)}
       </div>
     );
   }
@@ -191,10 +191,10 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
     <div className="max-w-2xl mx-auto space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500">{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p>
         </div>
-        <button onClick={load} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+        <button onClick={load} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
           <RefreshCw className="w-4 h-4" />
         </button>
       </div>
@@ -223,12 +223,12 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
       <AnnouncementBoard />
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-blue-600" />
-              <span className="font-semibold text-gray-900 text-sm">Progress Kunjungan Hari Ini</span>
+              <span className="font-semibold text-gray-900 dark:text-white text-sm">Progress Kunjungan Hari Ini</span>
             </div>
             <div className="flex items-center gap-2">
               {todayPlan && (
@@ -236,13 +236,13 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
                   {STATUS_LABEL[todayPlan.status]}
                 </span>
               )}
-              <span className="text-xs text-gray-500 font-medium">{checkinCount} / {totalStores} toko</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{checkinCount} / {totalStores} toko</span>
             </div>
           </div>
 
           {todayPlan && (
             <div className="mt-3">
-              <div className="w-full bg-gray-100 rounded-full h-2">
+              <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-500 ${progressPct === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
                   style={{ width: `${progressPct}%` }}
@@ -250,7 +250,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
               </div>
               <div className="flex justify-between text-xs text-gray-400 mt-1">
                 <span>Min {settings.min_visits}</span>
-                <span className={progressPct === 100 ? 'text-emerald-600 font-semibold' : 'text-gray-500 font-medium'}>
+                <span className={progressPct === 100 ? 'text-emerald-600 font-semibold' : 'text-gray-500 dark:text-gray-400 font-medium'}>
                   {progressPct}% selesai
                 </span>
                 <span>Max {settings.max_visits}</span>
@@ -272,7 +272,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
                     className={`rounded-xl border transition-all ${
                       checked
                         ? 'bg-emerald-50 border-emerald-200'
-                        : 'bg-white border-gray-200'
+                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                     }`}
                   >
                     <div className="flex items-center gap-3 px-3 py-2.5">
@@ -282,7 +282,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
                           : <Circle className="w-4 h-4" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 text-sm truncate">{store.name}</p>
+                        <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{store.name}</p>
                         {store.address && (
                           <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
                             <MapPin className="w-3 h-3 flex-shrink-0" />
@@ -315,7 +315,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
                     {checkin && (
                       <div className="px-3 pb-2.5 pl-10 flex flex-wrap items-center gap-3 text-xs border-t border-emerald-100 pt-1.5">
-                        <span className="text-gray-500">
+                        <span className="text-gray-500 dark:text-gray-400">
                           {new Date(checkin.checkin_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
@@ -358,7 +358,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
               <button
                 onClick={() => startCheckin({ name: '', address: '' })}
-                className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-500 py-2.5 rounded-xl transition-colors text-sm"
+                className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-gray-700 text-gray-400 hover:border-blue-300 hover:text-blue-500 py-2.5 rounded-xl transition-colors text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Check-in Toko Tambahan
@@ -367,7 +367,7 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
           ) : (
             <div className="text-center py-8">
               <AlertCircle className="w-10 h-10 mx-auto mb-2 text-gray-200" />
-              <p className="text-sm text-gray-500 font-medium">Belum ada plan kunjungan hari ini</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Belum ada plan kunjungan hari ini</p>
               <button
                 onClick={() => onNavigate('sariroti')}
                 className="mt-2 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
@@ -379,11 +379,11 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Store className="w-4 h-4 text-orange-500" />
-            <span className="font-semibold text-gray-900 text-sm">Toko Saya</span>
+            <span className="font-semibold text-gray-900 dark:text-white text-sm">Toko Saya</span>
           </div>
           <span className="text-xs text-gray-400">{registeredStores.length} toko terdaftar</span>
         </div>
@@ -391,9 +391,9 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
         {registeredStores.length > 0 ? (
           <div className="space-y-1.5 mb-3">
             {registeredStores.slice(0, 3).map(s => (
-              <div key={s.id} className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+              <div key={s.id} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <Store className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <span className="text-sm text-gray-700 truncate">{s.nama_toko}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{s.nama_toko}</span>
               </div>
             ))}
             {registeredStores.length > 3 && (

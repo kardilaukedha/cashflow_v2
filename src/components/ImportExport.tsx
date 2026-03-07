@@ -217,25 +217,25 @@ export default function ImportExport({ categories, onClose, onImported }: Import
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Import & Export Data</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Import & Export Data</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="p-6">
-          <div className="flex gap-2 mb-6 border-b border-gray-200">
+          <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setActiveTab('import')}
               className={`px-4 py-2 font-medium transition-colors border-b-2 ${
                 activeTab === 'import'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
               <Upload className="w-5 h-5 inline mr-2" />
@@ -245,8 +245,8 @@ export default function ImportExport({ categories, onClose, onImported }: Import
               onClick={() => setActiveTab('export')}
               className={`px-4 py-2 font-medium transition-colors border-b-2 ${
                 activeTab === 'export'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
               <Download className="w-5 h-5 inline mr-2" />
@@ -255,24 +255,24 @@ export default function ImportExport({ categories, onClose, onImported }: Import
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-2">
-              <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-emerald-600">{success}</p>
+            <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-start gap-2">
+              <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-emerald-600 dark:text-emerald-400">{success}</p>
             </div>
           )}
 
           {activeTab === 'import' ? (
             <div>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-blue-900 mb-2">Format CSV yang Dibutuhkan:</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Format CSV yang Dibutuhkan:</h3>
+                <ul className="text-sm text-blue-800 dark:text-blue-400 space-y-1">
                   <li>• Kolom wajib: <strong>Tanggal, Deskripsi, Nominal</strong></li>
                   <li>• Kolom opsional: <strong>Kategori, Tipe</strong></li>
                   <li>• Format tanggal: YYYY-MM-DD atau DD/MM/YYYY</li>
@@ -280,10 +280,10 @@ export default function ImportExport({ categories, onClose, onImported }: Import
                 </ul>
               </div>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <FileSpreadsheet className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
+                <FileSpreadsheet className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
                 <label className="cursor-pointer">
-                  <span className="text-blue-600 hover:text-blue-700 font-medium">
+                  <span className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                     Pilih file CSV
                   </span>
                   <input
@@ -293,35 +293,35 @@ export default function ImportExport({ categories, onClose, onImported }: Import
                     className="hidden"
                   />
                 </label>
-                <p className="text-sm text-gray-500 mt-2">atau drag & drop file di sini</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">atau drag & drop file di sini</p>
               </div>
 
               {showPreview && parsedData.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                     Preview Data ({parsedData.length} transaksi)
                   </h3>
-                  <div className="border border-gray-200 rounded-lg overflow-hidden max-h-96 overflow-y-auto">
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden max-h-96 overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 sticky top-0">
+                      <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0">
                         <tr>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700">Tanggal</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700">Deskripsi</th>
-                          <th className="px-4 py-2 text-right font-medium text-gray-700">Nominal</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700">Kategori</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700">Tipe</th>
+                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Tanggal</th>
+                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Deskripsi</th>
+                          <th className="px-4 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Nominal</th>
+                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Kategori</th>
+                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Tipe</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {parsedData.slice(0, 10).map((row, idx) => (
-                          <tr key={idx} className="hover:bg-gray-50">
-                            <td className="px-4 py-2">{row.date}</td>
-                            <td className="px-4 py-2">{row.description}</td>
-                            <td className="px-4 py-2 text-right">{row.amount.toLocaleString('id-ID')}</td>
-                            <td className="px-4 py-2">{row.category}</td>
+                          <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{row.date}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{row.description}</td>
+                            <td className="px-4 py-2 text-right text-gray-700 dark:text-gray-300">{row.amount.toLocaleString('id-ID')}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{row.category}</td>
                             <td className="px-4 py-2">
                               <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                row.type === 'income' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                                row.type === 'income' ? 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
                               }`}>
                                 {row.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}
                               </span>
@@ -332,7 +332,7 @@ export default function ImportExport({ categories, onClose, onImported }: Import
                     </table>
                   </div>
                   {parsedData.length > 10 && (
-                    <p className="text-sm text-gray-500 mt-2">... dan {parsedData.length - 10} baris lainnya</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">... dan {parsedData.length - 10} baris lainnya</p>
                   )}
                   <button
                     onClick={handleImport}
@@ -346,9 +346,9 @@ export default function ImportExport({ categories, onClose, onImported }: Import
             </div>
           ) : (
             <div>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
-                <h3 className="font-semibold text-emerald-900 mb-2">Export Data Anda</h3>
-                <p className="text-sm text-emerald-800">
+              <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-2">Export Data Anda</h3>
+                <p className="text-sm text-emerald-800 dark:text-emerald-400">
                   Download semua transaksi Anda dalam format CSV untuk backup atau analisis lebih lanjut.
                 </p>
               </div>

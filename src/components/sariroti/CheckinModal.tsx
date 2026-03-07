@@ -212,10 +212,10 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0">
           <div>
-            <h3 className="text-base font-bold text-gray-900">Check-in Toko</h3>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">Check-in Toko</h3>
             <div className="flex gap-1 mt-1 items-center">
               {Array.from({ length: STEP_COUNT }, (_, i) => (
                 <div key={i} className={`h-1 w-8 rounded-full transition-colors ${i + 1 <= step ? 'bg-blue-600' : 'bg-gray-200'}`} />
@@ -224,16 +224,16 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
               <span className="ml-2"><GpsIndicator /></span>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {step === 1 && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Toko *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Toko *</label>
                 {defaultStore?.name ? (
-                  <div className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-800 font-medium">
+                  <div className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-medium">
                     {storeName}
                   </div>
                 ) : registeredStores.length > 0 ? (
@@ -244,7 +244,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                       if (found) { setStoreName(found.nama_toko); setStoreAddress(found.alamat || ''); }
                       else { setStoreName(''); setStoreAddress(''); }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100 bg-white dark:bg-gray-800"
                   >
                     <option value="">-- Pilih Toko --</option>
                     {registeredStores.map(s => (
@@ -254,25 +254,25 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                 ) : (
                   <input type="text" value={storeName} onChange={e => setStoreName(e.target.value)}
                     placeholder="Nama toko yang dikunjungi"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Toko</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alamat Toko</label>
                 <input type="text" value={storeAddress} onChange={e => setStoreAddress(e.target.value)}
                   placeholder="Alamat (opsional)"
                   readOnly={!!defaultStore?.name || (registeredStores.length > 0 && !!storeName)}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 ${
-                    (!!defaultStore?.name || (registeredStores.length > 0 && !!storeName)) ? 'bg-gray-50 border-gray-200 text-gray-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100 ${
+                    (!!defaultStore?.name || (registeredStores.length > 0 && !!storeName)) ? 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400' : 'border-gray-300 dark:border-gray-600'
                   }`} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Foto Selfie *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foto Selfie *</label>
                 <input type="file" accept="image/*" capture="user" ref={fileRef} onChange={handleSelfie} className="hidden" />
                 {selfiePreview ? (
                   <div className="relative">
-                    <img src={selfiePreview} alt="Selfie" className="w-full h-48 object-cover rounded-xl border border-gray-200" />
+                    <img src={selfiePreview} alt="Selfie" className="w-full h-48 object-cover rounded-xl border border-gray-200 dark:border-gray-700" />
                     <button onClick={() => { setSelfieFile(null); setSelfiePreview(''); }}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs hover:bg-red-600">
                       <X className="w-3 h-3" />
@@ -280,7 +280,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                   </div>
                 ) : (
                   <button onClick={() => fileRef.current?.click()}
-                    className="w-full h-36 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors">
+                    className="w-full h-36 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors">
                     <Camera className="w-8 h-8" />
                     <span className="text-sm font-medium">Ambil Foto Selfie</span>
                     <span className="text-xs">Tap untuk membuka kamera</span>
@@ -289,7 +289,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Kunjungan *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Kunjungan *</label>
                 <div className="grid grid-cols-3 gap-2">
                   {([
                     { v: 'drop_roti', label: 'Drop Roti', Icon: Package },
@@ -297,7 +297,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                     { v: 'drop_dan_tagihan', label: 'Drop & Tagihan', Icon: CheckSquare },
                   ] as const).map(({ v, label, Icon }) => (
                     <button key={v} type="button" onClick={() => setVisitType(v)}
-                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center ${visitType === v ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all text-center ${visitType === v ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-200'}`}>
                       <Icon className="w-5 h-5" />
                       <span className="text-xs font-medium leading-tight">{label}</span>
                     </button>
@@ -313,14 +313,14 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Package className="w-4 h-4 text-blue-600" />
-                    <h4 className="font-semibold text-gray-900 text-sm">Scan Roti Drop</h4>
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm">Scan Roti Drop</h4>
                     <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">{dropScans.reduce((s, c) => s + c.quantity, 0)} item</span>
                   </div>
                   <div className="flex gap-2 mb-3">
                     <input ref={barcodeRef} type="text" value={barcodeInput} onChange={e => setBarcodeInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && addDropScan()}
                       placeholder="Scan / ketik barcode roti lalu Enter"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                     <button onClick={addDropScan} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                       <Scan className="w-4 h-4" />
                     </button>
@@ -332,11 +332,11 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                     {dropScans.map(s => (
                       <div key={s.barcode} className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-2">
                         <Package className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                        <span className="text-sm font-medium text-gray-800 flex-1">{s.barcode}</span>
+                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex-1">{s.barcode}</span>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => updateScanQty(dropScans, setDropScans, s.barcode, -1)} className="w-6 h-6 bg-white rounded text-gray-600 border text-xs hover:bg-gray-100">-</button>
+                          <button onClick={() => updateScanQty(dropScans, setDropScans, s.barcode, -1)} className="w-6 h-6 bg-white dark:bg-gray-800 rounded text-gray-600 dark:text-gray-400 border text-xs hover:bg-gray-100 dark:hover:bg-gray-700">-</button>
                           <span className="w-8 text-center text-sm font-semibold">{s.quantity}</span>
-                          <button onClick={() => updateScanQty(dropScans, setDropScans, s.barcode, 1)} className="w-6 h-6 bg-white rounded text-gray-600 border text-xs hover:bg-gray-100">+</button>
+                          <button onClick={() => updateScanQty(dropScans, setDropScans, s.barcode, 1)} className="w-6 h-6 bg-white dark:bg-gray-800 rounded text-gray-600 dark:text-gray-400 border text-xs hover:bg-gray-100 dark:hover:bg-gray-700">+</button>
                         </div>
                         <button onClick={() => removeScan(dropScans, setDropScans, s.barcode)} className="text-red-400 hover:text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
@@ -347,10 +347,10 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
               {needsBilling && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Penagihan (Rp) *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Penagihan (Rp) *</label>
                   <input type="number" value={totalBilling} onChange={e => setTotalBilling(e.target.value)}
                     placeholder="0" min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
                 </div>
               )}
 
@@ -358,7 +358,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                 <div className="flex items-center gap-2 mb-3">
                   <input type="checkbox" id="expired" checked={hasExpiredBread} onChange={e => setHasExpiredBread(e.target.checked)}
                     className="w-4 h-4 rounded text-orange-500" />
-                  <label htmlFor="expired" className="text-sm font-medium text-gray-700 flex items-center gap-1.5 cursor-pointer">
+                  <label htmlFor="expired" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5 cursor-pointer">
                     <AlertTriangle className="w-4 h-4 text-orange-500" /> Ada roti kadaluarsa / ditarik
                   </label>
                 </div>
@@ -372,20 +372,20 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                       <input ref={tarikRef} type="text" value={tarikBarcodeInput} onChange={e => setTarikBarcodeInput(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && addTarikScan()}
                         placeholder="Barcode roti tarik / kadaluarsa"
-                        className="flex-1 px-3 py-2 border border-orange-200 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 bg-white" />
+                        className="flex-1 px-3 py-2 border border-orange-200 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 bg-white dark:bg-gray-800" />
                       <button onClick={addTarikScan} className="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                         <Scan className="w-4 h-4" />
                       </button>
                     </div>
                     <div className="space-y-1.5 max-h-28 overflow-y-auto">
                       {tarikaScans.map(s => (
-                        <div key={s.barcode} className="flex items-center gap-2 bg-white rounded-lg px-3 py-1.5">
+                        <div key={s.barcode} className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-3 py-1.5">
                           <AlertTriangle className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
                           <span className="text-sm flex-1">{s.barcode}</span>
                           <div className="flex items-center gap-1">
-                            <button onClick={() => updateScanQty(tarikaScans, setTarikScans, s.barcode, -1)} className="w-6 h-6 bg-gray-100 rounded text-gray-600 text-xs hover:bg-gray-200">-</button>
+                            <button onClick={() => updateScanQty(tarikaScans, setTarikScans, s.barcode, -1)} className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-400 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">-</button>
                             <span className="w-8 text-center text-sm font-semibold">{s.quantity}</span>
-                            <button onClick={() => updateScanQty(tarikaScans, setTarikScans, s.barcode, 1)} className="w-6 h-6 bg-gray-100 rounded text-gray-600 text-xs hover:bg-gray-200">+</button>
+                            <button onClick={() => updateScanQty(tarikaScans, setTarikScans, s.barcode, 1)} className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-400 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">+</button>
                           </div>
                           <button onClick={() => removeScan(tarikaScans, setTarikScans, s.barcode)} className="text-red-400 hover:text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
@@ -399,8 +399,8 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
           {step === 3 && (
             <div className="space-y-4">
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                <h4 className="font-semibold text-gray-900 text-sm">Ringkasan Check-in</h4>
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-gray-900 dark:text-white text-sm">Ringkasan Check-in</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div><p className="text-xs text-gray-400">Toko</p><p className="font-medium">{storeName}</p></div>
                   <div><p className="text-xs text-gray-400">Jenis Kunjungan</p><p className="font-medium capitalize">{visitType.replace(/_/g,' ')}</p></div>
@@ -422,10 +422,10 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Catatan (opsional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan (opsional)</label>
                 <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
                   placeholder="Catatan tambahan..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 resize-none" />
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100 resize-none" />
               </div>
             </div>
           )}
@@ -433,7 +433,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
         <div className="flex gap-2 p-5 border-t flex-shrink-0">
           {step > 1 && (
-            <button onClick={() => setStep(step - 1)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">
+            <button onClick={() => setStep(step - 1)} className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               Kembali
             </button>
           )}

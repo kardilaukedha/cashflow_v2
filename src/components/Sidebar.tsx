@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import type { Category } from '../lib/supabase';
 import { can, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
 import {
   Wallet, LogOut, BarChart3, Download, Upload, Tag, Users,
-  Briefcase, UserCircle, Settings, Megaphone, MapPin, Eye, Store, History, Package, X,
+  Briefcase, UserCircle, Settings, Megaphone, MapPin, Eye, Store, History, Package, X, Sun, Moon,
 } from 'lucide-react';
 import CategoryManager from './CategoryManager';
 import ImportExport from './ImportExport';
@@ -20,6 +21,7 @@ interface SidebarProps {
 
 export default function Sidebar({ categories, onCategoryUpdated, currentView, onViewChange, mobileOpen, onMobileClose }: SidebarProps) {
   const { user, signOut, userProfile, userRole } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
 
@@ -46,7 +48,9 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
       key={view}
       onClick={() => handleNav(view)}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-        currentView === view ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+        currentView === view
+          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+          : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600'
       }`}
     >
       <Icon className="w-5 h-5 flex-shrink-0" />
@@ -56,16 +60,16 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
-      <div className="p-5 border-b border-gray-200 flex-shrink-0">
+      <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
               <Wallet className="w-6 h-6 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-gray-900 text-sm">Cashflow App</h2>
-              <p className="text-xs text-gray-600 truncate">{userProfile?.full_name || 'User'}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              <h2 className="font-bold text-gray-900 dark:text-white text-sm">Cashflow App</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{userProfile?.full_name || 'User'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 truncate">{user?.email}</p>
               <span className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
                 {roleLabel}
               </span>
@@ -73,7 +77,7 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
           </div>
           <button
             onClick={onMobileClose}
-            className="lg:hidden p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg -mr-1"
+            className="lg:hidden p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg -mr-1"
           >
             <X className="w-5 h-5" />
           </button>
@@ -104,7 +108,7 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
         {can(role, 'manage_categories') && (
           <button
             onClick={() => { setShowCategoryManager(true); onMobileClose(); }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-colors"
           >
             <Tag className="w-5 h-5 flex-shrink-0" />
             <span className="font-medium text-sm">Kelola Kategori</span>
@@ -115,14 +119,14 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
           <>
             <button
               onClick={() => { setShowImportExport(true); onMobileClose(); }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-colors"
             >
               <Upload className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm">Import Data</span>
             </button>
             <button
               onClick={() => { setShowImportExport(true); onMobileClose(); }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-colors"
             >
               <Download className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium text-sm">Export Data</span>
@@ -132,15 +136,23 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
 
         {can(role, 'manage_users') && navBtn('users', UserCircle, 'Kelola User')}
 
-        <div className="my-2 border-t border-gray-200"></div>
+        <div className="my-2 border-t border-gray-200 dark:border-gray-700"></div>
 
         {navBtn('settings', Settings, 'Pengaturan')}
+
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-colors"
+        >
+          {isDark ? <Sun className="w-5 h-5 flex-shrink-0" /> : <Moon className="w-5 h-5 flex-shrink-0" />}
+          <span className="font-medium text-sm">{isDark ? 'Mode Terang' : 'Mode Gelap'}</span>
+        </button>
       </nav>
 
-      <div className="p-3 border-t border-gray-200 flex-shrink-0">
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
         <button
           onClick={() => { signOut(); onMobileClose(); }}
-          className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 active:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/20 dark:active:bg-red-900/30 rounded-lg transition-colors"
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
           <span className="font-medium text-sm">Logout</span>
@@ -151,14 +163,14 @@ export default function Sidebar({ categories, onCategoryUpdated, currentView, on
 
   return (
     <>
-      <div className="hidden lg:flex lg:w-64 lg:flex-shrink-0 bg-white border-r border-gray-200 flex-col h-full">
+      <div className="hidden lg:flex lg:w-64 lg:flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col h-full">
         {sidebarContent}
       </div>
 
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/50" onClick={onMobileClose} />
-          <div className="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-white shadow-2xl animate-slide-in">
+          <div className="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl animate-slide-in">
             {sidebarContent}
           </div>
         </div>

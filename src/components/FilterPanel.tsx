@@ -78,11 +78,11 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
+          className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium"
         >
           <Filter className="w-5 h-5" />
           <span>Filter</span>
@@ -100,7 +100,7 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
             placeholder="Cari transaksi..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           />
           {activeFilterCount > 0 && (
             <button
@@ -115,37 +115,37 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
       </div>
 
       {showFilters && (
-        <div className="space-y-4 pt-4 border-t border-gray-200">
+        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Quick Date Range</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Date Range</label>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => getDateRange('today')}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium transition-colors"
               >
                 Today
               </button>
               <button
                 onClick={() => getDateRange('7days')}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium transition-colors"
               >
                 7 Days
               </button>
               <button
                 onClick={() => getDateRange('1month')}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium transition-colors"
               >
                 1 Month
               </button>
               <button
                 onClick={() => getDateRange('3months')}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium transition-colors"
               >
                 3 Months
               </button>
               <button
                 onClick={() => getDateRange('1year')}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium transition-colors"
               >
                 1 Year
               </button>
@@ -154,11 +154,11 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipe Transaksi</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipe Transaksi</label>
               <select
                 value={filters.type}
                 onChange={(e) => setFilters({ ...filters, type: e.target.value as FilterOptions['type'] })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="all">Semua</option>
                 <option value="income">Pemasukan</option>
@@ -167,48 +167,48 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Dari</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal Dari</label>
               <input
                 type="date"
                 value={filters.dateFrom}
                 onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Sampai</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal Sampai</label>
               <input
                 type="date"
                 value={filters.dateTo}
                 onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nominal</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nominal</label>
               <div className="flex gap-2">
                 <input
                   type="number"
                   placeholder="Min"
                   value={filters.amountMin}
                   onChange={(e) => setFilters({ ...filters, amountMin: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={filters.amountMax}
                   onChange={(e) => setFilters({ ...filters, amountMax: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kategori</label>
             <div className="flex flex-wrap gap-2">
               {categories.map(category => (
                 <button
@@ -217,7 +217,7 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     filters.categoryIds.includes(category.id)
                       ? 'text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
                   }`}
                   style={filters.categoryIds.includes(category.id) ? { backgroundColor: category.color } : {}}
                 >

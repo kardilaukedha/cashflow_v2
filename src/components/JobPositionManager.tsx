@@ -111,19 +111,19 @@ export default function JobPositionManager() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 sm:p-3 bg-blue-100 rounded-lg">
-            <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+          <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+            <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Manajemen Jabatan</h2>
-            <p className="text-xs sm:text-sm text-gray-600">Kelola jabatan dan gaji pokok</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Manajemen Jabatan</h2>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Kelola jabatan dan gaji pokok</p>
           </div>
         </div>
         <button
@@ -137,39 +137,39 @@ export default function JobPositionManager() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingPosition ? 'Edit Jabatan' : 'Tambah Jabatan'}
               </h3>
-              <button onClick={cancelForm} className="text-gray-400 hover:text-gray-600">
+              <button onClick={cancelForm} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nama Jabatan
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Gaji Pokok (Rp)
                 </label>
                 <input
                   type="number"
                   value={formData.base_salary}
                   onChange={(e) => setFormData({ ...formData, base_salary: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                   min="0"
                   step="1000"
@@ -186,7 +186,7 @@ export default function JobPositionManager() {
                 <button
                   type="button"
                   onClick={cancelForm}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
                 >
                   Batal
                 </button>
@@ -196,14 +196,14 @@ export default function JobPositionManager() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {positions.length === 0 ? (
           <div className="text-center py-12">
-            <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Belum ada jabatan</p>
+            <Briefcase className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">Belum ada jabatan</p>
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+              className="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               Tambah jabatan pertama
             </button>
@@ -211,40 +211,40 @@ export default function JobPositionManager() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[400px]">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Nama Jabatan
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Gaji Pokok
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {positions.map((position) => (
-                  <tr key={position.id} className="hover:bg-gray-50">
+                  <tr key={position.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{position.name}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">{position.name}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-900 dark:text-gray-200">
                         Rp {position.base_salary.toLocaleString('id-ID')}
                       </div>
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleEdit(position)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4"
                       >
                         <Edit2 className="w-4 h-4 inline" />
                       </button>
                       <button
                         onClick={() => handleDelete(position.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4 inline" />
                       </button>

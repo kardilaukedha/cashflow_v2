@@ -297,10 +297,10 @@ export default function BulkOperations() {
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      draft: 'bg-gray-100 text-gray-700',
-      processing: 'bg-blue-100 text-blue-700',
-      completed: 'bg-emerald-100 text-emerald-700',
-      cancelled: 'bg-red-100 text-red-700',
+      draft: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+      processing: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      cancelled: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
     };
     return styles[status] || styles.draft;
   };
@@ -308,33 +308,33 @@ export default function BulkOperations() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-violet-100 rounded-lg">
-          <Zap className="w-6 h-6 text-violet-600" />
+        <div className="p-3 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
+          <Zap className="w-6 h-6 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Operasi Massal</h2>
-          <p className="text-sm text-gray-600">Proses pembayaran gaji batch & operasi bulk lainnya</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Operasi Massal</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Proses pembayaran gaji batch & operasi bulk lainnya</p>
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-lg p-6">
-        <h3 className="font-bold text-violet-900 mb-2 flex items-center gap-2">
+      <div className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-200 dark:border-violet-800 rounded-lg p-6">
+        <h3 className="font-bold text-violet-900 dark:text-violet-300 mb-2 flex items-center gap-2">
           <DollarSign className="w-5 h-5" />
           Pembayaran Gaji Massal
         </h3>
-        <p className="text-sm text-violet-800 mb-4">
+        <p className="text-sm text-violet-800 dark:text-violet-400 mb-4">
           Proses pembayaran gaji untuk multiple karyawan sekaligus dengan upload bukti transfer
         </p>
 
-        <div className="bg-white rounded-lg border border-violet-200 p-4 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-violet-200 dark:border-violet-800 p-4 mb-4">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+            <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <Users className="w-5 h-5" />
               Pilih Karyawan ({selectedEmployees.length}/{employees.length})
             </h4>
             <button
               onClick={handleSelectAll}
-              className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+              className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium"
             >
               {selectedEmployees.length === employees.length ? 'Deselect All' : 'Select All'}
             </button>
@@ -344,7 +344,7 @@ export default function BulkOperations() {
             {employees.map((employee) => (
               <label
                 key={employee.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-violet-50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -354,17 +354,17 @@ export default function BulkOperations() {
                     className="w-4 h-4 text-violet-600 rounded focus:ring-violet-500"
                   />
                   <div>
-                    <p className="font-medium text-gray-900">{employee.name}</p>
-                    <p className="text-xs text-gray-600">{employee.employee_code}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{employee.name}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">{employee.employee_code}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {formatCurrency(employee.basic_salary + employee.transport_allowance +
                                   employee.communication_allowance + employee.motorcycle_rental +
                                   employee.meal_allowance)}
                   </p>
-                  <p className="text-xs text-gray-500">Gaji Kotor</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Gaji Kotor</p>
                 </div>
               </label>
             ))}
@@ -383,22 +383,22 @@ export default function BulkOperations() {
 
       {showBatchForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Review Pembayaran Gaji Batch</h3>
-              <button onClick={() => setShowBatchForm(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Review Pembayaran Gaji Batch</h3>
+              <button onClick={() => setShowBatchForm(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="mb-6 p-4 bg-violet-50 rounded-lg border border-violet-200">
+            <div className="mb-6 p-4 bg-violet-50 dark:bg-violet-900/20 rounded-lg border border-violet-200 dark:border-violet-800">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Periode</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Periode</label>
                   <select
                     value={batchForm.period_month}
                     onChange={(e) => setBatchForm({ ...batchForm, period_month: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   >
                     {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                       <option key={month} value={month}>{getMonthName(month)}</option>
@@ -406,30 +406,30 @@ export default function BulkOperations() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tahun</label>
                   <input
                     type="number"
                     value={batchForm.period_year}
                     onChange={(e) => setBatchForm({ ...batchForm, period_year: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Pembayaran</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal Pembayaran</label>
                   <input
                     type="date"
                     value={batchForm.payment_date}
                     onChange={(e) => setBatchForm({ ...batchForm, payment_date: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Catatan</label>
                   <input
                     type="text"
                     value={batchForm.notes}
                     onChange={(e) => setBatchForm({ ...batchForm, notes: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                     placeholder="Optional"
                   />
                 </div>
@@ -437,24 +437,24 @@ export default function BulkOperations() {
             </div>
 
             <div className="space-y-2 mb-6">
-              <h4 className="font-semibold text-gray-900 mb-3">Detail Pembayaran:</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Detail Pembayaran:</h4>
               {salaryDetails.map((detail, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div key={index} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold text-gray-900">{detail.employee.name}</p>
-                      <p className="text-sm text-gray-600">{detail.employee.employee_code}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{detail.employee.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{detail.employee.employee_code}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Gaji Kotor: {formatCurrency(detail.gross_salary)}
                       </p>
                       {detail.loan_deduction > 0 && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-sm text-red-600 dark:text-red-400">
                           Potongan Pinjaman: -{formatCurrency(detail.loan_deduction)}
                         </p>
                       )}
-                      <p className="text-lg font-bold text-emerald-600">
+                      <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                         Nett: {formatCurrency(detail.net_salary)}
                       </p>
                     </div>
@@ -463,14 +463,14 @@ export default function BulkOperations() {
               ))}
             </div>
 
-            <div className="border-t border-gray-200 pt-4 mb-6">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-6">
               <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total Pembayaran:</span>
-                <span className="text-emerald-600">
+                <span className="text-gray-900 dark:text-white">Total Pembayaran:</span>
+                <span className="text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(salaryDetails.reduce((sum, d) => sum + d.net_salary, 0))}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {salaryDetails.length} karyawan
               </p>
             </div>
@@ -486,7 +486,7 @@ export default function BulkOperations() {
               </button>
               <button
                 onClick={() => setShowBatchForm(false)}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 Batal
               </button>
@@ -497,23 +497,23 @@ export default function BulkOperations() {
 
       {showProofUpload && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Upload Bukti Pembayaran</h3>
-              <button onClick={() => setShowProofUpload(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Upload Bukti Pembayaran</h3>
+              <button onClick={() => setShowProofUpload(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Tipe Pembayaran
                 </label>
                 <select
                   value={proofForm.proof_type}
                   onChange={(e) => setProofForm({ ...proofForm, proof_type: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                 >
                   <option value="transfer">Transfer Bank</option>
                   <option value="cash">Tunai</option>
@@ -522,42 +522,42 @@ export default function BulkOperations() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nomor Bukti (No. Ref/No. Cek)
                 </label>
                 <input
                   type="text"
                   value={proofForm.proof_number}
                   onChange={(e) => setProofForm({ ...proofForm, proof_number: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   placeholder="Contoh: TRF20241201001"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   URL Bukti (Link foto/file)
                 </label>
                 <input
                   type="url"
                   value={proofForm.proof_url}
                   onChange={(e) => setProofForm({ ...proofForm, proof_url: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   placeholder="https://drive.google.com/..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Upload bukti ke Google Drive/cloud storage, lalu paste link di sini
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Catatan
                 </label>
                 <textarea
                   value={proofForm.notes}
                   onChange={(e) => setProofForm({ ...proofForm, notes: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 dark:bg-gray-700 dark:text-gray-100"
                   rows={3}
                   placeholder="Catatan tambahan (optional)"
                 />
@@ -575,7 +575,7 @@ export default function BulkOperations() {
               </button>
               <button
                 onClick={() => setShowProofUpload(false)}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 Skip
               </button>
@@ -584,33 +584,33 @@ export default function BulkOperations() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5" />
           Riwayat Batch Pembayaran
         </h3>
 
         {batches.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
             <p>Belum ada batch pembayaran</p>
           </div>
         ) : (
           <div className="space-y-3">
             {batches.map((batch) => (
-              <div key={batch.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div key={batch.id} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{batch.batch_name}</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{batch.batch_name}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {batch.total_employees} karyawan • {formatDate(batch.payment_date)}
                     </p>
                     {batch.notes && (
-                      <p className="text-xs text-gray-500 mt-1">{batch.notes}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{batch.notes}</p>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-emerald-600">
+                    <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                       {formatCurrency(batch.total_amount)}
                     </p>
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(batch.status)}`}>

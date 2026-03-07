@@ -147,19 +147,19 @@ export default function BudgetPlanning() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-indigo-100 rounded-lg">
-            <PieChart className="w-6 h-6 text-indigo-600" />
+          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+            <PieChart className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Anggaran & Forecast</h2>
-            <p className="text-sm text-gray-600">Atur budget per kategori dan monitor spending</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Anggaran & Forecast</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Atur budget per kategori dan monitor spending</p>
           </div>
         </div>
         <button
@@ -173,25 +173,25 @@ export default function BudgetPlanning() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {editingBudget ? 'Edit Budget Plan' : 'Tambah Budget Plan'}
               </h3>
-              <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
+              <button onClick={resetForm} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Kategori *
                 </label>
                 <select
                   value={formData.category_id}
                   onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
                   required
                 >
                   <option value="">Pilih Kategori</option>
@@ -205,13 +205,13 @@ export default function BudgetPlanning() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Periode *
                   </label>
                   <select
                     value={formData.budget_period}
                     onChange={(e) => setFormData({ ...formData, budget_period: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
                   >
                     <option value="monthly">Bulanan</option>
                     <option value="quarterly">Kuartalan</option>
@@ -220,7 +220,7 @@ export default function BudgetPlanning() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Jumlah Budget *
                   </label>
                   <input
@@ -228,7 +228,7 @@ export default function BudgetPlanning() {
                     step="1000"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -236,34 +236,34 @@ export default function BudgetPlanning() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tanggal Mulai *
                   </label>
                   <input
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tanggal Selesai
                   </label>
                   <input
                     type="date"
                     value={formData.end_date || ''}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value || null })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Kosongkan untuk tidak ada batas</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Kosongkan untuk tidak ada batas</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Alert Threshold ({formData.alert_threshold_percentage}%)
                 </label>
                 <input
@@ -274,7 +274,7 @@ export default function BudgetPlanning() {
                   onChange={(e) => setFormData({ ...formData, alert_threshold_percentage: parseInt(e.target.value) })}
                   className="w-full"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Alert saat spending mencapai {formData.alert_threshold_percentage}% dari budget
                 </p>
               </div>
@@ -287,7 +287,7 @@ export default function BudgetPlanning() {
                     onChange={(e) => setFormData({ ...formData, rollover_enabled: e.target.checked })}
                     className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-gray-700">Rollover sisa budget ke periode berikutnya</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Rollover sisa budget ke periode berikutnya</span>
                 </label>
 
                 <label className="flex items-center gap-2">
@@ -297,7 +297,7 @@ export default function BudgetPlanning() {
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                     className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-gray-700">Aktif</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Aktif</span>
                 </label>
               </div>
 
@@ -311,7 +311,7 @@ export default function BudgetPlanning() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
                 >
                   Batal
                 </button>
@@ -323,12 +323,12 @@ export default function BudgetPlanning() {
 
       <div className="grid gap-4">
         {budgets.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-            <PieChart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Belum ada budget plan</p>
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+            <PieChart className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">Belum ada budget plan</p>
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 text-indigo-600 hover:text-indigo-700 font-medium"
+              className="mt-4 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
             >
               Buat budget pertama
             </button>
@@ -342,8 +342,8 @@ export default function BudgetPlanning() {
                 key={budget.id}
                 className={`p-6 rounded-lg border-2 transition-colors ${
                   budget.is_active
-                    ? 'bg-white border-indigo-200 hover:border-indigo-300'
-                    : 'bg-gray-50 border-gray-200'
+                    ? 'bg-white dark:bg-gray-800 border-indigo-200 dark:border-indigo-800 hover:border-indigo-300 dark:hover:border-indigo-700'
+                    : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -353,14 +353,14 @@ export default function BudgetPlanning() {
                         className="w-4 h-4 rounded"
                         style={{ backgroundColor: budget.categories?.color || '#6366f1' }}
                       />
-                      <h3 className="font-bold text-gray-900">{budget.categories?.name}</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-white">{budget.categories?.name}</h3>
                       {!budget.is_active && (
-                        <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
+                        <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded">
                           Nonaktif
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <span className="capitalize">{budget.budget_period}</span>
                       <span>•</span>
                       <span>Mulai: {new Date(budget.start_date).toLocaleDateString('id-ID')}</span>
@@ -375,13 +375,13 @@ export default function BudgetPlanning() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEdit(budget)}
-                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                      className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(budget.id!)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -390,22 +390,22 @@ export default function BudgetPlanning() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Target Budget:</span>
-                    <span className="font-semibold text-gray-900">{formatCurrency(budget.amount)}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Target Budget:</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(budget.amount)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Alert Threshold ({budget.alert_threshold_percentage}%):</span>
-                    <span className="font-semibold text-orange-600">{formatCurrency(thresholdAmount)}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Alert Threshold ({budget.alert_threshold_percentage}%):</span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{formatCurrency(thresholdAmount)}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-600 mt-2">
+                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 mt-2">
                     {budget.rollover_enabled && (
-                      <span className="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
+                      <span className="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded">
                         <TrendingUp className="w-3 h-3" />
                         Rollover Enabled
                       </span>
                     )}
                     {budget.alert_threshold_percentage < 100 && (
-                      <span className="flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded">
+                      <span className="flex items-center gap-1 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">
                         <AlertTriangle className="w-3 h-3" />
                         Alert at {budget.alert_threshold_percentage}%
                       </span>

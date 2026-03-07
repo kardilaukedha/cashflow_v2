@@ -331,17 +331,17 @@ export default function EmployeeSalary() {
       return (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-100 rounded-lg"><DollarSign className="w-6 h-6 text-blue-600" /></div>
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Gaji Saya</h2>
-              <p className="text-sm text-gray-500">Informasi penggajian Anda</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Gaji Saya</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Informasi penggajian Anda</p>
             </div>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-4">
-            <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-6 flex items-start gap-4">
+            <AlertCircle className="w-6 h-6 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-amber-800">Akun belum terhubung ke data karyawan</p>
-              <p className="text-sm text-amber-600 mt-1">
+              <p className="font-semibold text-amber-800 dark:text-amber-300">Akun belum terhubung ke data karyawan</p>
+              <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
                 Minta admin untuk menambahkan data karyawan Anda di menu <strong>Gaji Karyawan → Tambah Karyawan</strong>, lalu hubungkan ke akun ini melalui dropdown <em>"Hubungkan ke Akun User"</em>.
               </p>
             </div>
@@ -357,10 +357,10 @@ export default function EmployeeSalary() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-100 rounded-lg"><DollarSign className="w-6 h-6 text-blue-600" /></div>
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg"><DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Gaji Saya</h2>
-            <p className="text-sm text-gray-500">Informasi penggajian Anda</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Gaji Saya</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Informasi penggajian Anda</p>
           </div>
         </div>
 
@@ -391,9 +391,9 @@ export default function EmployeeSalary() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Komponen Gaji</h4>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-700/50 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Komponen Gaji</h4>
             </div>
             <div className="p-5 space-y-3">
               {[
@@ -404,30 +404,30 @@ export default function EmployeeSalary() {
                 { label: 'Konsumsi', val: myEmployee.meal_allowance },
               ].map(({ label, val }) => (
                 <div key={label} className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">{label}</span>
-                  <span className="font-medium text-gray-900 font-mono">{formatCurrency(val)}</span>
+                  <span className="text-gray-600 dark:text-gray-400">{label}</span>
+                  <span className="font-medium text-gray-900 dark:text-white font-mono">{formatCurrency(val)}</span>
                 </div>
               ))}
-              <div className="pt-3 border-t border-gray-200 flex justify-between items-center">
-                <span className="font-semibold text-gray-800">Total Bruto</span>
-                <span className="font-bold text-blue-600 font-mono">{formatCurrency(myGross)}</span>
+              <div className="pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <span className="font-semibold text-gray-800 dark:text-gray-200">Total Bruto</span>
+                <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">{formatCurrency(myGross)}</span>
               </div>
               {myLoans.length > 0 && (
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-rose-600 flex items-center gap-1"><TrendingDown className="w-3.5 h-3.5" /> Cicilan Pinjaman</span>
-                  <span className="font-medium text-rose-600 font-mono">-{formatCurrency(myLoanTotal)}</span>
+                  <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1"><TrendingDown className="w-3.5 h-3.5" /> Cicilan Pinjaman</span>
+                  <span className="font-medium text-rose-600 dark:text-rose-400 font-mono">-{formatCurrency(myLoanTotal)}</span>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Pinjaman Aktif</h4>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-700/50 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Pinjaman Aktif</h4>
             </div>
             <div className="p-5">
               {myLoans.length === 0 ? (
-                <div className="flex flex-col items-center py-4 text-gray-400">
+                <div className="flex flex-col items-center py-4 text-gray-400 dark:text-gray-500">
                   <CheckCircle className="w-10 h-10 mb-2 text-emerald-400" />
                   <p className="text-sm">Tidak ada pinjaman aktif</p>
                 </div>
@@ -436,17 +436,17 @@ export default function EmployeeSalary() {
                 return (
                   <div key={loan.id} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Sisa Pinjaman</span>
-                      <span className="font-mono font-medium text-rose-600">{formatCurrency(loan.remaining_amount)}</span>
+                      <span className="text-gray-600 dark:text-gray-400">Sisa Pinjaman</span>
+                      <span className="font-mono font-medium text-rose-600 dark:text-rose-400">{formatCurrency(loan.remaining_amount)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Cicilan/Bulan</span>
-                      <span className="font-mono font-medium">{formatCurrency(loan.monthly_deduction)}</span>
+                      <span className="text-gray-600 dark:text-gray-400">Cicilan/Bulan</span>
+                      <span className="font-mono font-medium dark:text-white">{formatCurrency(loan.monthly_deduction)}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
                       <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${progress}%` }} />
                     </div>
-                    <p className="text-xs text-gray-400 text-right">Lunas {progress.toFixed(0)}%</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 text-right">Lunas {progress.toFixed(0)}%</p>
                   </div>
                 );
               })}
@@ -454,32 +454,32 @@ export default function EmployeeSalary() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Riwayat Slip Gaji</h4>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+          <div className="bg-gray-50 dark:bg-gray-700/50 px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Riwayat Slip Gaji</h4>
           </div>
           {myPayments.length === 0 ? (
-            <div className="text-center py-10 text-gray-400">
-              <DollarSign className="w-12 h-12 mx-auto mb-3 text-gray-200" />
+            <div className="text-center py-10 text-gray-400 dark:text-gray-500">
+              <DollarSign className="w-12 h-12 mx-auto mb-3 text-gray-200 dark:text-gray-600" />
               <p>Belum ada riwayat pembayaran gaji</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {myPayments.map(payment => (
-                <div key={payment.id} className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
+                <div key={payment.id} className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {MONTHS[payment.period_month - 1]} {payment.period_year}
                     </p>
-                    <p className="text-xs text-gray-400">{formatDate(payment.payment_date, 'short')}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(payment.payment_date, 'short')}</p>
                     {payment.bonus > 0 && (
-                      <p className="text-xs text-blue-500 mt-0.5">Bonus: {formatCurrency(payment.bonus)}</p>
+                      <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">Bonus: {formatCurrency(payment.bonus)}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="font-bold text-emerald-600 font-mono">{formatCurrency(payment.total_salary)}</p>
-                      <p className="text-xs text-gray-400">Total</p>
+                      <p className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{formatCurrency(payment.total_salary)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">Total</p>
                     </div>
                     <button
                       onClick={() => { setSelectedPayment(payment); setShowSalarySlip(true); }}
@@ -527,7 +527,7 @@ export default function EmployeeSalary() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gaji Karyawan</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Gaji Karyawan</h1>
         <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => setShowEmployeeForm(true)}
@@ -545,9 +545,9 @@ export default function EmployeeSalary() {
       </div>
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Data Karyawan</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Data Karyawan</h2>
           </div>
           <div className="p-4 space-y-3">
             {employees.filter(e => e.status === 'active').map(employee => {
@@ -557,15 +557,15 @@ export default function EmployeeSalary() {
               const net = calculateNet(employee.id, gross);
 
               return (
-                <div key={employee.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={employee.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{employee.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <p className="font-semibold text-gray-900 dark:text-white">{employee.name}</p>
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                           <span>{employee.employee_code}</span>
                           <span>·</span>
                           <span className="flex items-center gap-1">
@@ -576,11 +576,11 @@ export default function EmployeeSalary() {
                         {linkedProfiles.length > 0 && (
                           <div className="flex flex-wrap items-center gap-1 mt-1">
                             {linkedProfiles.map(lp => (
-                              <span key={lp.id} className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                              <span key={lp.id} className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded">
                                 <Link className="w-3 h-3" />
                                 {lp.full_name || lp.email}
                                 {lp.role === 'karyawan_sariroti' && (
-                                  <span className="ml-0.5 px-1 bg-orange-100 text-orange-600 rounded font-medium">SR</span>
+                                  <span className="ml-0.5 px-1 bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 rounded font-medium">SR</span>
                                 )}
                               </span>
                             ))}
@@ -589,20 +589,20 @@ export default function EmployeeSalary() {
                       </div>
                     </div>
                     <div className="mt-2 ml-13 text-sm pl-13">
-                      <p className="font-semibold text-gray-700">{formatCurrency(gross)}</p>
+                      <p className="font-semibold text-gray-700 dark:text-gray-300">{formatCurrency(gross)}</p>
                       {empLoans.length > 0 && (
                         <div className="mt-1 text-xs space-y-0.5">
-                          <p className="text-orange-600">Pinjaman: -{formatCurrency(empLoans.reduce((s, l) => s + l.monthly_deduction, 0))}</p>
-                          <p className="text-green-600 font-semibold">Est. Gaji Bersih: {formatCurrency(net)}</p>
+                          <p className="text-orange-600 dark:text-orange-400">Pinjaman: -{formatCurrency(empLoans.reduce((s, l) => s + l.monthly_deduction, 0))}</p>
+                          <p className="text-green-600 dark:text-green-400 font-semibold">Est. Gaji Bersih: {formatCurrency(net)}</p>
                         </div>
                       )}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => editEmployee(employee)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <button onClick={() => editEmployee(employee)} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDeleteEmployee(employee.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => handleDeleteEmployee(employee.id)} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -610,27 +610,27 @@ export default function EmployeeSalary() {
               );
             })}
             {employees.filter(e => e.status === 'active').length === 0 && (
-              <p className="text-center text-gray-500 py-8">Belum ada data karyawan aktif</p>
+              <p className="text-center text-gray-500 dark:text-gray-400 py-8">Belum ada data karyawan aktif</p>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Riwayat Pembayaran</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Riwayat Pembayaran</h2>
           </div>
           <div className="p-4">
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {payments.map(payment => (
-                <div key={payment.id} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
+                <div key={payment.id} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-900">{payment.employee?.name}</p>
-                      <p className="text-sm text-gray-600">{payment.employee?.employee_code}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{payment.employee?.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{payment.employee?.employee_code}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-emerald-600 font-mono">{formatCurrency(payment.total_salary)}</p>
-                      <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                      <p className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{formatCurrency(payment.total_salary)}</p>
+                      <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {MONTHS[payment.period_month - 1]} {payment.period_year}
                       </div>
@@ -638,8 +638,8 @@ export default function EmployeeSalary() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      {payment.bonus > 0 && <p className="text-xs text-blue-600">Bonus: {formatCurrency(payment.bonus)}</p>}
-                      {payment.notes && <p className="text-xs text-gray-500 mt-1">{payment.notes}</p>}
+                      {payment.bonus > 0 && <p className="text-xs text-blue-600 dark:text-blue-400">Bonus: {formatCurrency(payment.bonus)}</p>}
+                      {payment.notes && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{payment.notes}</p>}
                     </div>
                     <button
                       onClick={() => { setSelectedPayment(payment); setShowSalarySlip(true); }}
@@ -651,7 +651,7 @@ export default function EmployeeSalary() {
                 </div>
               ))}
               {payments.length === 0 && (
-                <p className="text-center text-gray-500 py-8">Belum ada riwayat pembayaran</p>
+                <p className="text-center text-gray-500 dark:text-gray-400 py-8">Belum ada riwayat pembayaran</p>
               )}
             </div>
           </div>
@@ -660,42 +660,42 @@ export default function EmployeeSalary() {
 
       {showEmployeeForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {editingEmployee ? 'Edit Karyawan' : 'Tambah Karyawan'}
               </h2>
-              <button onClick={resetEmployeeForm} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X className="w-5 h-5" />
+              <button onClick={resetEmployeeForm} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <X className="w-5 h-5 dark:text-gray-400" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Karyawan *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Karyawan *</label>
                   <input type="text" value={employeeForm.name}
                     onChange={e => setEmployeeForm({ ...employeeForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="Nama lengkap" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Kode Karyawan *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kode Karyawan *</label>
                   <input type="text" value={employeeForm.employee_code}
                     onChange={e => setEmployeeForm({ ...employeeForm, employee_code: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="KRY001" />
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jabatan</label>
                   <select value={employeeForm.job_position_id}
                     onChange={e => {
                       const pos = jobPositions.find(p => p.id === e.target.value);
                       setEmployeeForm({ ...employeeForm, job_position_id: e.target.value, basic_salary: pos?.base_salary || 0 });
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                     <option value="">Pilih Jabatan</option>
                     {jobPositions.map(pos => (
                       <option key={pos.id} value={pos.id}>{pos.name} (Rp {pos.base_salary.toLocaleString('id-ID')})</option>
@@ -703,10 +703,10 @@ export default function EmployeeSalary() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                   <select value={employeeForm.status}
                     onChange={e => setEmployeeForm({ ...employeeForm, status: e.target.value as 'active' | 'inactive' })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                     <option value="active">Aktif</option>
                     <option value="inactive">Tidak Aktif</option>
                   </select>
@@ -714,42 +714,42 @@ export default function EmployeeSalary() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gaji Pokok</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gaji Pokok</label>
                 <input type="number" value={employeeForm.basic_salary}
                   onChange={e => setEmployeeForm({ ...employeeForm, basic_salary: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="0" />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tunjangan Transport</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tunjangan Transport</label>
                   <input type="number" value={employeeForm.transport_allowance}
                     onChange={e => setEmployeeForm({ ...employeeForm, transport_allowance: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="0" />
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tunjangan Komunikasi</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tunjangan Komunikasi</label>
                   <input type="number" value={employeeForm.communication_allowance}
                     onChange={e => setEmployeeForm({ ...employeeForm, communication_allowance: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="0" />
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sewa Motor</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sewa Motor</label>
                   <input type="number" value={employeeForm.motorcycle_rental}
                     onChange={e => setEmployeeForm({ ...employeeForm, motorcycle_rental: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="0" />
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Konsumsi</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Konsumsi</label>
                   <input type="number" value={employeeForm.meal_allowance}
                     onChange={e => setEmployeeForm({ ...employeeForm, meal_allowance: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="0" />
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="0" />
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <label className="block text-sm font-medium text-blue-800 mb-2 flex items-center gap-2">
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                <label className="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
                   <Link className="w-4 h-4" /> Hubungkan ke Akun User (Opsional)
                   {employeeForm.linked_user_profile_ids.length > 0 && (
                     <span className="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
@@ -757,9 +757,9 @@ export default function EmployeeSalary() {
                     </span>
                   )}
                 </label>
-                <div className="max-h-40 overflow-y-auto border border-blue-200 rounded-lg bg-white divide-y divide-gray-100">
+                <div className="max-h-40 overflow-y-auto border border-blue-200 dark:border-blue-700 rounded-lg bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                   {availableProfiles(editingEmployee?.id).length === 0 ? (
-                    <p className="text-xs text-gray-400 p-3 text-center">Tidak ada akun yang tersedia</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 p-3 text-center">Tidak ada akun yang tersedia</p>
                   ) : (
                     availableProfiles(editingEmployee?.id).map(p => {
                       const checked = employeeForm.linked_user_profile_ids.includes(p.id);
@@ -774,19 +774,19 @@ export default function EmployeeSalary() {
                         }));
                       };
                       return (
-                        <label key={p.id} className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-blue-50 transition-colors ${checked ? 'bg-blue-50' : ''}`}>
+                        <label key={p.id} className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${checked ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={toggleProfile}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500 cursor-pointer"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate">{p.full_name || p.email}</p>
-                            <p className="text-xs text-gray-500 truncate">{p.email}</p>
+                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{p.full_name || p.email}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{p.email}</p>
                           </div>
                           <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${
-                            p.role === 'karyawan_sariroti' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
+                            p.role === 'karyawan_sariroti' ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                           }`}>
                             {roleLabel}
                           </span>
@@ -795,12 +795,12 @@ export default function EmployeeSalary() {
                     })
                   )}
                 </div>
-                <p className="text-xs text-blue-600 mt-1.5">Pilih satu atau lebih akun agar dapat melihat gaji &amp; pinjaman sendiri</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1.5">Pilih satu atau lebih akun agar dapat melihat gaji &amp; pinjaman sendiri</p>
               </div>
 
-              <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-                <p className="text-sm text-gray-600">Total Gaji:</p>
-                <p className="text-lg font-bold text-gray-900">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Gaji:</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">
                   {formatCurrency(
                     employeeForm.basic_salary + employeeForm.transport_allowance +
                     employeeForm.communication_allowance + employeeForm.motorcycle_rental +
@@ -811,7 +811,7 @@ export default function EmployeeSalary() {
 
               <div className="flex gap-3 pt-2">
                 <button onClick={resetEmployeeForm}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                   Batal
                 </button>
                 <button onClick={handleSaveEmployee}
@@ -826,17 +826,17 @@ export default function EmployeeSalary() {
 
       {showPaymentForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-lg w-full">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Bayar Gaji</h2>
-              <button onClick={resetPaymentForm} className="p-2 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Bayar Gaji</h2>
+              <button onClick={resetPaymentForm} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5 dark:text-gray-400" /></button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Karyawan *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Karyawan *</label>
                 <select value={paymentForm.employee_id}
                   onChange={e => setPaymentForm({ ...paymentForm, employee_id: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   <option value="">Pilih Karyawan</option>
                   {employees.filter(e => e.status === 'active').map(emp => (
                     <option key={emp.id} value={emp.id}>{emp.name} - {emp.employee_code}</option>
@@ -848,7 +848,7 @@ export default function EmployeeSalary() {
                 const emp = employees.find(e => e.id === paymentForm.employee_id);
                 if (!emp) return null;
                 return (
-                  <div className="p-4 bg-blue-50 rounded-lg text-sm space-y-2">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-sm space-y-2">
                     {[
                       ['Gaji Pokok', emp.basic_salary],
                       ['Transport', emp.transport_allowance],
@@ -857,8 +857,8 @@ export default function EmployeeSalary() {
                       ['Konsumsi', emp.meal_allowance],
                     ].map(([l, v]) => (
                       <div key={l as string} className="flex justify-between">
-                        <span className="text-gray-600">{l}</span>
-                        <span className="font-semibold">{formatCurrency(v as number)}</span>
+                        <span className="text-gray-600 dark:text-gray-400">{l}</span>
+                        <span className="font-semibold dark:text-white">{formatCurrency(v as number)}</span>
                       </div>
                     ))}
                   </div>
@@ -867,41 +867,41 @@ export default function EmployeeSalary() {
 
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bulan</label>
                   <select value={paymentForm.period_month}
                     onChange={e => setPaymentForm({ ...paymentForm, period_month: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                     {MONTHS.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun</label>
                   <input type="number" value={paymentForm.period_year}
                     onChange={e => setPaymentForm({ ...paymentForm, period_year: Number(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Pembayaran</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Pembayaran</label>
                 <input type="date" value={paymentForm.payment_date}
                   onChange={e => setPaymentForm({ ...paymentForm, payment_date: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bonus / Insentif</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bonus / Insentif</label>
                 <input type="number" value={paymentForm.bonus}
                   onChange={e => setPaymentForm({ ...paymentForm, bonus: Number(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="0" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catatan</label>
                 <textarea value={paymentForm.notes}
                   onChange={e => setPaymentForm({ ...paymentForm, notes: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" rows={3}
                   placeholder="Catatan pembayaran (opsional)" />
               </div>
 
@@ -910,16 +910,16 @@ export default function EmployeeSalary() {
                 if (!emp) return null;
                 const total = totalGross(emp) + paymentForm.bonus;
                 return (
-                  <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-                    <p className="text-sm text-gray-600">Total Yang Dibayarkan:</p>
-                    <p className="text-xl font-bold text-green-600">{formatCurrency(total)}</p>
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Yang Dibayarkan:</p>
+                    <p className="text-xl font-bold text-green-600 dark:text-green-400">{formatCurrency(total)}</p>
                   </div>
                 );
               })()}
 
               <div className="flex gap-3 pt-4">
                 <button onClick={resetPaymentForm}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                   Batal
                 </button>
                 <button onClick={handleSavePayment}

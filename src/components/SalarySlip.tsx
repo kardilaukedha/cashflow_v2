@@ -38,46 +38,46 @@ export default function SalarySlip({ employee, payment, onClose }: SalarySlipPro
 
   const DeductionRow = ({ label, amount }: { label: string; amount: number }) => (
     <div className="flex justify-between items-center py-2 text-sm">
-      <span className="text-gray-600">{label}</span>
-      <span className="text-rose-600 font-medium font-mono">-{formatCurrency(amount)}</span>
+      <span className="text-gray-600 dark:text-gray-400">{label}</span>
+      <span className="text-rose-600 dark:text-rose-400 font-medium font-mono">-{formatCurrency(amount)}</span>
     </div>
   );
 
   const IncomeRow = ({ label, amount, detail }: { label: string; amount: number; detail?: string }) => (
     <div className="flex justify-between items-center py-2 text-sm">
       <div>
-        <span className="text-gray-600">{label}</span>
-        {detail && <p className="text-xs text-gray-400">{detail}</p>}
+        <span className="text-gray-600 dark:text-gray-400">{label}</span>
+        {detail && <p className="text-xs text-gray-400 dark:text-gray-500">{detail}</p>}
       </div>
-      <span className="text-emerald-600 font-medium font-mono">+{formatCurrency(amount)}</span>
+      <span className="text-emerald-600 dark:text-emerald-400 font-medium font-mono">+{formatCurrency(amount)}</span>
     </div>
   );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Slip Gaji</h2>
-            <p className="text-sm text-gray-600">{formatDate(payment.payment_date, 'long')}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Slip Gaji</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{formatDate(payment.payment_date, 'long')}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsVisible(!isVisible)}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title={isVisible ? 'Sembunyikan' : 'Tampilkan'}
             >
               {isVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
             <button
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title="Download"
             >
               <Download className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -85,30 +85,30 @@ export default function SalarySlip({ employee, payment, onClose }: SalarySlipPro
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+          <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-600">Nama Karyawan</p>
-                <p className="font-semibold text-gray-900">{employee.name}</p>
+                <p className="text-gray-600 dark:text-gray-400">Nama Karyawan</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{employee.name}</p>
               </div>
               <div>
-                <p className="text-gray-600">Kode Karyawan</p>
-                <p className="font-semibold text-gray-900">{employee.employee_code}</p>
+                <p className="text-gray-600 dark:text-gray-400">Kode Karyawan</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{employee.employee_code}</p>
               </div>
               {employee.job_position && (
                 <div className="col-span-2">
-                  <p className="text-gray-600">Jabatan</p>
-                  <p className="font-semibold text-gray-900">{employee.job_position}</p>
+                  <p className="text-gray-600 dark:text-gray-400">Jabatan</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{employee.job_position}</p>
                 </div>
               )}
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg p-4 border border-emerald-200">
-              <h3 className="font-semibold text-emerald-900 mb-3 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-lg p-4 border border-emerald-200 dark:border-emerald-700">
+              <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-3 flex items-center justify-between">
                 <span>Pendapatan</span>
-                <span className="text-xs font-normal text-emerald-700">Total Bruto</span>
+                <span className="text-xs font-normal text-emerald-700 dark:text-emerald-400">Total Bruto</span>
               </h3>
               <div className="space-y-1">
                 <IncomeRow label="Gaji Pokok" amount={payment.base_salary} />
@@ -129,20 +129,20 @@ export default function SalarySlip({ employee, payment, onClose }: SalarySlipPro
                 )}
                 {payment.bonus > 0 && <IncomeRow label="Bonus" amount={payment.bonus} />}
               </div>
-              <div className="mt-3 pt-3 border-t border-emerald-300">
+              <div className="mt-3 pt-3 border-t border-emerald-300 dark:border-emerald-600">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-emerald-900">Total Pendapatan</span>
-                  <span className="text-lg font-bold text-emerald-900 font-mono">
+                  <span className="font-semibold text-emerald-900 dark:text-emerald-300">Total Pendapatan</span>
+                  <span className="text-lg font-bold text-emerald-900 dark:text-emerald-300 font-mono">
                     {isVisible ? formatCurrency(grossIncome) : 'Rp ********'}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-rose-50 to-rose-100 rounded-lg p-4 border border-rose-200">
-              <h3 className="font-semibold text-rose-900 mb-3 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 rounded-lg p-4 border border-rose-200 dark:border-rose-700">
+              <h3 className="font-semibold text-rose-900 dark:text-rose-300 mb-3 flex items-center justify-between">
                 <span>Potongan</span>
-                <span className="text-xs font-normal text-rose-700">Total Deductions</span>
+                <span className="text-xs font-normal text-rose-700 dark:text-rose-400">Total Deductions</span>
               </h3>
               <div className="space-y-1">
                 <DeductionRow label="BPJS Kesehatan (1%)" amount={bpjs.kesehatan} />
@@ -151,10 +151,10 @@ export default function SalarySlip({ employee, payment, onClose }: SalarySlipPro
                 <DeductionRow label="PPh 21 (Estimasi)" amount={pph21} />
                 {payment.deduction > 0 && <DeductionRow label="Kasbon/Pinjaman" amount={payment.deduction} />}
               </div>
-              <div className="mt-3 pt-3 border-t border-rose-300">
+              <div className="mt-3 pt-3 border-t border-rose-300 dark:border-rose-600">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-rose-900">Total Potongan</span>
-                  <span className="text-lg font-bold text-rose-900 font-mono">
+                  <span className="font-semibold text-rose-900 dark:text-rose-300">Total Potongan</span>
+                  <span className="text-lg font-bold text-rose-900 dark:text-rose-300 font-mono">
                     {isVisible ? formatCurrency(totalDeductions) : 'Rp ********'}
                   </span>
                 </div>
@@ -177,8 +177,8 @@ export default function SalarySlip({ employee, payment, onClose }: SalarySlipPro
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="text-xs text-amber-800">
+          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
+            <p className="text-xs text-amber-800 dark:text-amber-300">
               <strong>Catatan:</strong> Slip gaji ini adalah dokumen resmi. Perhitungan BPJS dan PPh 21 adalah estimasi.
               Untuk informasi lebih detail, hubungi bagian HRD/Keuangan.
             </p>

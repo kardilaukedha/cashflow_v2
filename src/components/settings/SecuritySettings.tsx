@@ -77,28 +77,28 @@ export default function SecuritySettings() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8 dark:text-gray-400">Loading...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-red-100 rounded-lg">
-          <Shield className="w-6 h-6 text-red-600" />
+        <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+          <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Keamanan</h2>
-          <p className="text-sm text-gray-600">Kelola pengaturan keamanan akun Anda</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Keamanan</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Kelola pengaturan keamanan akun Anda</p>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <Key className="w-5 h-5 text-gray-600" />
+            <Key className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             <div>
-              <h3 className="font-semibold text-gray-900">Ubah Password</h3>
-              <p className="text-sm text-gray-600">Update password Anda secara berkala</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Ubah Password</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Update password Anda secara berkala</p>
             </div>
           </div>
           <button
@@ -110,44 +110,44 @@ export default function SecuritySettings() {
         </div>
 
         {showChangePassword && (
-          <form onSubmit={handleChangePassword} className="mt-4 space-y-4 border-t border-gray-200 pt-4">
+          <form onSubmit={handleChangePassword} className="mt-4 space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password Saat Ini
               </label>
               <input
                 type="password"
                 value={passwordForm.currentPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password Baru
               </label>
               <input
                 type="password"
                 value={passwordForm.newPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 minLength={6}
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">Minimal 6 karakter</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Minimal 6 karakter</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Konfirmasi Password Baru
               </label>
               <input
                 type="password"
                 value={passwordForm.confirmPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 minLength={6}
                 required
               />
@@ -165,18 +165,18 @@ export default function SecuritySettings() {
         )}
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="flex items-center gap-3 mb-4">
-          <History className="w-5 h-5 text-gray-600" />
+          <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <div>
-            <h3 className="font-semibold text-gray-900">Riwayat Login</h3>
-            <p className="text-sm text-gray-600">10 aktivitas login terakhir</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Riwayat Login</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">10 aktivitas login terakhir</p>
           </div>
         </div>
 
         {loginHistory.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <History className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <History className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
             <p>Belum ada riwayat login</p>
           </div>
         ) : (
@@ -184,30 +184,30 @@ export default function SecuritySettings() {
             {loginHistory.map((record) => (
               <div
                 key={record.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-2 rounded-full ${
                     record.status === 'success' ? 'bg-emerald-500' : 'bg-red-500'
                   }`} />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {record.ip_address || 'Unknown IP'}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       {record.device_info || 'Unknown Device'}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     {new Date(record.logged_in_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',
                     })}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {new Date(record.logged_in_at).toLocaleTimeString('id-ID', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -220,12 +220,12 @@ export default function SecuritySettings() {
         )}
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <Lock className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-semibold text-amber-900 mb-1">Tips Keamanan</h4>
-            <ul className="text-sm text-amber-800 space-y-1">
+            <h4 className="font-semibold text-amber-900 dark:text-amber-300 mb-1">Tips Keamanan</h4>
+            <ul className="text-sm text-amber-800 dark:text-amber-400 space-y-1">
               <li>• Gunakan password yang kuat dan unik</li>
               <li>• Jangan bagikan password Anda kepada siapapun</li>
               <li>• Ubah password secara berkala (minimal 3 bulan sekali)</li>

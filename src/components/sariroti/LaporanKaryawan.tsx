@@ -29,7 +29,7 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600',
+  draft: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400',
   submitted: 'bg-blue-100 text-blue-700',
   approved: 'bg-emerald-100 text-emerald-700',
   rejected: 'bg-red-100 text-red-700',
@@ -97,11 +97,11 @@ export default function LaporanKaryawan() {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Laporan Kunjungan</h2>
-          <p className="text-sm text-gray-500">Rekap data kunjungan toko per periode</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Laporan Kunjungan</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Rekap data kunjungan toko per periode</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+          <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
           <button onClick={handleExport} disabled={exporting || rows.length === 0}
@@ -114,18 +114,18 @@ export default function LaporanKaryawan() {
       <div className="flex flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-gray-400" />
-          <label className="text-sm text-gray-600">Dari:</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400">Dari:</label>
           <input type="date" value={from} onChange={e => setFrom(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Sampai:</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400">Sampai:</label>
           <input type="date" value={to} onChange={e => setTo(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100" />
         </div>
         {isAdmin && (
           <select value={selectedUser} onChange={e => setSelectedUser(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 dark:text-gray-100 bg-white dark:bg-gray-800">
             <option value="">Semua Karyawan</option>
             {karyawanList.map(k => (
               <option key={k.id} value={k.id}>{k.full_name || k.email}</option>
@@ -166,52 +166,52 @@ export default function LaporanKaryawan() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-14 bg-gray-100 animate-pulse rounded-xl" />)}</div>
+        <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-14 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-xl" />)}</div>
       ) : rows.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Tidak ada data untuk periode ini</p>
+          <p className="text-gray-500 dark:text-gray-400">Tidak ada data untuk periode ini</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Tanggal</th>
-                  {isAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Karyawan</th>}
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Plan</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Kunjungan</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Total Tagihan</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Rata-rata Durasi</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Tanggal</th>
+                  {isAdmin && <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Karyawan</th>}
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Plan</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Kunjungan</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">Total Tagihan</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Rata-rata Durasi</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 dark:text-gray-400">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {rows.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                  <tr key={i} className="hover:bg-gray-50 dark:bg-gray-900 transition-colors">
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300 whitespace-nowrap">
                       {new Date(row.plan_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     {isAdmin && (
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-800">{row.full_name}</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">{row.full_name}</p>
                         <p className="text-xs text-gray-400">{row.email}</p>
                       </td>
                     )}
-                    <td className="px-4 py-3 text-center text-gray-600">
+                    <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-400">
                       <span className="font-medium">{row.total_checkins}</span>
                       <span className="text-gray-400">/{row.planned_stores}</span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${row.plan_completed ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${row.plan_completed ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                         {row.plan_completed ? '✓ Selesai' : `${row.total_checkins}/${row.planned_stores}`}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-gray-800">
+                    <td className="px-4 py-3 text-right font-medium text-gray-800 dark:text-gray-200">
                       {Number(row.total_billing) > 0 ? `Rp ${Number(row.total_billing).toLocaleString('id-ID')}` : '—'}
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-500">
+                    <td className="px-4 py-3 text-center text-gray-500 dark:text-gray-400">
                       {row.avg_duration_minutes ? `${Math.round(Number(row.avg_duration_minutes))} mnt` : '—'}
                     </td>
                     <td className="px-4 py-3 text-center">

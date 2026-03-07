@@ -96,32 +96,32 @@ export default function CompanyProfile() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-blue-100 rounded-lg">
-          <Building2 className="w-6 h-6 text-blue-600" />
+        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+          <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Profil Perusahaan</h2>
-          <p className="text-sm text-gray-600">Informasi dasar perusahaan Anda</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Profil Perusahaan</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Informasi dasar perusahaan Anda</p>
         </div>
       </div>
 
       <div className="grid gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Nama Perusahaan *
           </label>
           <input
             type="text"
             value={settings.company_name}
             onChange={(e) => setSettings({ ...settings, company_name: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
             placeholder="PT. Contoh Perusahaan"
           />
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Mail className="w-4 h-4 inline mr-1" />
               Email Perusahaan
             </label>
@@ -129,13 +129,13 @@ export default function CompanyProfile() {
               type="email"
               value={settings.email}
               onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
               placeholder="info@perusahaan.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Phone className="w-4 h-4 inline mr-1" />
               Nomor Telepon
             </label>
@@ -143,21 +143,21 @@ export default function CompanyProfile() {
               type="tel"
               value={settings.phone}
               onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
               placeholder="021-12345678"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             <MapPin className="w-4 h-4 inline mr-1" />
             Alamat Lengkap
           </label>
           <textarea
             value={settings.address}
             onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
             rows={3}
             placeholder="Jl. Contoh No. 123, Jakarta"
           />
@@ -165,7 +165,7 @@ export default function CompanyProfile() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <FileText className="w-4 h-4 inline mr-1" />
               NPWP
             </label>
@@ -173,19 +173,19 @@ export default function CompanyProfile() {
               type="text"
               value={settings.npwp}
               onChange={(e) => setSettings({ ...settings, npwp: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
               placeholder="00.000.000.0-000.000"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Mata Uang
             </label>
             <select
               value={settings.currency}
               onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
             >
               <option value="IDR">IDR - Rupiah Indonesia</option>
               <option value="USD">USD - US Dollar</option>
@@ -196,13 +196,13 @@ export default function CompanyProfile() {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Awal Tahun Buku
             </label>
             <select
               value={settings.fiscal_year_start}
               onChange={(e) => setSettings({ ...settings, fiscal_year_start: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
             >
               {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                 <option key={month} value={month}>
@@ -213,13 +213,13 @@ export default function CompanyProfile() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Zona Waktu
             </label>
             <select
               value={settings.timezone}
               onChange={(e) => setSettings({ ...settings, timezone: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
             >
               <option value="Asia/Jakarta">WIB - Jakarta</option>
               <option value="Asia/Makassar">WITA - Makassar</option>
@@ -229,7 +229,7 @@ export default function CompanyProfile() {
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={handleSave}
           disabled={saving}

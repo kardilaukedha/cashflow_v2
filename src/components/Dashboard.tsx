@@ -22,8 +22,9 @@ import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import TokoManager from './sariroti/TokoManager';
 import TokoAdminView from './sariroti/TokoAdminView';
 import SkuManager from './sariroti/SkuManager';
-import { Plus, Lock, Menu, Wallet } from 'lucide-react';
+import { Plus, Lock, Menu, Wallet, Sun, Moon } from 'lucide-react';
 import { can, DEFAULT_VIEW_BY_ROLE, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
+import { useTheme } from '../contexts/ThemeContext';
 
 export interface FilterOptions {
   categoryIds: string[];
@@ -45,15 +46,16 @@ interface UserProfile {
 function AccessDenied() {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-center px-4">
-      <Lock className="w-12 h-12 text-gray-300 mb-4" />
-      <h2 className="text-lg font-semibold text-gray-600">Akses Ditolak</h2>
-      <p className="text-sm text-gray-400 mt-1">Role Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+      <Lock className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
+      <h2 className="text-lg font-semibold text-gray-600 dark:text-gray-400">Akses Ditolak</h2>
+      <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Role Anda tidak memiliki izin untuk mengakses halaman ini.</p>
     </div>
   );
 }
 
 export default function Dashboard() {
   const { user, userRole, userProfile } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<TransactionWithCategory[]>([]);
@@ -204,7 +206,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar
         categories={categories}
         onCategoryUpdated={handleCategoryUpdated}
@@ -215,10 +217,10 @@ export default function Dashboard() {
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0 safe-top">
+        <header className="lg:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center gap-3 flex-shrink-0 safe-top">
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 -ml-1 text-gray-600 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors"
+            className="p-2 -ml-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 rounded-lg transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -226,9 +228,15 @@ export default function Dashboard() {
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <Wallet className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-gray-900 text-sm truncate">Cashflow App</span>
+            <span className="font-bold text-gray-900 dark:text-white text-sm truncate">Cashflow App</span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             <span className={`px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
               {ROLE_LABELS[role] || role}
             </span>
@@ -241,15 +249,15 @@ export default function Dashboard() {
               <>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3">
                   <div className="flex-1">
-                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="text-sm text-gray-600">Kelola cashflow Anda dengan mudah</p>
+                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Kelola cashflow Anda dengan mudah</p>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
                     {isSuperAdmin && users.length > 0 && (
                       <select
                         value={selectedUserId}
                         onChange={(e) => setSelectedUserId(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm flex-1 sm:flex-none"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm flex-1 sm:flex-none"
                       >
                         <option value="all">Semua User</option>
                         {users.map((u) => (
@@ -279,16 +287,16 @@ export default function Dashboard() {
                   <div className="space-y-4 lg:space-y-6">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-4">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="h-20 lg:h-24 bg-gray-200 animate-pulse rounded-xl" />
+                        <div key={i} className="h-20 lg:h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl" />
                       ))}
                     </div>
-                    <div className="h-64 lg:h-96 bg-gray-200 animate-pulse rounded-xl" />
+                    <div className="h-64 lg:h-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl" />
                   </div>
                 ) : (
                   <>
                     {isSuperAdmin && selectedUserId !== 'all' && (
-                      <div className="mb-4 p-3 lg:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-sm text-blue-800">
+                      <div className="mb-4 p-3 lg:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p className="text-sm text-blue-800 dark:text-blue-300">
                           <strong>Menampilkan cashflow dari:</strong>{' '}
                           {users.find(u => u.user_id === selectedUserId)?.full_name || 'User'}
                         </p>

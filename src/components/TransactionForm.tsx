@@ -86,14 +86,14 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {transaction ? 'Edit Transaksi' : 'Tambah Transaksi'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -101,13 +101,13 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tipe Transaksi</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipe Transaksi</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -115,7 +115,7 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   formData.type === 'income'
                     ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 Pemasukan
@@ -126,7 +126,7 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   formData.type === 'expense'
                     ? 'bg-red-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
                 }`}
               >
                 Pengeluaran
@@ -135,8 +135,8 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kategori</label>
+            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
               {filteredCategories.map(category => {
                 const IconComponent = (Icons as any)[category.icon] || Icons.Circle;
                 return (
@@ -147,7 +147,7 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
                       formData.category_id === category.id
                         ? 'text-white shadow-md'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
                     }`}
                     style={formData.category_id === category.id ? { backgroundColor: category.color } : {}}
                   >
@@ -160,27 +160,27 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tanggal</label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Deskripsi</label>
             <div className="relative">
               <FileText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="Contoh: Makan siang di restoran"
                 rows={3}
                 required
@@ -189,14 +189,14 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nominal (Rp)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nominal (Rp)</label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="number"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="0"
                 min="0"
                 step="0.01"
@@ -209,7 +209,7 @@ export default function TransactionForm({ categories, transaction, onClose, onSa
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Batal
             </button>
