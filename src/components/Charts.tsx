@@ -116,9 +116,9 @@ export default function Charts({ transactions, categories }: ChartsProps) {
     <div className="space-y-6 mb-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {expensesByCategory.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Pengeluaran per Kategori</h3>
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Pengeluaran per Kategori</h3>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
                   data={expensesByCategory}
@@ -126,7 +126,7 @@ export default function Charts({ transactions, categories }: ChartsProps) {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                  outerRadius={100}
+                  outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -141,9 +141,9 @@ export default function Charts({ transactions, categories }: ChartsProps) {
         )}
 
         {incomeByCategory.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Pemasukan per Kategori</h3>
-            <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Pemasukan per Kategori</h3>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
                   data={incomeByCategory}
@@ -151,7 +151,7 @@ export default function Charts({ transactions, categories }: ChartsProps) {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                  outerRadius={100}
+                  outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -167,12 +167,12 @@ export default function Charts({ transactions, categories }: ChartsProps) {
       </div>
 
       {monthlyData.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Tren Arus Kas (6 Bulan Terakhir)</h3>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 md:mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900">Tren Arus Kas (6 Bulan Terakhir)</h3>
             <button
               onClick={() => setShowForecast(!showForecast)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-colors self-start ${
                 showForecast
                   ? 'bg-blue-100 text-blue-700'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -182,7 +182,7 @@ export default function Charts({ transactions, categories }: ChartsProps) {
               {showForecast ? 'Sembunyikan' : 'Tampilkan'} Forecast
             </button>
           </div>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={280}>
             <LineChart data={[...monthlyData, ...forecastData]}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" style={{ fontSize: '12px' }} />

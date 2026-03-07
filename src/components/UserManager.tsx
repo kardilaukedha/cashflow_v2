@@ -69,7 +69,7 @@ function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword
       <div className="grid grid-cols-1 gap-6">
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Akun</h4>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
               <input type="email" value={formData.email} disabled={isEdit}
@@ -116,8 +116,8 @@ function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword
 
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Identitas Pribadi</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
               <input type="text" value={formData.full_name}
                 onChange={e => setFormData(f => ({ ...f, full_name: e.target.value }))}
@@ -153,7 +153,7 @@ function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword
                 placeholder="08xx-xxxx-xxxx"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
               <textarea value={formData.address}
                 onChange={e => setFormData(f => ({ ...f, address: e.target.value }))}
@@ -165,7 +165,7 @@ function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword
 
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Informasi Pekerjaan</h4>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
               <input type="text" value={formData.department}
@@ -187,7 +187,7 @@ function UserForm({ isEdit, formData, setFormData, showPassword, setShowPassword
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
             {isEdit && (
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-blue-700 mb-1 flex items-center gap-1">
                   <LinkIcon className="w-4 h-4" /> Hubungkan ke Data Karyawan (Opsional)
                 </label>
@@ -526,7 +526,7 @@ export default function UserManager() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">#</th>

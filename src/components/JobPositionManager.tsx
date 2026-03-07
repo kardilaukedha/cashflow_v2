@@ -116,19 +116,19 @@ export default function JobPositionManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-blue-100 rounded-lg">
-            <Briefcase className="w-6 h-6 text-blue-600" />
+          <div className="p-2 sm:p-3 bg-blue-100 rounded-lg">
+            <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Manajemen Jabatan</h2>
-            <p className="text-sm text-gray-600">Kelola jabatan dan gaji pokok</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Manajemen Jabatan</h2>
+            <p className="text-xs sm:text-sm text-gray-600">Kelola jabatan dan gaji pokok</p>
           </div>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm w-full sm:w-auto justify-center"
         >
           <Plus className="w-5 h-5" />
           Tambah Jabatan
@@ -210,16 +210,16 @@ export default function JobPositionManager() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[400px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Jabatan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Gaji Pokok
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
@@ -227,15 +227,15 @@ export default function JobPositionManager() {
               <tbody className="divide-y divide-gray-200">
                 {positions.map((position) => (
                   <tr key={position.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{position.name}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         Rp {position.base_salary.toLocaleString('id-ID')}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleEdit(position)}
                         className="text-blue-600 hover:text-blue-900 mr-4"

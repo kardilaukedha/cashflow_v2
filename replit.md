@@ -96,3 +96,12 @@ The server also auto-migrates on startup:
 ## Visit Plan Date Restriction
 - Users can select a plan date from today up to 3 days in the future
 - Date picker enforced via min/max attributes on the date input
+
+## Mobile-Responsive Design
+- **Sidebar**: Responsive drawer — visible as sidebar on desktop (lg+), hamburger menu overlay on mobile (<lg)
+- **Dashboard**: Sticky top nav bar on mobile with hamburger + app title + role badge; `p-4` mobile / `p-6` desktop
+- **Tables**: All admin tables (EmployeeSalary, Loans, Users, Positions) use horizontal scroll (`overflow-x-auto` + `min-w-[...]`) on mobile
+- **Cards/Grids**: SummaryCards use `grid-cols-2` on mobile, `md:grid-cols-4` on desktop. Forms use `grid-cols-1` on mobile, `sm:grid-cols-2` on desktop
+- **Settings**: Horizontal scrollable tab bar on mobile, sidebar tabs on desktop
+- **CSS Animations**: `animate-slide-in` for mobile drawer entrance (defined in `src/index.css`)
+- **Safe area**: `safe-top` / `safe-bottom` classes for iOS notch support

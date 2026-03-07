@@ -103,14 +103,14 @@ export default function AnnouncementManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
             <Megaphone className="w-5 h-5 text-yellow-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Manajemen Pengumuman</h2>
-            <p className="text-sm text-gray-500">Buat dan kelola pengumuman untuk karyawan</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Manajemen Pengumuman</h2>
+            <p className="text-xs sm:text-sm text-gray-500">Buat dan kelola pengumuman untuk karyawan</p>
           </div>
         </div>
         <button onClick={openNew} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">

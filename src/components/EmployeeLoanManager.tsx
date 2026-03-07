@@ -210,14 +210,14 @@ export default function EmployeeLoanManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-orange-100 rounded-lg">
-            <Wallet className="w-6 h-6 text-orange-600" />
+          <div className="p-2 sm:p-3 bg-orange-100 rounded-lg">
+            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Pinjaman Karyawan</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Pinjaman Karyawan</h2>
+            <p className="text-xs sm:text-sm text-gray-600">
               {!canManage ? 'Lihat pinjaman Anda' : 'Kelola pinjaman karyawan'}
             </p>
           </div>
@@ -225,7 +225,7 @@ export default function EmployeeLoanManager() {
         {canManage && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm w-full sm:w-auto justify-center"
           >
             <Plus className="w-5 h-5" />
             Tambah Pinjaman
@@ -370,26 +370,26 @@ export default function EmployeeLoanManager() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Karyawan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Sisa
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Potongan/Bulan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                   {canManage && (
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
                     </th>
                   )}
@@ -400,7 +400,7 @@ export default function EmployeeLoanManager() {
                   const progress = ((loan.amount - loan.remaining_amount) / loan.amount) * 100;
                   return (
                     <tr key={loan.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <div className="text-sm font-medium text-gray-900">
                           {loan.employees.name}
                         </div>
@@ -411,12 +411,12 @@ export default function EmployeeLoanManager() {
                           Mulai: {formatDate(loan.start_date, 'short')}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-gray-900 font-mono">
                           {formatCurrency(loan.amount)}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <div className="text-sm font-semibold text-rose-600 font-mono mb-2">
                           {formatCurrency(loan.remaining_amount)}
                         </div>
@@ -430,13 +430,13 @@ export default function EmployeeLoanManager() {
                           Lunas {progress.toFixed(0)}%
                         </p>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-mono text-gray-900">
                           {formatCurrency(loan.monthly_deduction)}
                         </div>
                         <div className="text-xs text-gray-500">per bulan</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                           loan.status === 'active'
                             ? 'bg-emerald-100 text-emerald-800'
@@ -446,7 +446,7 @@ export default function EmployeeLoanManager() {
                         </span>
                       </td>
                       {canManage && (
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           {loan.status === 'active' && (
                             <>
                               <button

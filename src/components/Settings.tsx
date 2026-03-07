@@ -101,9 +101,31 @@ export default function Settings() {
           <p className="text-gray-600">Kelola pengaturan aplikasi dan preferensi Anda</p>
         </div>
 
+        <div className="md:hidden overflow-x-auto -mx-4 px-4 pb-2">
+          <div className="flex gap-2 min-w-max">
+            {visibleTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="grid grid-cols-12 gap-0">
-            <div className="col-span-12 md:col-span-3 border-r border-gray-200 bg-gray-50">
+            <div className="hidden md:block col-span-3 border-r border-gray-200 bg-gray-50">
               <nav className="p-4 space-y-1">
                 {visibleTabs.map((tab) => {
                   const Icon = tab.icon;
@@ -125,7 +147,7 @@ export default function Settings() {
               </nav>
             </div>
 
-            <div className="col-span-12 md:col-span-9 p-6">
+            <div className="col-span-12 md:col-span-9 p-4 md:p-6">
               {renderContent()}
             </div>
           </div>

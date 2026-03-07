@@ -79,7 +79,7 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
@@ -100,12 +100,12 @@ export default function FilterPanel({ filters, setFilters, categories }: FilterP
             placeholder="Cari transaksi..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+              className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1 flex-shrink-0"
             >
               <X className="w-4 h-4" />
               Reset

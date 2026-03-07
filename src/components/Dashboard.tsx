@@ -22,8 +22,8 @@ import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import TokoManager from './sariroti/TokoManager';
 import TokoAdminView from './sariroti/TokoAdminView';
 import SkuManager from './sariroti/SkuManager';
-import { Plus, Lock } from 'lucide-react';
-import { can, DEFAULT_VIEW_BY_ROLE } from '../lib/permissions';
+import { Plus, Lock, Menu, Wallet } from 'lucide-react';
+import { can, DEFAULT_VIEW_BY_ROLE, ROLE_LABELS, ROLE_BADGE_COLORS } from '../lib/permissions';
 
 export interface FilterOptions {
   categoryIds: string[];
@@ -44,7 +44,7 @@ interface UserProfile {
 
 function AccessDenied() {
   return (
-    <div className="flex flex-col items-center justify-center h-64 text-center">
+    <div className="flex flex-col items-center justify-center h-64 text-center px-4">
       <Lock className="w-12 h-12 text-gray-300 mb-4" />
       <h2 className="text-lg font-semibold text-gray-600">Akses Ditolak</h2>
       <p className="text-sm text-gray-400 mt-1">Role Anda tidak memiliki izin untuk mengakses halaman ini.</p>
@@ -53,7 +53,7 @@ function AccessDenied() {
 }
 
 export default function Dashboard() {
-  const { user, userRole } = useAuth();
+  const { user, userRole, userProfile } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<TransactionWithCategory[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<TransactionWithCategory[]>([]);
@@ -63,6 +63,7 @@ export default function Dashboard() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [currentView, setCurrentView] = useState(DEFAULT_VIEW_BY_ROLE[userRole || 'karyawan'] || 'loans');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     categoryIds: [],
     type: 'all',
@@ -75,6 +76,7 @@ export default function Dashboard() {
 
   const isSuperAdmin = userRole === 'superadmin';
   const role = userRole || 'karyawan';
+  const badgeColor = ROLE_BADGE_COLORS[role] || 'bg-gray-400 text-white';
 
   useEffect(() => {
     if (user) {
@@ -208,119 +210,143 @@ export default function Dashboard() {
         onCategoryUpdated={handleCategoryUpdated}
         currentView={currentView}
         onViewChange={setCurrentView}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
       />
 
-      <div className="flex-1 overflow-auto">
-        <div className="p-6 max-w-7xl mx-auto">
-          {currentView === 'dashboard' ? (
-            <>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                  <p className="text-gray-600">Kelola cashflow Anda dengan mudah</p>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0 safe-top">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 -ml-1 text-gray-600 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-colors"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Wallet className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold text-gray-900 text-sm truncate">Cashflow App</span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className={`px-2 py-0.5 text-xs font-semibold rounded ${badgeColor}`}>
+              {ROLE_LABELS[role] || role}
+            </span>
+          </div>
+        </header>
+
+        <div className="flex-1 overflow-auto">
+          <div className="p-4 lg:p-6 max-w-7xl mx-auto">
+            {currentView === 'dashboard' ? (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3">
+                  <div className="flex-1">
+                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Dashboard</h1>
+                    <p className="text-sm text-gray-600">Kelola cashflow Anda dengan mudah</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {isSuperAdmin && users.length > 0 && (
+                      <select
+                        value={selectedUserId}
+                        onChange={(e) => setSelectedUserId(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm flex-1 sm:flex-none"
+                      >
+                        <option value="all">Semua User</option>
+                        {users.map((u) => (
+                          <option key={u.user_id} value={u.user_id}>
+                            {u.full_name} ({u.role})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {can(role, 'manage_transactions') && (
+                      <button
+                        onClick={() => {
+                          setEditingTransaction(null);
+                          setShowTransactionForm(true);
+                        }}
+                        className="bg-gradient-to-r from-emerald-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-emerald-600 hover:to-blue-700 transition-all flex items-center gap-2 text-sm whitespace-nowrap"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span className="hidden sm:inline">Tambah Transaksi</span>
+                        <span className="sm:hidden">Tambah</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                {isSuperAdmin && users.length > 0 && (
-                  <div className="mr-4">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Filter User</label>
-                    <select
-                      value={selectedUserId}
-                      onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    >
-                      <option value="all">Semua User</option>
-                      {users.map((u) => (
-                        <option key={u.user_id} value={u.user_id}>
-                          {u.full_name} ({u.role})
-                        </option>
+
+                {loading ? (
+                  <div className="space-y-4 lg:space-y-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-4">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="h-20 lg:h-24 bg-gray-200 animate-pulse rounded-xl" />
                       ))}
-                    </select>
-                  </div>
-                )}
-                {can(role, 'manage_transactions') && (
-                  <button
-                    onClick={() => {
-                      setEditingTransaction(null);
-                      setShowTransactionForm(true);
-                    }}
-                    className="bg-gradient-to-r from-emerald-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-emerald-600 hover:to-blue-700 transition-all flex items-center gap-2"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Tambah Transaksi
-                  </button>
-                )}
-              </div>
-
-              {loading ? (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="h-24 bg-gray-200 animate-pulse rounded-xl" />
-                    ))}
-                  </div>
-                  <div className="h-96 bg-gray-200 animate-pulse rounded-xl" />
-                </div>
-              ) : (
-                <>
-                  {isSuperAdmin && selectedUserId !== 'all' && (
-                    <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
-                        <strong>Menampilkan cashflow dari:</strong>{' '}
-                        {users.find(u => u.user_id === selectedUserId)?.full_name || 'User'}
-                      </p>
                     </div>
-                  )}
+                    <div className="h-64 lg:h-96 bg-gray-200 animate-pulse rounded-xl" />
+                  </div>
+                ) : (
+                  <>
+                    {isSuperAdmin && selectedUserId !== 'all' && (
+                      <div className="mb-4 p-3 lg:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                          <strong>Menampilkan cashflow dari:</strong>{' '}
+                          {users.find(u => u.user_id === selectedUserId)?.full_name || 'User'}
+                        </p>
+                      </div>
+                    )}
 
-                  <AnnouncementBoard />
+                    <AnnouncementBoard />
 
-                  <SummaryCards transactions={filteredTransactions} />
+                    <SummaryCards transactions={filteredTransactions} />
 
-                  <FilterPanel
-                    filters={filters}
-                    setFilters={setFilters}
-                    categories={categories}
-                  />
+                    <FilterPanel
+                      filters={filters}
+                      setFilters={setFilters}
+                      categories={categories}
+                    />
 
-                  <Charts
-                    transactions={filteredTransactions}
-                    categories={categories}
-                  />
+                    <Charts
+                      transactions={filteredTransactions}
+                      categories={categories}
+                    />
 
-                  <TransactionList
-                    transactions={filteredTransactions}
-                    categories={categories}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                </>
-              )}
-            </>
-          ) : currentView === 'salary' ? (
-            <EmployeeSalary />
-          ) : currentView === 'positions' ? (
-            can(role, 'manage_positions') ? <JobPositionManager /> : <AccessDenied />
-          ) : currentView === 'loans' ? (
-            <EmployeeLoanManager />
-          ) : currentView === 'users' ? (
-            can(role, 'manage_users') ? <UserManager /> : <AccessDenied />
-          ) : currentView === 'announcements' ? (
-            can(role, 'manage_announcements') ? <AnnouncementManager /> : <AccessDenied />
-          ) : currentView === 'visit_monitor' ? (
-            can(role, 'monitor_visits') ? <VisitMonitorAdmin /> : <AccessDenied />
-          ) : currentView === 'sariroti_home' ? (
-            <SariRotiHomeDashboard onNavigate={setCurrentView} />
-          ) : currentView === 'sariroti' ? (
-            <SariRotiDashboard onNavigate={setCurrentView} />
-          ) : currentView === 'history_kunjungan' ? (
-            <HistoryKunjungan />
-          ) : currentView === 'toko' ? (
-            <TokoManager />
-          ) : currentView === 'toko_admin' ? (
-            can(role, 'manage_stores') ? <TokoAdminView /> : <AccessDenied />
-          ) : currentView === 'sku_manager' ? (
-            can(role, 'manage_sku') ? <SkuManager /> : <AccessDenied />
-          ) : currentView === 'settings' ? (
-            <Settings />
-          ) : null}
+                    <TransactionList
+                      transactions={filteredTransactions}
+                      categories={categories}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  </>
+                )}
+              </>
+            ) : currentView === 'salary' ? (
+              <EmployeeSalary />
+            ) : currentView === 'positions' ? (
+              can(role, 'manage_positions') ? <JobPositionManager /> : <AccessDenied />
+            ) : currentView === 'loans' ? (
+              <EmployeeLoanManager />
+            ) : currentView === 'users' ? (
+              can(role, 'manage_users') ? <UserManager /> : <AccessDenied />
+            ) : currentView === 'announcements' ? (
+              can(role, 'manage_announcements') ? <AnnouncementManager /> : <AccessDenied />
+            ) : currentView === 'visit_monitor' ? (
+              can(role, 'monitor_visits') ? <VisitMonitorAdmin /> : <AccessDenied />
+            ) : currentView === 'sariroti_home' ? (
+              <SariRotiHomeDashboard onNavigate={setCurrentView} />
+            ) : currentView === 'sariroti' ? (
+              <SariRotiDashboard onNavigate={setCurrentView} />
+            ) : currentView === 'history_kunjungan' ? (
+              <HistoryKunjungan />
+            ) : currentView === 'toko' ? (
+              <TokoManager />
+            ) : currentView === 'toko_admin' ? (
+              can(role, 'manage_stores') ? <TokoAdminView /> : <AccessDenied />
+            ) : currentView === 'sku_manager' ? (
+              can(role, 'manage_sku') ? <SkuManager /> : <AccessDenied />
+            ) : currentView === 'settings' ? (
+              <Settings />
+            ) : null}
+          </div>
         </div>
       </div>
 

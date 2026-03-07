@@ -187,25 +187,27 @@ export default function VisitMonitorAdmin() {
             <MapPin className="w-5 h-5 text-orange-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Monitor Kunjungan Sari Roti</h2>
-            <p className="text-sm text-gray-500">Pantau aktivitas kunjungan toko karyawan</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Monitor Kunjungan Sari Roti</h2>
+            <p className="text-xs sm:text-sm text-gray-500">Pantau aktivitas kunjungan toko karyawan</p>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
-        {tabs.map(({ key, label, Icon, badge }) => (
-          <button key={key} onClick={() => setTab(key)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative ${tab === key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-            <Icon className="w-4 h-4" />
-            {label}
-            {badge !== undefined && (
-              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                {badge}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+          {tabs.map(({ key, label, Icon, badge }) => (
+            <button key={key} onClick={() => setTab(key)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative whitespace-nowrap ${tab === key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              <Icon className="w-4 h-4" />
+              {label}
+              {badge !== undefined && (
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {tab === 'monitor' && (
@@ -282,7 +284,7 @@ export default function VisitMonitorAdmin() {
                         {row.stores?.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-gray-500 mb-2">PLAN KUNJUNGAN ({row.stores.length} toko)</p>
-                            <div className="grid grid-cols-2 gap-1.5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                               {row.stores.map((s, i) => (
                                 <div key={i} className="bg-white rounded-lg px-3 py-2 text-xs border border-gray-200">
                                   <p className="font-medium text-gray-800">{s.name}</p>
@@ -448,7 +450,7 @@ export default function VisitMonitorAdmin() {
                       <Save className="w-4 h-4" /> {savingSettings === u.id ? 'Menyimpan...' : 'Simpan'}
                     </button>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Min Kunjungan/Hari</label>
                       <input type="number" min="1" max="50" value={s.min_visits}

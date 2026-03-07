@@ -374,7 +374,7 @@ export default function EmployeeSalary() {
               <p className="text-blue-100 text-sm">{myEmployee.employee_code} · {myEmployee.job_positions?.name || '—'}</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-4">
             <div className="bg-white bg-opacity-10 rounded-lg p-3 text-center">
               <p className="text-blue-100 text-xs mb-1">Gaji Kotor</p>
               <p className="font-bold text-sm">{formatCurrency(myGross)}</p>
@@ -526,25 +526,25 @@ export default function EmployeeSalary() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Gaji Karyawan</h1>
-        <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gaji Karyawan</h1>
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => setShowEmployeeForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
-            <Plus className="w-4 h-4" /> Tambah Karyawan
+            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Tambah</span> Karyawan
           </button>
           <button
             onClick={() => setShowPaymentForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
           >
             <DollarSign className="w-4 h-4" /> Bayar Gaji
           </button>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Data Karyawan</h2>
@@ -643,7 +643,7 @@ export default function EmployeeSalary() {
                     </div>
                     <button
                       onClick={() => { setSelectedPayment(payment); setShowSalarySlip(true); }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700"
+                      className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700"
                     >
                       <Eye className="w-3 h-3" /> Lihat Slip
                     </button>
@@ -865,7 +865,7 @@ export default function EmployeeSalary() {
                 );
               })()}
 
-              <div className="grid gap-4 grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                   <select value={paymentForm.period_month}

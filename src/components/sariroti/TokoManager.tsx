@@ -133,13 +133,13 @@ export default function TokoManager() {
         <div className="grid gap-4">
           {stores.map(toko => (
             <div key={toko.id} className={`bg-white rounded-xl border overflow-hidden shadow-sm transition-all ${successId === toko.id ? 'border-green-400 ring-2 ring-green-200' : 'border-gray-200'}`}>
-              <div className="flex">
+              <div className="flex flex-col sm:flex-row">
                 {toko.foto_toko ? (
-                  <div className="w-32 h-32 flex-shrink-0">
+                  <div className="w-full h-40 sm:w-32 sm:h-32 flex-shrink-0">
                     <img src={toko.foto_toko} alt={toko.nama_toko} className="w-full h-full object-cover" />
                   </div>
                 ) : (
-                  <div className="w-32 h-32 flex-shrink-0 bg-gray-100 flex items-center justify-center">
+                  <div className="w-full h-32 sm:w-32 sm:h-32 flex-shrink-0 bg-gray-100 flex items-center justify-center">
                     <ImageIcon className="w-8 h-8 text-gray-300" />
                   </div>
                 )}

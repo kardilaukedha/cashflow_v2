@@ -131,10 +131,10 @@ export default function SkuManager() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kelola SKU</h1>
-          <p className="text-sm text-gray-500">{items.length} SKU terdaftar ({items.filter(s => s.is_active).length} aktif)</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Kelola SKU</h1>
+          <p className="text-xs sm:text-sm text-gray-500">{items.length} SKU terdaftar ({items.filter(s => s.is_active).length} aktif)</p>
         </div>
         <button onClick={openCreate}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
