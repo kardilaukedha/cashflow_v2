@@ -47,6 +47,7 @@ This runs both the Express server (`node server/index.js`) and Vite (`vite`) con
 - `POST /api/auth/register` — Register new user
 - `POST /api/auth/create-user` — Create user (superadmin only)
 - `DELETE /api/auth/delete-user/:userId` — Delete user (superadmin only)
+- `GET/POST/PUT/DELETE /api/sku-items` — SKU management CRUD (GET: all authenticated users; POST/PUT/DELETE: superadmin, admin_sariroti only)
 - `GET/POST/PUT/DELETE /api/:table` — Generic CRUD for any table
 - `POST /api/checkin` — Field visit check-in with GPS + selfie
 - `POST /api/checkout/:checkinId` — Field visit checkout
@@ -82,4 +83,16 @@ pool.query(fs.readFileSync('server/init_db.sql', 'utf8'))
   .catch(e => { console.error(e.message); pool.end(); });
 "
 ```
-The server also auto-migrates the `visit_checkins` table on startup to add GPS/checkout columns.
+The server also auto-migrates on startup:
+- `visit_checkins` table: adds GPS/checkout columns
+- `sku_items` table: creates table and seeds 92 SKU items from the static list if empty
+
+## SKU Management
+- **Table**: `sku_items` (id, kode, nama, kategori, cbp, is_active)
+- **Admin component**: `src/components/sariroti/SkuManager.tsx` — CRUD interface for managing SKUs
+- **Picker**: `src/components/sariroti/SkuPickerModal.tsx` — loads SKUs from DB, supports quantity per SKU
+- **Permission**: `manage_sku` — only `superadmin` and `admin_sariroti` can create/edit/delete; all authenticated users can read
+
+## Visit Plan Date Restriction
+- Users can select a plan date from today up to 3 days in the future
+- Date picker enforced via min/max attributes on the date input

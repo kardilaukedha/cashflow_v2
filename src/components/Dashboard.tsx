@@ -21,6 +21,7 @@ import HistoryKunjungan from './sariroti/HistoryKunjungan';
 import VisitMonitorAdmin from './sariroti/VisitMonitorAdmin';
 import TokoManager from './sariroti/TokoManager';
 import TokoAdminView from './sariroti/TokoAdminView';
+import SkuManager from './sariroti/SkuManager';
 import { Plus, Lock } from 'lucide-react';
 import { can, DEFAULT_VIEW_BY_ROLE } from '../lib/permissions';
 
@@ -315,6 +316,8 @@ export default function Dashboard() {
             <TokoManager />
           ) : currentView === 'toko_admin' ? (
             can(role, 'manage_stores') ? <TokoAdminView /> : <AccessDenied />
+          ) : currentView === 'sku_manager' ? (
+            can(role, 'manage_sku') ? <SkuManager /> : <AccessDenied />
           ) : currentView === 'settings' ? (
             <Settings />
           ) : null}

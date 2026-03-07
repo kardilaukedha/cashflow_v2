@@ -395,6 +395,70 @@ app.delete('/api/stores/:id', authMiddleware, requireRole('superadmin', 'admin_s
   }
 });
 
+// ===== SKU Management Routes =====
+
+// GET /api/sku-items - list all SKU items (all authenticated users)
+app.get('/api/sku-items', authMiddleware, async (req, res) => {
+  try {
+    const activeOnly = req.query.active_only === 'true';
+    const sql = activeOnly
+      ? 'SELECT * FROM sku_items WHERE is_active = true ORDER BY kategori, kode'
+      : 'SELECT * FROM sku_items ORDER BY kategori, kode';
+    const { rows } = await pool.query(sql);
+    res.json({ data: rows, error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// POST /api/sku-items - create SKU item (admin only)
+app.post('/api/sku-items', authMiddleware, requireRole('superadmin', 'admin_sariroti'), async (req, res) => {
+  try {
+    const { kode, nama, kategori, cbp } = req.body;
+    if (!kode || !nama || !kategori) {
+      return res.status(400).json({ data: null, error: { message: 'Kode, nama, dan kategori wajib diisi' } });
+    }
+    const existing = await pool.query('SELECT id FROM sku_items WHERE kode = $1', [kode]);
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ data: null, error: { message: `SKU dengan kode "${kode}" sudah ada` } });
+    }
+    const { rows } = await pool.query(
+      'INSERT INTO sku_items (kode, nama, kategori, cbp, is_active) VALUES ($1, $2, $3, $4, true) RETURNING *',
+      [kode.trim(), nama.trim(), kategori.trim(), cbp || 0]
+    );
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// PUT /api/sku-items/:id - update SKU item (admin only)
+app.put('/api/sku-items/:id', authMiddleware, requireRole('superadmin', 'admin_sariroti'), async (req, res) => {
+  try {
+    const { kode, nama, kategori, cbp, is_active } = req.body;
+    const { rows } = await pool.query(
+      `UPDATE sku_items SET kode = COALESCE($1, kode), nama = COALESCE($2, nama), kategori = COALESCE($3, kategori),
+       cbp = COALESCE($4, cbp), is_active = COALESCE($5, is_active), updated_at = NOW() WHERE id = $6 RETURNING *`,
+      [kode, nama, kategori, cbp, is_active, req.params.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ data: null, error: { message: 'SKU tidak ditemukan' } });
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
+// DELETE /api/sku-items/:id - delete SKU item (admin only)
+app.delete('/api/sku-items/:id', authMiddleware, requireRole('superadmin', 'admin_sariroti'), async (req, res) => {
+  try {
+    const { rows } = await pool.query('DELETE FROM sku_items WHERE id = $1 RETURNING *', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ data: null, error: { message: 'SKU tidak ditemukan' } });
+    res.json({ data: rows[0], error: null });
+  } catch (err) {
+    res.status(500).json({ data: null, error: { message: err.message } });
+  }
+});
+
 // GET /api/:table
 app.get('/api/:table', authMiddleware, async (req, res) => {
   try {
@@ -887,6 +951,78 @@ app.listen(PORT, '127.0.0.1', async () => {
         ADD COLUMN IF NOT EXISTS checkout_time TIMESTAMPTZ,
         ADD COLUMN IF NOT EXISTS duration_minutes INTEGER
     `);
+    // Auto-migrate: create sku_items table if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sku_items (
+        id SERIAL PRIMARY KEY,
+        kode VARCHAR(50) NOT NULL UNIQUE,
+        nama VARCHAR(255) NOT NULL,
+        kategori VARCHAR(100) NOT NULL,
+        cbp INTEGER NOT NULL DEFAULT 0,
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+    // Seed sku_items from static list if empty
+    const { rows: skuCount } = await pool.query('SELECT COUNT(*) as cnt FROM sku_items');
+    if (parseInt(skuCount[0].cnt) === 0) {
+      const skuData = [
+        ['RTS','Roti Tawar Special','Roti Tawar',15000],['RTG','Roti Tawar Gandum','Roti Tawar',18000],
+        ['RTPDM','Roti Tawar Pandan Manis','Roti Tawar',18000],['RCC','Roti Tawar Choco Chip','Roti Tawar',19000],
+        ['RTKL','Roti Tawar Klasik','Roti Tawar',12500],['RKU','Roti Tawar Kupas','Roti Tawar',6000],
+        ['RJKU','Roti Jumbo Tawar Kupas','Roti Tawar',21000],['DOP','Roti Tawar Doble Soft F','Roti Tawar',14500],
+        ['DOM','Roti Tawar Doble Soft','Roti Tawar',20500],['RTJS','Roti Tawar Jumbo Spesial','Roti Tawar',18000],
+        ['RJMS','Roti Jumbo Milk Soft','Roti Tawar',17500],
+        ['SCC','Sandwich Coklat','Sandwich',6000],['SAB','Sandwich Blueberry','Sandwich',6000],
+        ['SAP','Sandwich Krim Peanut','Sandwich',6000],['SKI','Sandwich Keju','Sandwich',6000],
+        ['SMG','Sandwich Margarin Gula','Sandwich',6000],['SSM','Sandwich Pandan Sarikaya','Sandwich',6000],
+        ['SCB','Sandwich Choco Blast','Sandwich',6000],
+        ['ZSCCK','Zupper Sandwich Krim Coklat','Zupper Sandwich',5000],['ZSCMK','Zupper Sandwich Krim Moka','Zupper Sandwich',5000],
+        ['ZSCS','Zupper Sandwich Creamy Sweet','Zupper Sandwich',5000],['ZSCST','Zuper Sandwich Krim Strawberry','Zupper Sandwich',5000],
+        ['ICK GT','Choco Bun','Bun & Sobek',4000],['ICZ GT','Cheese Bun','Bun & Sobek',4000],
+        ['ICE','Sweet Cheese Bun','Bun & Sobek',4000],['IST','Blueberry Bun GT','Bun & Sobek',4000],
+        ['IBL','Blueberry Bun','Bun & Sobek',4000],['ICO','Coconut Bun GT','Bun & Sobek',4000],
+        ['TOC','Roti Sobek Coklat Coklat','Bun & Sobek',18000],['TCC','Roti Sobek Coklat Meses','Bun & Sobek',18000],
+        ['TCS','Roti Sobek Coklat Sarikaya','Bun & Sobek',18000],['TST','Roti Sobek Coklat Strawberry','Bun & Sobek',18000],
+        ['TCB','Roti Sobek Coklat Blueberry','Bun & Sobek',13500],['TCBIII','Roti Sobek Krim Meses','Bun & Sobek',13500],
+        ['TDST','Sobek Duo Strawberry','Bun & Sobek',11000],['TDCB','Sobek Duo Blueberry','Bun & Sobek',11000],
+        ['TDOC','Sobek Duo Cokelat','Bun & Sobek',8500],['TDSA','Sobek Duo Sarikaya','Bun & Sobek',8000],
+        ['KBC','Klasik Bantal Sweet Cheese','Bun & Sobek',8500],['RMNS','Roti Mini Strawberry','Bun & Sobek',8000],
+        ['BUR','Burgerbun','Bun & Sobek',11000],['SRPL','Plain Rolls','Bun & Sobek',11000],
+        ['SCM','Roti Krim Cokelat Meses','Roti Krim',5000],['SCCIII','Roti Creamy Cokelat Meses','Roti Krim',5000],
+        ['SCVIII','Roti Krim Coklat','Roti Krim',5000],['SCCJII','Roti Krim Keju','Roti Krim',5000],
+        ['SRMIII','Roti Krim Moca','Roti Krim',5000],
+        ['ZCRCK','Zuperr Creamy Choco Double Choco','Zuperr Creamy',5000],['ZCRCR','Zuperr Creamy Choco Choco Berry','Zuperr Creamy',5000],
+        ['ZCRCB','Zuperr Creamy Choco Choco Banana','Zuperr Creamy',5000],['SRS','Roti Sandroll Zuperr Creamy Strawberry','Zuperr Creamy',5000],
+        ['DCS','Dorayaki Si Coklat','Dorayaki',7500],['DCP','Dorayaki Choco Peanut','Dorayaki',7500],
+        ['DCH','Dorayaki Hokkaido Cheese','Dorayaki',7500],['DHF','Dorayaki Honey Flavor','Dorayaki',7500],
+        ['DSK','Dorayaki Sarikaya','Dorayaki',5500],['DMT','Dorayaki Martabak','Dorayaki',6000],
+        ['DPS','Dorayaki Pandan Sarikaya','Dorayaki',6000],['DNS','Dorayaki Nastar','Dorayaki',6000],
+        ['RKJ','Roti Kasur Keju','Roti Kasur & Sisir',14000],['RSM','Roti Sisir Mentega','Roti Kasur & Sisir',11000],
+        ['RKS','Roti Kasur Susu','Roti Kasur & Sisir',11000],
+        ['CCC','Chiffon Cake Coklat','Cake',25000],['CCP','Chiffon Cake Pandan','Cake',25000],
+        ['MCP VI','Mini Cupcake Vanilla Coconut Isi 6','Cake',22000],['KAOF','Kastela Original Family','Cake',255000],
+        ['KAOM','Kastela Original Medium','Cake',105000],['BKV','Bolu Kukus Putih Vanilla','Cake',12500],
+        ['BMO','Bolu Mini Original','Cake',5000],['WFO','Waffle Original','Cake',5000],
+        ['LSPO','Lapis Surabaya Premium Original','Lapis Surabaya',12500],['LSPK','Lapis Surabaya Premium Keju','Lapis Surabaya',12500],
+        ['LSPP','Lapis Surabaya Premium Pandan','Lapis Surabaya',12500],['LSPM','Lapis Surabaya Premium Moca','Lapis Surabaya',12500],
+        ['SCCP','Soft Cake Putu Pandan','Soft Cake',9500],['SCPI','Soft Cake Pisang Ijo','Soft Cake',9500],
+        ['SCET','Soft Cake Es Teler','Soft Cake',9500],['SCGA','Soft Cake Gula Aren','Soft Cake',9500],
+        ['SCPSM','Soft Cake Pandan Salted Caramel Mocca','Soft Cake',9500],
+        ['STCS','Steam Cheese Cake Strawberry','Steam Cheese Cake',9500],['STCC','Steam Cheese Cake','Steam Cheese Cake',9500],
+        ['STCK','Steam Cheese Cake Cokelat','Steam Cheese Cake',9500],['STCB','Steam Cheese Cake Banana','Steam Cheese Cake',9500],
+        ['STCTM','Steam Cheese Cake Tiramisu','Steam Cheese Cake',9500],['STCBA','Steam Cheese Cake Basket','Steam Cheese Cake',9500],
+        ['STCDC','Steam Cheese Cake Duo','Steam Cheese Cake',7000],
+        ['SCSC','Sari Choco Spread Coklat','Sari Choco',18000],['SCSCH','Sari Choco Spread Coklat Hazelnut','Sari Choco',18000],
+        ['SCM110','Sari Choco Milk 110ml','Sari Choco',5000],['SCM180','Sari Choco Milk 180ml','Sari Choco',6000],
+        ['BKCK','Bamkohem Original','Bamkohem',10500],['BKKJ','Bamkohem Keju','Bamkohem',10500],
+      ];
+      const values = skuData.map((s, i) => `($${i*4+1}, $${i*4+2}, $${i*4+3}, $${i*4+4})`).join(',');
+      const params = skuData.flat();
+      await pool.query(`INSERT INTO sku_items (kode, nama, kategori, cbp) VALUES ${values}`, params);
+      console.log(`Seeded ${skuData.length} SKU items`);
+    }
     console.log(`API server running on http://localhost:${PORT} (DB connected)`);
   } catch (err) {
     console.error('DB connection failed:', err.message);

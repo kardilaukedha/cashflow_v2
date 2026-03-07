@@ -4,11 +4,11 @@ import { supabase } from '../../lib/supabase';
 import AnnouncementBoard from '../AnnouncementBoard';
 import CheckinModal from './CheckinModal';
 import SkuPickerModal from './SkuPickerModal';
-import type { SkuItem } from '../../lib/skuList';
+import type { SkuItem, SkuWithQty } from '../../lib/skuList';
 import {
   MapPin, Clock, CheckCircle2, Circle, Plus, Trash2,
   AlertCircle, Send, RefreshCw, Package, ClipboardList,
-  TrendingUp, Navigation, Store, LogOut, Timer, ExternalLink
+  TrendingUp, Navigation, Store, LogOut, Timer, ExternalLink, Calendar
 } from 'lucide-react';
 
 interface SariRotiSettings {
@@ -20,7 +20,7 @@ interface SariRotiSettings {
 interface PlannedStore {
   name: string;
   address: string;
-  planned_skus?: SkuItem[];
+  planned_skus?: SkuWithQty[];
 }
 
 interface VisitPlan {
@@ -57,6 +57,12 @@ interface RegisteredStore {
 
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 
+function maxDateStr() {
+  const d = new Date();
+  d.setDate(d.getDate() + 3);
+  return d.toISOString().split('T')[0];
+}
+
 const VISIT_TYPE_LABELS: Record<string, string> = {
   drop_roti: 'Drop Roti',
   tagihan: 'Tagihan',
@@ -82,6 +88,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
   const [checkingOut, setCheckingOut] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
   const [skuPickerIdx, setSkuPickerIdx] = useState<number | null>(null);
+  const [planDate, setPlanDate] = useState(todayStr());
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000);
@@ -93,7 +100,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
     setLoading(true);
     await Promise.all([loadSettings(), loadTodayPlan(), loadRegisteredStores()]);
     setLoading(false);
-  }, [user, userProfile]);
+  }, [user, userProfile, planDate]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -125,12 +132,16 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
   const loadTodayPlan = async () => {
     if (!user) return;
     const { data } = await supabase.from('visit_plans').select('*')
-      .eq('user_id', user.id).eq('plan_date', todayStr()).limit(1);
+      .eq('user_id', user.id).eq('plan_date', planDate).limit(1);
     if (data && data.length > 0) {
       const plan = data[0] as VisitPlan;
       setTodayPlan(plan);
       setStoreInputs(plan.stores?.length > 0 ? plan.stores : [{ name: '', address: '' }]);
       loadCheckins(plan.id);
+    } else {
+      setTodayPlan(null);
+      setStoreInputs([{ name: '', address: '' }]);
+      setCheckins([]);
     }
   };
 
@@ -191,7 +202,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
     }
   };
 
-  const handleSkuConfirm = (skus: SkuItem[]) => {
+  const handleSkuConfirm = (skus: SkuWithQty[]) => {
     if (skuPickerIdx === null) return;
     setStoreInputs(prev => prev.map((s, idx) => idx === skuPickerIdx ? { ...s, planned_skus: skus } : s));
     setSkuPickerIdx(null);
@@ -219,7 +230,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
       const { error } = await supabase.from('visit_plans').update({ stores: validStores, updated_at: new Date().toISOString() }).eq('id', todayPlan.id);
       saveError = error;
     } else {
-      const { error } = await supabase.from('visit_plans').insert({ user_id: user?.id, plan_date: todayStr(), stores: validStores, status: 'draft' });
+      const { error } = await supabase.from('visit_plans').insert({ user_id: user?.id, plan_date: planDate, stores: validStores, status: 'draft' });
       saveError = error;
     }
     setSaving(false);
@@ -372,7 +383,18 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ClipboardList className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-gray-900 text-sm">Plan Kunjungan Hari Ini</span>
+            <span className="font-semibold text-gray-900 text-sm">Plan Kunjungan</span>
+            <div className="flex items-center gap-1.5 ml-2">
+              <Calendar className="w-3.5 h-3.5 text-gray-400" />
+              <input
+                type="date"
+                value={planDate}
+                min={todayStr()}
+                max={maxDateStr()}
+                onChange={e => setPlanDate(e.target.value)}
+                className="text-xs border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {isPastDeadline() && !todayPlan && (
@@ -464,7 +486,9 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
                             {skuCount > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1.5 px-1">
                                 {store.planned_skus!.slice(0, 5).map(s => (
-                                  <span key={s.kode} className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">{s.kode}</span>
+                                  <span key={s.kode} className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">
+                                    {s.kode} {('qty' in s && (s as SkuWithQty).qty) ? (s as SkuWithQty).qty : ''}
+                                  </span>
                                 ))}
                                 {skuCount > 5 && (
                                   <span className="text-xs text-gray-400 self-center">+{skuCount - 5} lagi</span>
@@ -585,7 +609,7 @@ export default function SariRotiDashboard({ onNavigate }: Props) {
       {skuPickerIdx !== null && storeInputs[skuPickerIdx] && (
         <SkuPickerModal
           storeName={storeInputs[skuPickerIdx].name || `Toko ${skuPickerIdx + 1}`}
-          selected={storeInputs[skuPickerIdx].planned_skus || []}
+          selected={(storeInputs[skuPickerIdx].planned_skus || []).map(s => ({ ...s, qty: ('qty' in s ? (s as SkuWithQty).qty : 1) }))}
           onConfirm={handleSkuConfirm}
           onClose={() => setSkuPickerIdx(null)}
         />
