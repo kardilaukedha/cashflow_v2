@@ -105,3 +105,15 @@ The server also auto-migrates on startup:
 - **Settings**: Horizontal scrollable tab bar on mobile, sidebar tabs on desktop
 - **CSS Animations**: `animate-slide-in` for mobile drawer entrance (defined in `src/index.css`)
 - **Safe area**: `safe-top` / `safe-bottom` classes for iOS notch support
+
+## Announcements System
+- **Table**: `announcements` (id, user_id, title, content, target_roles TEXT[], priority TEXT, is_active, timestamps)
+- **Admin**: AnnouncementManager.tsx — create/edit/delete announcements with role targeting and priority levels
+- **Display**: AnnouncementBoard.tsx — shown on dashboard, filtered by user's role via `target_roles` array
+- **Auto-migration**: Server adds `target_roles` and `priority` columns on startup if missing
+- **Generic CRUD**: POST/PUT handlers pass JavaScript arrays natively to PostgreSQL (not JSON.stringify)
+
+## Role Integration Notes
+- All 5 roles have access to Settings (profile, security, notifications)
+- `karyawan` and `karyawan_sariroti` see personal data only (own salary, own loans, own announcements)
+- Admin roles manage all data; karyawan views show helpful message when `employee_id` is not linked

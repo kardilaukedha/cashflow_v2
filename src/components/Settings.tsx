@@ -44,7 +44,7 @@ export default function Settings() {
   const role = userRole || 'karyawan';
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
-  const ALL = ['superadmin', 'admin_keuangan', 'admin_sariroti', 'karyawan'];
+  const ALL = ['superadmin', 'admin_keuangan', 'admin_sariroti', 'karyawan', 'karyawan_sariroti'];
   const FINANCE = ['superadmin', 'admin_keuangan'];
   const SUPER = ['superadmin'];
 

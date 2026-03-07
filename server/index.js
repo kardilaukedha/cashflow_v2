@@ -505,6 +505,7 @@ app.post('/api/:table', authMiddleware, async (req, res) => {
     const keys = Object.keys(data).filter(k => data[k] !== undefined);
     const values = keys.map(k => {
       const v = data[k];
+      if (Array.isArray(v)) return v;
       if (v !== null && typeof v === 'object') return JSON.stringify(v);
       return v;
     });
@@ -538,6 +539,7 @@ app.put('/api/:table', authMiddleware, async (req, res) => {
     const keys = Object.keys(data).filter(k => data[k] !== undefined);
     const values = keys.map(k => {
       const v = data[k];
+      if (Array.isArray(v)) return v;
       if (v !== null && typeof v === 'object') return JSON.stringify(v);
       return v;
     });
@@ -950,6 +952,12 @@ app.listen(PORT, '127.0.0.1', async () => {
         ADD COLUMN IF NOT EXISTS gps_accuracy DECIMAL,
         ADD COLUMN IF NOT EXISTS checkout_time TIMESTAMPTZ,
         ADD COLUMN IF NOT EXISTS duration_minutes INTEGER
+    `);
+    // Auto-migrate: add target_roles and priority columns to announcements
+    await pool.query(`
+      ALTER TABLE announcements
+        ADD COLUMN IF NOT EXISTS target_roles TEXT[] DEFAULT '{karyawan,karyawan_sariroti}',
+        ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'normal'
     `);
     // Auto-migrate: create sku_items table if not exists
     await pool.query(`

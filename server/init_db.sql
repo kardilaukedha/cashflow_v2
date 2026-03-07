@@ -528,6 +528,8 @@ CREATE TABLE IF NOT EXISTS announcements (
   user_id uuid REFERENCES users(id) NOT NULL,
   title text NOT NULL,
   content text NOT NULL,
+  target_roles text[] DEFAULT '{karyawan,karyawan_sariroti}',
+  priority text DEFAULT 'normal',
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
