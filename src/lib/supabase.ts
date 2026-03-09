@@ -120,6 +120,9 @@ export const supabase = {
           return { data: null, error: { message: 'Server sedang tidak tersedia. Coba lagi beberapa saat.' } };
         }
         if (result.error) return { data: null, error: result.error };
+        if (!result.data?.session?.access_token) {
+          return { data: null, error: { message: 'Respons login tidak valid. Coba lagi.' } };
+        }
         setToken(result.data.session.access_token);
         authStateCallbacks.forEach(cb => cb('SIGNED_IN', result.data.session));
         return { data: result.data, error: null };
