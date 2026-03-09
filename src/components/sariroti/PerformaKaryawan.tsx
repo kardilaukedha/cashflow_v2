@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { getApiUrl, getApiHeaders } from '../../lib/supabase';
 import { TrendingUp, Award, Star, Calendar, RefreshCw, Users, DollarSign, MapPin, Clock } from 'lucide-react';
 
 interface PerformaRow {
@@ -25,8 +24,8 @@ export default function PerformaKaryawan() {
 
   const load = async () => {
     setLoading(true);
-    const res = await fetch(getApiUrl(`/performa-karyawan?bulan=${bulan}&tahun=${tahun}`), {
-      headers: getApiHeaders(),
+    const res = await fetch(`/api/performa-karyawan?bulan=${bulan}&tahun=${tahun}`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     const json = await res.json();
     if (json.data) setRows(json.data);

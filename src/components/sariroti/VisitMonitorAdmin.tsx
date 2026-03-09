@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, getApiUrl, getApiHeaders } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import {
   Users, MapPin, Calendar, RefreshCw, ChevronDown, ChevronRight,
   CheckCircle2, Clock, AlertTriangle, Package, Receipt, Image,
@@ -98,8 +98,8 @@ export default function VisitMonitorAdmin() {
 
   const loadSummary = useCallback(async () => {
     setLoading(true);
-    const url = filterDate ? getApiUrl(`/visit-summary?date=${filterDate}`) : getApiUrl('/visit-summary');
-    const res = await fetch(url, { headers: getApiHeaders() });
+    const url = filterDate ? `/api/visit-summary?date=${filterDate}` : '/api/visit-summary';
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setSummaries(json.data);
     setLoading(false);
@@ -122,14 +122,14 @@ export default function VisitMonitorAdmin() {
 
   const loadNotifikasi = async () => {
     setNotifLoading(true);
-    const res = await fetch(getApiUrl('/notifikasi-deadline'), { headers: getApiHeaders() });
+    const res = await fetch('/api/notifikasi-deadline', { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setNotifRows(json.data);
     setNotifLoading(false);
   };
 
   const loadUserSettings = async (userProfileId: string) => {
-    const res = await fetch(getApiUrl(`/sariroti-settings/${userProfileId}`), { headers: getApiHeaders() });
+    const res = await fetch(`/api/sariroti-settings/${userProfileId}`, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) {
       setSettingsMap(prev => ({ ...prev, [userProfileId]: { min_visits: json.data.min_visits, max_visits: json.data.max_visits, plan_deadline: json.data.plan_deadline?.substring(0,5) || '10:00' } }));
@@ -142,9 +142,9 @@ export default function VisitMonitorAdmin() {
     const s = settingsMap[userProfileId];
     if (!s) return;
     setSavingSettings(userProfileId);
-    await fetch(getApiUrl(`/sariroti-settings/${userProfileId}`), {
+    await fetch(`/api/sariroti-settings/${userProfileId}`, {
       method: 'PUT',
-      headers: getApiHeaders(),
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(s),
     });
     setSavingSettings(null);
@@ -156,7 +156,7 @@ export default function VisitMonitorAdmin() {
     setExpandedPlan(planId);
     if (planDetails[planId]) return;
     setLoadingDetail(planId);
-    const res = await fetch(getApiUrl(`/visit-detail/${planId}`), { headers: getApiHeaders() });
+    const res = await fetch(`/api/visit-detail/${planId}`, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setPlanDetails(prev => ({ ...prev, [planId]: json.data }));
     setLoadingDetail(null);

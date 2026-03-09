@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getApiUrl, getApiHeaders } from '../../lib/supabase';
-import { Store, Plus, X, Phone, MapPin, ExternalLink, Image as ImageIcon, RefreshCw, CheckCircle } from 'lucide-react';
+import { Store, Plus, X, Phone, MapPin, ExternalLink, ImageIcon, RefreshCw, CheckCircle } from 'lucide-react';
 
 interface Toko {
   id: number;
@@ -40,7 +39,7 @@ export default function TokoManager() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(getApiUrl('/stores'), { headers: getApiHeaders() });
+      const res = await fetch('/api/stores', { headers: { Authorization: `Bearer ${token}` } });
       const json = await res.json();
       if (json.data) setStores(json.data);
     } finally {
@@ -65,26 +64,18 @@ export default function TokoManager() {
     }
     setSaving(true);
     try {
-      const body: Record<string, unknown> = {
-        nama_toko: form.nama_toko,
-        nama_pemilik: form.nama_pemilik,
-        alamat: form.alamat,
-        nomor_hp: form.nomor_hp,
-        sharelok: form.sharelok,
-      };
-      if (fotoFile) {
-        const reader = new FileReader();
-        const dataUrl = await new Promise<string>((resolve) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(fotoFile);
-        });
-        body.foto_toko = dataUrl;
-      }
+      const fd = new FormData();
+      fd.append('nama_toko', form.nama_toko);
+      fd.append('nama_pemilik', form.nama_pemilik);
+      fd.append('alamat', form.alamat);
+      fd.append('nomor_hp', form.nomor_hp);
+      fd.append('sharelok', form.sharelok);
+      if (fotoFile) fd.append('foto_toko', fotoFile);
 
-      const res = await fetch(getApiUrl('/stores'), {
+      const res = await fetch('/api/stores', {
         method: 'POST',
-        headers: getApiHeaders(),
-        body: JSON.stringify(body),
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
       });
       const json = await res.json();
       if (json.error) { alert(json.error.message); return; }
