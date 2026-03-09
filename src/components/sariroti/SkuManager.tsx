@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getApiUrl, getApiHeaders } from '../../lib/supabase';
-import { Search, Plus, Edit2, Trash2, X, Save, Package, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Search, Plus, CreditCard as Edit2, Trash2, X, Save, Package, ToggleLeft, ToggleRight } from 'lucide-react';
 
 interface SkuItem {
   id: number;

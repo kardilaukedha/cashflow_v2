@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getApiUrl, getApiHeaders } from '../../lib/supabase';
-import { Store, Edit2, ArrowRightLeft, Trash2, X, Phone, MapPin, ExternalLink, ImageIcon, RefreshCw, Search, User } from 'lucide-react';
+import { Store, CreditCard as Edit2, ArrowRightLeft, Trash2, X, Phone, MapPin, ExternalLink, Image as ImageIcon, RefreshCw, Search, User } from 'lucide-react';
 
 interface Toko {
   id: number;
