@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, getAccessToken } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  UserCircle, Edit2, X, Link as LinkIcon, Copy, Check, Users,
-  UserPlus, Trash2, Phone, Building2, Briefcase, Calendar, Hash,
-  ChevronDown, ChevronUp, Eye, EyeOff,
-} from 'lucide-react';
+import { CircleUser as UserCircle, CreditCard as Edit2, X, Link as LinkIcon, Copy, Check, Users, UserPlus, Trash2, Phone, Building2, Briefcase, Calendar, Hash, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 
 interface UserProfile {
   id: string;
