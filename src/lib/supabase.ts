@@ -1,4 +1,12 @@
-const API_BASE = '/api';
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const AUTH_FN_URL = `${SUPABASE_URL}/functions/v1/auth`;
+const API_FN_URL = `${SUPABASE_URL}/functions/v1/api`;
 
 function getToken(): string | null {
   return localStorage.getItem('sb_token');
@@ -14,122 +22,36 @@ function authHeaders(): Record<string, string> {
   const token = getToken();
   return {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'Apikey': SUPABASE_ANON_KEY,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
   };
 }
 
-class QueryChain {
-  private _table: string;
-  private _method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET';
-  private _select: string = '*';
-  private _filters: { col: string; val: any }[] = [];
-  private _order: { col: string; dir: string } | null = null;
-  private _limit: number | null = null;
-  private _single: boolean = false;
-  private _body: any = null;
+export function getApiHeaders(): Record<string, string> {
+  const token = getToken();
+  return {
+    'Content-Type': 'application/json',
+    'Apikey': SUPABASE_ANON_KEY,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+}
 
-  constructor(table: string) {
-    this._table = table;
-  }
-
-  select(cols: string = '*') {
-    if (this._method === 'GET') this._select = cols;
-    return this;
-  }
-
-  insert(data: any | any[]) {
-    this._method = 'POST';
-    this._body = Array.isArray(data) ? data[0] : data;
-    return this;
-  }
-
-  update(data: any) {
-    this._method = 'PUT';
-    this._body = data;
-    return this;
-  }
-
-  delete() {
-    this._method = 'DELETE';
-    return this;
-  }
-
-  eq(col: string, val: any) {
-    this._filters.push({ col, val });
-    return this;
-  }
-
-  order(col: string, opts?: { ascending?: boolean }) {
-    this._order = { col, dir: opts?.ascending === false ? 'desc' : 'asc' };
-    return this;
-  }
-
-  limit(n: number) {
-    this._limit = n;
-    return this;
-  }
-
-  single() {
-    this._single = true;
-    return this as any;
-  }
-
-  async maybeSingle(): Promise<any> {
-    this._single = true;
-    return this._execute();
-  }
-
-  then(resolve: (value: any) => any, reject: (reason?: any) => any) {
-    return this._execute().then(resolve, reject);
-  }
-
-  private async _execute(): Promise<any> {
-    try {
-      const params = new URLSearchParams();
-
-      if (this._method === 'GET') {
-        params.set('select', this._select);
-        for (const f of this._filters) {
-          params.append('filter', `${f.col}:${f.val}`);
-        }
-        if (this._order) params.set('order', `${this._order.col}:${this._order.dir}`);
-        if (this._limit) params.set('limit', String(this._limit));
-        if (this._single) params.set('single', '1');
-      } else {
-        for (const f of this._filters) {
-          params.append('filter', `${f.col}:${f.val}`);
-        }
-      }
-
-      const url = `${API_BASE}/${this._table}?${params.toString()}`;
-      const opts: RequestInit = {
-        method: this._method,
-        headers: authHeaders(),
-      };
-      if (this._body && (this._method === 'POST' || this._method === 'PUT')) {
-        opts.body = JSON.stringify(this._body);
-      }
-
-      const res = await fetch(url, opts);
-      const result = await res.json();
-      return result;
-    } catch (err: any) {
-      return { data: null, error: { message: err.message } };
-    }
-  }
+export function getApiUrl(path: string): string {
+  return `${API_FN_URL}${path}`;
 }
 
 let authStateCallbacks: ((event: string, session: any) => void)[] = [];
 
 export const supabase = {
-  from: (table: string) => new QueryChain(table),
+  from: (table: string) => supabaseClient.from(table),
 
   auth: {
     getSession: async () => {
       const token = getToken();
       if (!token) return { data: { session: null }, error: null };
       try {
-        const res = await fetch(`${API_BASE}/auth/me`, { headers: authHeaders() });
+        const res = await fetch(`${AUTH_FN_URL}/me`, { headers: authHeaders() });
         if (!res.ok) {
           clearToken();
           return { data: { session: null }, error: null };
@@ -149,7 +71,7 @@ export const supabase = {
       authStateCallbacks.push(callback);
       const token = getToken();
       if (token) {
-        fetch(`${API_BASE}/auth/me`, { headers: authHeaders() })
+        fetch(`${AUTH_FN_URL}/me`, { headers: authHeaders() })
           .then(r => r.json())
           .then(({ data }) => {
             if (data?.user) {
@@ -179,9 +101,12 @@ export const supabase = {
 
     signInWithPassword: async ({ email, password }: { email: string; password: string }) => {
       try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
+        const res = await fetch(`${AUTH_FN_URL}/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Apikey': SUPABASE_ANON_KEY,
+          },
           body: JSON.stringify({ email, password }),
         });
         const text = await res.text();
@@ -214,9 +139,12 @@ export const supabase = {
 
     signUp: async ({ email, password }: { email: string; password: string }) => {
       try {
-        const res = await fetch(`${API_BASE}/auth/register`, {
+        const res = await fetch(`${AUTH_FN_URL}/register`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Apikey': SUPABASE_ANON_KEY,
+          },
           body: JSON.stringify({ email, password }),
         });
         const result = await res.json();
@@ -235,10 +163,35 @@ export const supabase = {
 
     updateUser: async ({ password }: { password: string }) => {
       try {
-        const res = await fetch(`${API_BASE}/auth/update-password`, {
+        const res = await fetch(`${AUTH_FN_URL}/update-password`, {
           method: 'POST',
           headers: authHeaders(),
           body: JSON.stringify({ password }),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { data: null, error: { message: err.message } };
+      }
+    },
+
+    createUser: async (userData: any) => {
+      try {
+        const res = await fetch(`${AUTH_FN_URL}/create-user`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify(userData),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { data: null, error: { message: err.message } };
+      }
+    },
+
+    deleteUser: async (userId: string) => {
+      try {
+        const res = await fetch(`${AUTH_FN_URL}/delete-user/${userId}`, {
+          method: 'DELETE',
+          headers: authHeaders(),
         });
         return await res.json();
       } catch (err: any) {

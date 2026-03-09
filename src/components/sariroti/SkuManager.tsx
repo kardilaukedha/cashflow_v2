@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { getApiUrl, getApiHeaders } from '../../lib/supabase';
 import { Search, Plus, Edit2, Trash2, X, Save, Package, ToggleLeft, ToggleRight } from 'lucide-react';
 
 interface SkuItem {
@@ -25,8 +26,8 @@ export default function SkuManager() {
   const loadItems = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/sku-items', {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await fetch(getApiUrl('/sku-items'), {
+        headers: getApiHeaders(),
       });
       const json = await res.json();
       if (json.data) setItems(json.data);
@@ -71,11 +72,11 @@ export default function SkuManager() {
     }
     setSaving(true);
     try {
-      const url = editing ? `/api/sku-items/${editing.id}` : '/api/sku-items';
+      const url = editing ? getApiUrl(`/sku-items/${editing.id}`) : getApiUrl('/sku-items');
       const method = editing ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: getApiHeaders(),
         body: JSON.stringify(formData),
       });
       const json = await res.json();
@@ -94,9 +95,9 @@ export default function SkuManager() {
   const handleDelete = async (item: SkuItem) => {
     if (!confirm(`Hapus SKU "${item.kode} - ${item.nama}"?`)) return;
     try {
-      const res = await fetch(`/api/sku-items/${item.id}`, {
+      const res = await fetch(getApiUrl(`/sku-items/${item.id}`), {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getApiHeaders(),
       });
       const json = await res.json();
       if (json.error) alert(json.error.message);
@@ -108,9 +109,9 @@ export default function SkuManager() {
 
   const toggleActive = async (item: SkuItem) => {
     try {
-      await fetch(`/api/sku-items/${item.id}`, {
+      await fetch(getApiUrl(`/sku-items/${item.id}`), {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: getApiHeaders(),
         body: JSON.stringify({ is_active: !item.is_active }),
       });
       loadItems();

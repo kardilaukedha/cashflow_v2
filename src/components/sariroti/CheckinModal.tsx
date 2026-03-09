@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, getApiUrl, getApiHeaders } from '../../lib/supabase';
 import { X, Camera, Scan, Trash2, Package, Receipt, CheckSquare, Upload, AlertTriangle, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface RegisteredStore {
@@ -129,25 +129,33 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('sb_token');
+      let selfieDataUrl = '';
+      if (selfieFile) {
+        const reader = new FileReader();
+        selfieDataUrl = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(selfieFile);
+        });
+      }
 
-      const fd = new FormData();
-      fd.append('visit_plan_id', visitPlanId);
-      fd.append('store_name', storeName.trim());
-      fd.append('store_address', storeAddress.trim());
-      fd.append('visit_type', visitType);
-      fd.append('total_billing', totalBilling || '0');
-      fd.append('has_expired_bread', String(hasExpiredBread));
-      fd.append('notes', notes.trim());
-      if (gpsLat !== null) fd.append('gps_lat', String(gpsLat));
-      if (gpsLng !== null) fd.append('gps_lng', String(gpsLng));
-      if (gpsAccuracy !== null) fd.append('gps_accuracy', String(gpsAccuracy));
-      if (selfieFile) fd.append('selfie', selfieFile);
+      const checkinBody = {
+        visit_plan_id: visitPlanId,
+        store_name: storeName.trim(),
+        store_address: storeAddress.trim(),
+        visit_type: visitType,
+        total_billing: totalBilling || '0',
+        has_expired_bread: hasExpiredBread,
+        notes: notes.trim(),
+        gps_lat: gpsLat,
+        gps_lng: gpsLng,
+        gps_accuracy: gpsAccuracy,
+        selfie_url: selfieDataUrl,
+      };
 
-      const res = await fetch('/api/checkin', {
+      const res = await fetch(getApiUrl('/checkin'), {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
+        headers: getApiHeaders(),
+        body: JSON.stringify(checkinBody),
       });
       const json = await res.json();
 

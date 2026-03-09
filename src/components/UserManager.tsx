@@ -314,15 +314,9 @@ export default function UserManager() {
     e.preventDefault();
     setSaving(true);
     try {
-      const token = localStorage.getItem('sb_token');
-      const res = await fetch('/api/auth/create-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(formData),
-      });
-      const json = await res.json();
-      if (json.error) {
-        alert(json.error.message);
+      const result = await supabase.auth.createUser(formData);
+      if (result.error) {
+        alert(result.error.message);
         return;
       }
       setShowAddForm(false);
@@ -379,14 +373,9 @@ export default function UserManager() {
 
   const handleDelete = async (userId: string) => {
     try {
-      const token = localStorage.getItem('sb_token');
-      const res = await fetch(`/api/auth/delete-user/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await res.json();
-      if (json.error) {
-        alert(json.error.message);
+      const result = await supabase.auth.deleteUser(userId);
+      if (result.error) {
+        alert(result.error.message);
         return;
       }
       setDeleteConfirm(null);

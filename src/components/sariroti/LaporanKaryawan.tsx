@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { getApiUrl, getApiHeaders } from '../../lib/supabase';
 import { FileText, Download, RefreshCw, Calendar, User, TrendingUp, DollarSign, MapPin } from 'lucide-react';
 
 interface LaporanRow {
@@ -57,17 +58,17 @@ export default function LaporanKaryawan() {
 
   useEffect(() => {
     if (isAdmin) {
-      fetch('/api/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email', {
-        headers: { Authorization: `Bearer ${token}` },
+      fetch(getApiUrl('/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email'), {
+        headers: getApiHeaders(),
       }).then(r => r.json()).then(j => { if (j.data) setKaryawanList(j.data); });
     }
   }, [isAdmin]);
 
   const load = async () => {
     setLoading(true);
-    let url = `/api/laporan-karyawan?from=${from}&to=${to}`;
+    let url = getApiUrl(`/laporan-karyawan?from=${from}&to=${to}`);
     if (isAdmin && selectedUser) url += `&user_profile_id=${selectedUser}`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, { headers: getApiHeaders() });
     const json = await res.json();
     if (json.data) setRows(json.data);
     setLoading(false);
@@ -77,9 +78,9 @@ export default function LaporanKaryawan() {
 
   const handleExport = async () => {
     setExporting(true);
-    let url = `/api/laporan-karyawan/export?from=${from}&to=${to}`;
+    let url = getApiUrl(`/laporan-karyawan/export?from=${from}&to=${to}`);
     if (isAdmin && selectedUser) url += `&user_profile_id=${selectedUser}`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, { headers: getApiHeaders() });
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);

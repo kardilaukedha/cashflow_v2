@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl, getApiHeaders } from '../../lib/supabase';
 import { Store, Edit2, ArrowRightLeft, Trash2, X, Phone, MapPin, ExternalLink, ImageIcon, RefreshCw, Search, User } from 'lucide-react';
 
 interface Toko {
@@ -57,8 +58,8 @@ export default function TokoAdminView() {
     setLoading(true);
     try {
       const [storesRes, karRes] = await Promise.all([
-        fetch('/api/stores', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(getApiUrl('/stores'), { headers: getApiHeaders() }),
+        fetch(getApiUrl('/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email'), { headers: getApiHeaders() }),
       ]);
       const storesJson = await storesRes.json();
       const karJson = await karRes.json();
@@ -97,19 +98,27 @@ export default function TokoAdminView() {
     if (!editingStore) return;
     setSaving(true);
     try {
-      const fd = new FormData();
-      fd.append('nama_toko', editForm.nama_toko);
-      fd.append('nama_pemilik', editForm.nama_pemilik);
-      fd.append('alamat', editForm.alamat);
-      fd.append('nomor_hp', editForm.nomor_hp);
-      fd.append('sharelok', editForm.sharelok);
-      fd.append('status', editForm.status);
-      if (editFotoFile) fd.append('foto_toko', editFotoFile);
+      const body: Record<string, unknown> = {
+        nama_toko: editForm.nama_toko,
+        nama_pemilik: editForm.nama_pemilik,
+        alamat: editForm.alamat,
+        nomor_hp: editForm.nomor_hp,
+        sharelok: editForm.sharelok,
+        status: editForm.status,
+      };
+      if (editFotoFile) {
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(editFotoFile);
+        });
+        body.foto_toko = dataUrl;
+      }
 
-      const res = await fetch(`/api/stores/${editingStore.id}`, {
+      const res = await fetch(getApiUrl(`/stores/${editingStore.id}`), {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
+        headers: getApiHeaders(),
+        body: JSON.stringify(body),
       });
       const json = await res.json();
       if (json.error) { alert(json.error.message); return; }
@@ -125,9 +134,9 @@ export default function TokoAdminView() {
     if (!transferStore || !transferTarget) return;
     setTransferring(true);
     try {
-      const res = await fetch(`/api/stores/${transferStore.id}/transfer`, {
+      const res = await fetch(getApiUrl(`/stores/${transferStore.id}/transfer`), {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers: getApiHeaders(),
         body: JSON.stringify({ new_user_profile_id: transferTarget }),
       });
       const json = await res.json();
@@ -142,9 +151,9 @@ export default function TokoAdminView() {
 
   const handleDelete = async (store: Toko) => {
     if (!confirm(`Hapus toko "${store.nama_toko}"? Tindakan ini tidak bisa dibatalkan.`)) return;
-    await fetch(`/api/stores/${store.id}`, {
+    await fetch(getApiUrl(`/stores/${store.id}`), {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getApiHeaders(),
     });
     await load();
   };
