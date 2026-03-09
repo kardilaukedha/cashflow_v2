@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { getAccessToken } from '../../lib/supabase';
 import { Search, Plus, Edit2, Trash2, X, Save, Package, ToggleLeft, ToggleRight } from 'lucide-react';
 
 interface SkuItem {
@@ -20,9 +21,8 @@ export default function SkuManager() {
   const [formData, setFormData] = useState({ kode: '', nama: '', kategori: '', cbp: 0 });
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem('sb_token');
-
   const loadItems = async () => {
+    const token = await getAccessToken();
     setLoading(true);
     try {
       const res = await fetch('/api/sku-items', {
@@ -71,6 +71,7 @@ export default function SkuManager() {
     }
     setSaving(true);
     try {
+      const token = await getAccessToken();
       const url = editing ? `/api/sku-items/${editing.id}` : '/api/sku-items';
       const method = editing ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -94,6 +95,7 @@ export default function SkuManager() {
   const handleDelete = async (item: SkuItem) => {
     if (!confirm(`Hapus SKU "${item.kode} - ${item.nama}"?`)) return;
     try {
+      const token = await getAccessToken();
       const res = await fetch(`/api/sku-items/${item.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
@@ -108,6 +110,7 @@ export default function SkuManager() {
 
   const toggleActive = async (item: SkuItem) => {
     try {
+      const token = await getAccessToken();
       await fetch(`/api/sku-items/${item.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

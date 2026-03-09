@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { getAccessToken } from '../../lib/supabase';
 import type { SkuItem, SkuWithQty } from '../../lib/skuList';
 import { Search, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -22,7 +23,7 @@ export default function SkuPickerModal({ storeName, selected, onConfirm, onClose
   useEffect(() => {
     const loadSkus = async () => {
       try {
-        const token = localStorage.getItem('sb_token');
+        const token = await getAccessToken();
         const res = await fetch('/api/sku-items?active_only=true', {
           headers: { Authorization: `Bearer ${token}` },
         });

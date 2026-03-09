@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getAccessToken } from '../../lib/supabase';
 import { TrendingUp, Award, Star, Calendar, RefreshCw, Users, DollarSign, MapPin, Clock } from 'lucide-react';
 
 interface PerformaRow {
@@ -20,10 +21,10 @@ export default function PerformaKaryawan() {
   const [tahun, setTahun] = useState(String(now.getFullYear()));
   const [rows, setRows] = useState<PerformaRow[]>([]);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('sb_token');
 
   const load = async () => {
     setLoading(true);
+    const token = await getAccessToken();
     const res = await fetch(`/api/performa-karyawan?bulan=${bulan}&tahun=${tahun}`, {
       headers: { Authorization: `Bearer ${token}` },
     });

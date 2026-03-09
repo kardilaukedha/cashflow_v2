@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getAccessToken } from '../../lib/supabase';
 import { Store, Edit2, ArrowRightLeft, Trash2, X, Phone, MapPin, ExternalLink, ImageIcon, RefreshCw, Search, User } from 'lucide-react';
 
 interface Toko {
@@ -51,11 +52,10 @@ export default function TokoAdminView() {
 
   const [fotoModal, setFotoModal] = useState<string | null>(null);
 
-  const token = localStorage.getItem('sb_token');
-
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const token = await getAccessToken();
       const [storesRes, karRes] = await Promise.all([
         fetch('/api/stores', { headers: { Authorization: `Bearer ${token}` } }),
         fetch('/api/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email', { headers: { Authorization: `Bearer ${token}` } }),
@@ -67,7 +67,7 @@ export default function TokoAdminView() {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
@@ -97,6 +97,7 @@ export default function TokoAdminView() {
     if (!editingStore) return;
     setSaving(true);
     try {
+      const token = await getAccessToken();
       const fd = new FormData();
       fd.append('nama_toko', editForm.nama_toko);
       fd.append('nama_pemilik', editForm.nama_pemilik);
@@ -125,6 +126,7 @@ export default function TokoAdminView() {
     if (!transferStore || !transferTarget) return;
     setTransferring(true);
     try {
+      const token = await getAccessToken();
       const res = await fetch(`/api/stores/${transferStore.id}/transfer`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -142,6 +144,7 @@ export default function TokoAdminView() {
 
   const handleDelete = async (store: Toko) => {
     if (!confirm(`Hapus toko "${store.nama_toko}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+    const token = await getAccessToken();
     await fetch(`/api/stores/${store.id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, getAccessToken } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import {
   UserCircle, Edit2, X, Link as LinkIcon, Copy, Check, Users,
@@ -314,7 +314,7 @@ export default function UserManager() {
     e.preventDefault();
     setSaving(true);
     try {
-      const token = localStorage.getItem('sb_token');
+      const token = await getAccessToken();
       const res = await fetch('/api/auth/create-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -379,7 +379,7 @@ export default function UserManager() {
 
   const handleDelete = async (userId: string) => {
     try {
-      const token = localStorage.getItem('sb_token');
+      const token = await getAccessToken();
       const res = await fetch(`/api/auth/delete-user/${userId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
