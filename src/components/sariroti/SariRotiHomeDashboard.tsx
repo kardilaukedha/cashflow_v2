@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase, getAccessToken } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import AnnouncementBoard from '../AnnouncementBoard';
 import CheckinModal from './CheckinModal';
 import {
@@ -95,9 +95,8 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
   const loadSettings = async () => {
     if (!userProfile?.id) return;
-    const token = await getAccessToken();
     const res = await fetch(`/api/sariroti-settings/${userProfile.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
     });
     const json = await res.json();
     if (json.data) {
@@ -110,9 +109,8 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
   };
 
   const loadRegisteredStores = async () => {
-    const token = await getAccessToken();
     const res = await fetch('/api/stores', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
     });
     const json = await res.json();
     if (json.data) {
@@ -143,10 +141,9 @@ export default function SariRotiHomeDashboard({ onNavigate }: Props) {
 
   const handleCheckout = async (checkinId: string) => {
     setCheckingOut(checkinId);
-    const token = await getAccessToken();
     const res = await fetch(`/api/checkout/${checkinId}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem('sb_token')}` },
     });
     const json = await res.json();
     if (json.error) alert(json.error.message);

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getAccessToken } from '../../lib/supabase';
-import { Store, Plus, X, Phone, MapPin, ExternalLink, Image as ImageIcon, RefreshCw, CheckCircle } from 'lucide-react';
+import { Store, Plus, X, Phone, MapPin, ExternalLink, ImageIcon, RefreshCw, CheckCircle } from 'lucide-react';
 
 interface Toko {
   id: number;
@@ -35,17 +34,18 @@ export default function TokoManager() {
   const [saving, setSaving] = useState(false);
   const [successId, setSuccessId] = useState<number | null>(null);
 
+  const token = localStorage.getItem('sb_token');
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const token = await getAccessToken();
       const res = await fetch('/api/stores', { headers: { Authorization: `Bearer ${token}` } });
       const json = await res.json();
       if (json.data) setStores(json.data);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -64,7 +64,6 @@ export default function TokoManager() {
     }
     setSaving(true);
     try {
-      const token = await getAccessToken();
       const fd = new FormData();
       fd.append('nama_toko', form.nama_toko);
       fd.append('nama_pemilik', form.nama_pemilik);

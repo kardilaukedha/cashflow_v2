@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, getAccessToken } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import {
   Users, MapPin, Calendar, RefreshCw, ChevronDown, ChevronRight,
   CheckCircle2, Clock, AlertTriangle, Package, Receipt, Image,
@@ -94,15 +94,16 @@ export default function VisitMonitorAdmin() {
   const [notifRows, setNotifRows] = useState<NotifRow[]>([]);
   const [notifLoading, setNotifLoading] = useState(false);
 
+  const token = localStorage.getItem('sb_token');
+
   const loadSummary = useCallback(async () => {
     setLoading(true);
-    const token = await getAccessToken();
     const url = filterDate ? `/api/visit-summary?date=${filterDate}` : '/api/visit-summary';
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setSummaries(json.data);
     setLoading(false);
-  }, [filterDate]);
+  }, [filterDate, token]);
 
   useEffect(() => { loadSummary(); }, [loadSummary]);
 
@@ -121,7 +122,6 @@ export default function VisitMonitorAdmin() {
 
   const loadNotifikasi = async () => {
     setNotifLoading(true);
-    const token = await getAccessToken();
     const res = await fetch('/api/notifikasi-deadline', { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setNotifRows(json.data);
@@ -129,7 +129,6 @@ export default function VisitMonitorAdmin() {
   };
 
   const loadUserSettings = async (userProfileId: string) => {
-    const token = await getAccessToken();
     const res = await fetch(`/api/sariroti-settings/${userProfileId}`, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) {
@@ -143,7 +142,6 @@ export default function VisitMonitorAdmin() {
     const s = settingsMap[userProfileId];
     if (!s) return;
     setSavingSettings(userProfileId);
-    const token = await getAccessToken();
     await fetch(`/api/sariroti-settings/${userProfileId}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -158,7 +156,6 @@ export default function VisitMonitorAdmin() {
     setExpandedPlan(planId);
     if (planDetails[planId]) return;
     setLoadingDetail(planId);
-    const token = await getAccessToken();
     const res = await fetch(`/api/visit-detail/${planId}`, { headers: { Authorization: `Bearer ${token}` } });
     const json = await res.json();
     if (json.data) setPlanDetails(prev => ({ ...prev, [planId]: json.data }));

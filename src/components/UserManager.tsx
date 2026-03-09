@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, getAccessToken } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { CircleUser as UserCircle, CreditCard as Edit2, X, Link as LinkIcon, Copy, Check, Users, UserPlus, Trash2, Phone, Building2, Briefcase, Calendar, Hash, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
+import {
+  UserCircle, Edit2, X, Link as LinkIcon, Copy, Check, Users,
+  UserPlus, Trash2, Phone, Building2, Briefcase, Calendar, Hash,
+  ChevronDown, ChevronUp, Eye, EyeOff,
+} from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -310,7 +314,7 @@ export default function UserManager() {
     e.preventDefault();
     setSaving(true);
     try {
-      const token = await getAccessToken();
+      const token = localStorage.getItem('sb_token');
       const res = await fetch('/api/auth/create-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -375,7 +379,7 @@ export default function UserManager() {
 
   const handleDelete = async (userId: string) => {
     try {
-      const token = await getAccessToken();
+      const token = localStorage.getItem('sb_token');
       const res = await fetch(`/api/auth/delete-user/${userId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },

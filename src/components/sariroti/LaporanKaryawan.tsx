@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getAccessToken } from '../../lib/supabase';
 import { FileText, Download, RefreshCw, Calendar, User, TrendingUp, DollarSign, MapPin } from 'lucide-react';
 
 interface LaporanRow {
@@ -54,20 +53,18 @@ export default function LaporanKaryawan() {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  const token = localStorage.getItem('sb_token');
+
   useEffect(() => {
     if (isAdmin) {
-      (async () => {
-        const token = await getAccessToken();
-        fetch('/api/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email', {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then(r => r.json()).then(j => { if (j.data) setKaryawanList(j.data); });
-      })();
+      fetch('/api/user_profiles?filter=role:karyawan_sariroti&select=id,full_name,email', {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(r => r.json()).then(j => { if (j.data) setKaryawanList(j.data); });
     }
   }, [isAdmin]);
 
   const load = async () => {
     setLoading(true);
-    const token = await getAccessToken();
     let url = `/api/laporan-karyawan?from=${from}&to=${to}`;
     if (isAdmin && selectedUser) url += `&user_profile_id=${selectedUser}`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -80,7 +77,6 @@ export default function LaporanKaryawan() {
 
   const handleExport = async () => {
     setExporting(true);
-    const token = await getAccessToken();
     let url = `/api/laporan-karyawan/export?from=${from}&to=${to}`;
     if (isAdmin && selectedUser) url += `&user_profile_id=${selectedUser}`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });

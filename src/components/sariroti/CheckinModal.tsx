@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { supabase, getAccessToken } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { X, Camera, Scan, Trash2, Package, Receipt, CheckSquare, Upload, AlertTriangle, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface RegisteredStore {
@@ -129,7 +129,7 @@ export default function CheckinModal({ visitPlanId, defaultStore, registeredStor
 
     setSaving(true);
     try {
-      const token = await getAccessToken();
+      const token = localStorage.getItem('sb_token');
 
       const fd = new FormData();
       fd.append('visit_plan_id', visitPlanId);
